@@ -12,10 +12,14 @@ import java.time.LocalDate;
  *      amount from the balance.
  * @param date the date on which the transaction has taken place.
  * @param cause the description of the operation that originated this transaction.
+ * @param otherParty used to define the other party involved in the transaction. Essentially, if the transaction is
+ *      a positive one, this will contain the name or IBAN of who is paying, and if the transaction is a negative one,
+ *      this will contain the name or IBAN of who is receiving the money.
  */
 public record Transaction(
     float amount,
     boolean isPositive,
     LocalDate date,
-    String cause) {
+    String cause,
+    String otherParty) {
 }

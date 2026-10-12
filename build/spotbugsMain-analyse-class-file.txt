@@ -1,2 +1,3 @@
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\src\main\java\project\BankAccount.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\src\main\java\project\PrepaidCard.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\src\main\java\project\Transaction.class

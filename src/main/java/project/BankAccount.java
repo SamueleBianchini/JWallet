@@ -1,9 +1,10 @@
 package src.main.java.project;
 
 import java.util.List;
+import java.time.LocalDate;
 
 /**
- * Interface that defines the methods needed for the functioning of all the operations for the BankAccount.
+ * The interface that defines the methods needed for the functioning of all the operations for the BankAccount.
  */
 public interface BankAccount {
 
@@ -12,9 +13,11 @@ public interface BankAccount {
      * like cash deposit, wire transfer or others.
      * 
      * @param amount the amount to deposit.
-     * @param cause used to set the description of the operation that resulted in this deposit.
+     * @param date the date on which the operation has occurred.
+     * @param cause used for the description of the operation that resulted in this deposit.
+     * @param source the source from which the deposit comes.
      */
-    void deposit(float amount, String cause);
+    void deposit(float amount, LocalDate date, String cause, String source);
 
     /**
      * This is the specific method used to recharge a Prepaid Card with a specific amount of money.
@@ -22,8 +25,10 @@ public interface BankAccount {
      * of the Prepaid Card to augment its balance.
      * 
      * @param amount the amount we need to recharge.
+     * @param destination the PrepaidCard which we want to recharge (we will use this only if we permit the creation of multiple
+     *      prepaid cards).
      */
-    void prepaidCharge(float amount);
+    void prepaidCharge(float amount, PrepaidCard destination);
 
     /**
      * This method is used to extract the list of the transactions made with the bank account,
@@ -32,4 +37,15 @@ public interface BankAccount {
      * @return a list of the transactions relative to this bank account.
      */
     List<Transaction> viewBankTransactions();
+
+    /**
+     * This method is used for creating and memorising a negative transaction when we wire 
+     * transfer money from our bank account to others.
+     * 
+     * @param amount the amount of the operation.
+     * @param date the date on which the operation has occurred.
+     * @param cause used for the description of the operation that resulted in this wire transfer.
+     * @param destination the destination where the money is going to go.
+     */
+    void wireTransfer(float amount, LocalDate date, String cause, String destination);
 }
