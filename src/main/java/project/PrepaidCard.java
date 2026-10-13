@@ -1,4 +1,4 @@
-package src.main.java.project;
+package project;
 
 /**
  * The interface that defines all of the methods needed for the PrepaidCard.
@@ -6,3 +6,4 @@ package src.main.java.project;
 public interface PrepaidCard {
 
 }
+
