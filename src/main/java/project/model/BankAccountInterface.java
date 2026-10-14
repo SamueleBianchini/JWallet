@@ -1,12 +1,14 @@
-package project;
+package project.model;
 
 import java.util.List;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import project.model.card.PrepaidCard;
 
 /**
  * The interface that defines the methods needed for the functioning of all the operations for the BankAccount.
  */
-public interface BankAccount {
+public interface BankAccountInterface {
 
     /**
      * This method is used to add an amount to the Bank Account balance, as a result of different types of operations,
@@ -17,7 +19,7 @@ public interface BankAccount {
      * @param cause used for the description of the operation that resulted in this deposit.
      * @param source the source from which the deposit comes.
      */
-    void deposit(float amount, LocalDate date, String cause, String source);
+    void deposit(BigDecimal amount, LocalDate date, String cause, String source);
 
     /**
      * This is the specific method used to recharge a Prepaid Card with a specific amount of money.
@@ -28,7 +30,7 @@ public interface BankAccount {
      * @param destination the PrepaidCard which we want to recharge (we will use this only if we permit the creation of multiple
      *      prepaid cards).
      */
-    void prepaidCharge(float amount, PrepaidCard destination);
+    void prepaidCharge(BigDecimal amount, PrepaidCard destination);
 
     /**
      * This method is used to extract the list of the transactions made with the bank account,
@@ -47,5 +49,5 @@ public interface BankAccount {
      * @param cause used for the description of the operation that resulted in this wire transfer.
      * @param destination the destination where the money is going to go.
      */
-    void wireTransfer(float amount, LocalDate date, String cause, String destination);
+    void wireTransfer(BigDecimal amount, LocalDate date, String cause, String destination);
 }

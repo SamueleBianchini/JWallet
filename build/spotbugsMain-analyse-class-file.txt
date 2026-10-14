@@ -1,5 +1,5 @@
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\main\project\BankAccount.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\main\project\model\card\AbstractCard.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\main\project\model\card\CardInterface.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\main\project\PrepaidCard.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\main\project\Transaction.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\BankAccountInterface.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\AbstractCard.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\CardInterface.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\PrepaidCard.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\Transaction.class

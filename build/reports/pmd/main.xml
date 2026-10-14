@@ -1,35 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 https://pmd.github.io/schema/report_2_0_0.xsd" version="7.19.0" timestamp="2026-10-13T20:58:36.821">
-<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\main\java\project\model\card\AbstractCard.java">
-<violation beginline="31" endline="31" begincolumn="19" endcolumn="32" rule="MissingOverride" ruleset="Best Practices" package="project.model.card" class="AbstractCard" method="getCardNumber" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
-The method 'getCardNumber()' is missing an @Override annotation.
-</violation>
-<violation beginline="36" endline="36" begincolumn="19" endcolumn="38" rule="MissingOverride" ruleset="Best Practices" package="project.model.card" class="AbstractCard" method="getMaskedCardNumber" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
-The method 'getMaskedCardNumber()' is missing an @Override annotation.
-</violation>
-<violation beginline="41" endline="41" begincolumn="22" endcolumn="35" rule="MissingOverride" ruleset="Best Practices" package="project.model.card" class="AbstractCard" method="getExpiryDate" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
-The method 'getExpiryDate()' is missing an @Override annotation.
-</violation>
-<violation beginline="46" endline="46" begincolumn="19" endcolumn="32" rule="MissingOverride" ruleset="Best Practices" package="project.model.card" class="AbstractCard" method="getCardHolder" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
-The method 'getCardHolder()' is missing an @Override annotation.
-</violation>
-<violation beginline="51" endline="51" begincolumn="20" endcolumn="28" rule="MissingOverride" ruleset="Best Practices" package="project.model.card" class="AbstractCard" method="isFrozen" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
-The method 'isFrozen()' is missing an @Override annotation.
-</violation>
-<violation beginline="55" endline="55" begincolumn="17" endcolumn="23" rule="MissingOverride" ruleset="Best Practices" package="project.model.card" class="AbstractCard" method="freeze" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
-The method 'freeze()' is missing an @Override annotation.
-</violation>
-<violation beginline="59" endline="59" begincolumn="17" endcolumn="25" rule="MissingOverride" ruleset="Best Practices" package="project.model.card" class="AbstractCard" method="unfreeze" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
-The method 'unfreeze()' is missing an @Override annotation.
-</violation>
-<violation beginline="63" endline="63" begincolumn="20" endcolumn="29" rule="MissingOverride" ruleset="Best Practices" package="project.model.card" class="AbstractCard" method="verifyPin" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
-The method 'verifyPin(String)' is missing an @Override annotation.
-</violation>
-<violation beginline="68" endline="68" begincolumn="29" endcolumn="43" rule="MissingOverride" ruleset="Best Practices" package="project.model.card" class="AbstractCard" method="executePayment" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
-The method 'executePayment(BigDecimal)' is missing an @Override annotation.
-</violation>
-<violation beginline="70" endline="70" begincolumn="30" endcolumn="51" rule="MissingOverride" ruleset="Best Practices" package="project.model.card" class="AbstractCard" method="getTransactionHistory" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_bestpractices.html#missingoverride" priority="3">
-The method 'getTransactionHistory()' is missing an @Override annotation.
-</violation>
-</file>
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 https://pmd.github.io/schema/report_2_0_0.xsd" version="7.19.0" timestamp="2026-10-14T17:43:09.888">
 </pmd>

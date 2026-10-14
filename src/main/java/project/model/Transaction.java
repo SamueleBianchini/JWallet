@@ -1,6 +1,7 @@
-package project;
+package project.model;
 
 import java.time.LocalDate;
+import java.math.BigDecimal;
 
 /**
  * This is a record used to store the data regarding the transactions, which we will need both
@@ -17,7 +18,7 @@ import java.time.LocalDate;
  *      this will contain the name or IBAN of who is receiving the money.
  */
 public record Transaction(
-    float amount,
+    BigDecimal amount,
     boolean isPositive,
     LocalDate date,
     String cause,
