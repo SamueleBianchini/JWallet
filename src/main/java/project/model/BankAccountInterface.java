@@ -50,4 +50,11 @@ public interface BankAccountInterface {
      * @param destination the destination where the money is going to go.
      */
     void wireTransfer(BigDecimal amount, LocalDate date, String cause, String destination);
+
+    /*
+    The methods we will use to register the payments for buying and seling assets, I will implement these
+    once Enrico does the interface for the assets so I know how to call and implement this function.
+    void invest();
+    void retireInvestment();
+    */
 }

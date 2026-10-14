@@ -8,6 +8,8 @@ import java.math.BigDecimal;
  * for memorisation and also for creating graphs.
  * 
  * @param amount the amount of money for the transaction.
+ * @param fee the fee paid for the specific operation. Can be 0 if no fee was applied, or any specific amount
+ *      depending on the operation that resulted in this fee.
  * @param isPositive this boolean is used to represent if the transaction is positive or negative. A positive value means that the
  *      transaction resulted in adding the amount to the balance, a negative one menas that we substracted the
  *      amount from the balance.
@@ -19,6 +21,7 @@ import java.math.BigDecimal;
  */
 public record Transaction(
     BigDecimal amount,
+    BigDecimal fee,
     boolean isPositive,
     LocalDate date,
     String cause,
