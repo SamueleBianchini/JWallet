@@ -1,3 +1,5 @@
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\assets\AbstractInvestment.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\assets\AssetInterface.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\BankAccountInterface.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\AbstractCard.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\CardInterface.class

@@ -3,7 +3,6 @@ package project.model.card;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import project.model.Transaction;
@@ -61,6 +60,7 @@ public abstract class AbstractCard implements CardInterface {
      * 
      * @return the card number as a String.
      */
+    @Override
     public final String getCardNumber() {
         return this.cardNumber;
     }
@@ -82,6 +82,7 @@ public abstract class AbstractCard implements CardInterface {
      * 
      * @return the expiry date as a LocalDate.
      */
+    @Override
     public final LocalDate getExpiryDate() {
         return this.expiryDate;
     }
@@ -91,6 +92,7 @@ public abstract class AbstractCard implements CardInterface {
      * 
      * @return the card holder's name as a String.
      */
+    @Override
     public final String getCardHolder() {
         return this.cardHolder;
     }
@@ -159,6 +161,6 @@ public abstract class AbstractCard implements CardInterface {
      */
     @Override
     public final List<Transaction> getTransactionHistory() {
-        return Collections.unmodifiableList(cardTransactions);
+        return List.copyOf(this.cardTransactions);
     }
 }

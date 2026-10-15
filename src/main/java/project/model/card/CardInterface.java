@@ -1,6 +1,7 @@
 package project.model.card;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import project.model.Transaction;
@@ -16,6 +17,27 @@ public interface CardInterface {
      * @return the card number in the form of String es. "**** **** **** 4812".
      */
     String getMaskedCardNumber();
+
+    /**
+     * This method is the getter for the field cardNumber. It should not be modified by the extensions of this abstract class.
+     * 
+     * @return the card number as a String.
+     */
+    String getCardNumber();
+
+    /**
+     * This method is the getter for the field expiryDate. It should not be modified by the extensions of this abstract class.
+     * 
+     * @return the expiry date as a LocalDate.
+     */
+    LocalDate getExpiryDate();
+
+    /**
+     * This method is the getter for the field cardHolder. It should not be modified by the extensions of this abstract class.
+     * 
+     * @return the card holder's name as a String.
+     */
+    String getCardHolder();
 
     /**
      * Verify if the card is active or is temporarily frozen.

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <checkstyle version="12.2.0">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\assets\AbstractInvestment.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\assets\AssetInterface.java">
+</file>
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\BankAccountInterface.java">
 </file>
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\card\AbstractCard.java">
