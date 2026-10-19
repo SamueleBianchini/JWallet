@@ -4,6 +4,7 @@ import java.util.List;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import project.model.card.PrepaidCard;
+import java.util.Optional;
 
 /**
  * The interface that defines the methods needed for the functioning of all the operations for the BankAccount.
@@ -34,11 +35,28 @@ public interface BankAccountInterface {
 
     /**
      * This method is used to extract the list of the transactions made with the bank account,
-     * for an external view to process and show on screen.
+     * while also selecting them based on specific instructions that can be put as parameters
+     * to specify the period, the cause, or the amount of the selected operations.
      * 
+     * @param start an optional that may contain a date from where to start the selection.
+     *      If not present, there will not be a minimum date to consider.
+     * @param finish an optional that may contain a date after which the operation is not selected
+     *      anymore. If not present, there will not be a maximum date do consider.
+     * @param cause an optional that may contain the specific cause for the operations we want
+     *      to select. If not present, all possible causes will be considered.
+     * @param min an optional containing a minimum amount for the operation to be selected.
+     *      If not present, no minimum will be considered.
+     * @param max an optional containing a maximum amount for the operation to be selected.
+     *      If not present, no maximum will be considered.
      * @return a list of the transactions relative to this bank account.
      */
-    List<Transaction> viewBankTransactions();
+    List<Transaction> viewBankTransactions(
+        Optional<LocalDate> start,
+        Optional<LocalDate> finish,
+        Optional<String> cause,
+        Optional<BigDecimal> min,
+        Optional<BigDecimal> max
+    );
 
     /**
      * This method is used for creating and memorising a negative transaction when we wire 
