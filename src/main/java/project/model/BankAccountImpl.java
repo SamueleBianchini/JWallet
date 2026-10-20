@@ -36,6 +36,7 @@ public class BankAccountImpl implements BankAccountInterface {
      * 
      * @return the iban as a String.
      */
+    @Override
     public String getIban() {
         return this.iban;
     }
@@ -45,13 +46,26 @@ public class BankAccountImpl implements BankAccountInterface {
      * 
      * @return the cardHolder's name as a String.
      */
+    @Override
     public String getCardHolder() {
         return this.cardHolder;
     }
 
     /**
+     * This method is a getter for the field balance.
+     * 
+     * @return the balance as a BigDecimal.
+     */
+    @Override
+    public BigDecimal getBalance() {
+        return this.balance;
+    }
+
+    /**
      * This method is used to add an amount to the Bank Account balance, as a result of different types of operations,
      * like cash deposit, wire transfer or others.
+     * This type of operation will not have a fee because normally the fee is paid by who pays for the operation and
+     * not by who receives the money.
      * 
      * @param amount the amount to deposit.
      * @param date the date on which the operation has occurred.
@@ -60,8 +74,8 @@ public class BankAccountImpl implements BankAccountInterface {
      */
     @Override
     public void deposit(final BigDecimal amount, final LocalDate date, final String cause, final String source) {
-        this.balance = this.balance.add(amount).subtract(BigDecimal.ONE);
-        final Transaction transaction = new Transaction(amount, BigDecimal.ONE, true, date, cause, source);
+        this.balance = this.balance.add(amount);
+        final Transaction transaction = new Transaction(amount, BigDecimal.ZERO, true, date, cause, source);
         this.transactionsList.add(transaction);
     }
 
@@ -69,14 +83,29 @@ public class BankAccountImpl implements BankAccountInterface {
      * This is the specific method used to recharge a Prepaid Card with a specific amount of money.
      * It should lower the balance of the bank account by the specified amount and then call a function
      * of the Prepaid Card to augment its balance.
+     * This type of operation will for now have a fee assigned to 1 euro.
      * 
      * @param amount the amount we need to recharge.
      * @param destination the PrepaidCard which we want to recharge (we will use this only if we permit the creation of multiple
      *      prepaid cards).
+     * @param date the date of the operation.
      */
     @Override
-    public void prepaidCharge(final BigDecimal amount, final PrepaidCard destination) {
+    public void prepaidCharge(final BigDecimal amount, final PrepaidCard destination, final LocalDate date) {
+        this.balance = this.balance.subtract(amount.add(BigDecimal.ONE));
+        final Transaction transaction = new Transaction(
+            amount,
+            BigDecimal.ONE,
+            false,
+            date,
+            "Recharging prepaid card",
+            destination.getCardNumber());
+        this.transactionsList.add(transaction);
+        /*
+            This will be uncommented once the method for the prepaidcard is setup.
 
+            destination.recharge(amount, date);
+         */
     }
 
     /**
@@ -101,10 +130,32 @@ public class BankAccountImpl implements BankAccountInterface {
         final Optional<LocalDate> start,
         final Optional<LocalDate> finish,
         final Optional<String> cause,
+        final Optional<Boolean> isPositive,
         final Optional<BigDecimal> min,
         final Optional<BigDecimal> max
     ) {
-        return List.of();
+        /*
+            This part checks if the start if after the finish or if the min is higher than the max, in which
+            case it throws an IllegalArgumentException which will need to be handled by the controller when it calls this method.
+        */
+        if (start.isPresent() && finish.isPresent() && start.get().isAfter(finish.get())) {
+            throw new IllegalArgumentException("Starting date cannot be after finishing date");
+        }
+        if (min.isPresent() && max.isPresent() && min.get().compareTo(max.get()) > 0) {
+            throw new IllegalArgumentException("Minimum amount cannot be higher than the maximum amount");
+        }
+        /*
+            This part is the output of the method. It uses stream() to filter for every parameter necessary
+            and then returns the stream as an unmodifiable list.
+        */
+        return this.transactionsList.stream()
+            .filter(t -> start.isEmpty() || !t.date().isBefore(start.get()))
+            .filter(t -> finish.isEmpty() || !t.date().isAfter(finish.get()))
+            .filter(t -> cause.isEmpty() || t.cause().equals(cause.get()))
+            .filter(t -> isPositive.isEmpty() || t.isPositive() == isPositive.get())
+            .filter(t -> min.isEmpty() || t.amount().compareTo(min.get()) >= 0)
+            .filter(t -> max.isEmpty() || t.amount().compareTo(max.get()) <= 0)
+            .toList();
     }
 
     /**
@@ -118,6 +169,8 @@ public class BankAccountImpl implements BankAccountInterface {
      */
     @Override
     public void wireTransfer(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
-
+        this.balance = this.balance.subtract(amount.add(BigDecimal.ONE));
+        final Transaction transaction = new Transaction(amount, BigDecimal.ONE, false, date, cause, destination);
+        this.transactionsList.add(transaction);
     }
 }

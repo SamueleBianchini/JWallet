@@ -12,6 +12,27 @@ import java.util.Optional;
 public interface BankAccountInterface {
 
     /**
+     * This method is a getter for the field iban.
+     * 
+     * @return the iban as a String.
+     */
+    String getIban();
+
+    /**
+     * This method is a getter for the field cardHolder.
+     * 
+     * @return the cardHolder's name as a String.
+     */
+    String getCardHolder();
+
+    /**
+     * This method is a getter for the field balance.
+     * 
+     * @return the balance as a BigDecimal.
+     */
+    BigDecimal getBalance();
+
+    /**
      * This method is used to add an amount to the Bank Account balance, as a result of different types of operations,
      * like cash deposit, wire transfer or others.
      * 
@@ -30,8 +51,9 @@ public interface BankAccountInterface {
      * @param amount the amount we need to recharge.
      * @param destination the PrepaidCard which we want to recharge (we will use this only if we permit the creation of multiple
      *      prepaid cards).
+     * @param date the date of the operation.
      */
-    void prepaidCharge(BigDecimal amount, PrepaidCard destination);
+    void prepaidCharge(BigDecimal amount, PrepaidCard destination, LocalDate date);
 
     /**
      * This method is used to extract the list of the transactions made with the bank account,
@@ -44,6 +66,9 @@ public interface BankAccountInterface {
      *      anymore. If not present, there will not be a maximum date do consider.
      * @param cause an optional that may contain the specific cause for the operations we want
      *      to select. If not present, all possible causes will be considered.
+     * @param isPositive an optional that may contain a boolean which, if positive, means
+     *      that the operations we need to select are only positive, if false only negative ones,
+     *      if not present means both.
      * @param min an optional containing a minimum amount for the operation to be selected.
      *      If not present, no minimum will be considered.
      * @param max an optional containing a maximum amount for the operation to be selected.
@@ -54,6 +79,7 @@ public interface BankAccountInterface {
         Optional<LocalDate> start,
         Optional<LocalDate> finish,
         Optional<String> cause,
+        Optional<Boolean> isPositive,
         Optional<BigDecimal> min,
         Optional<BigDecimal> max
     );
