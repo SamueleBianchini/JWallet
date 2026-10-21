@@ -66,8 +66,9 @@ public interface BankAccountInterface {
      * @param date the date on which the operation has occurred.
      * @param cause used for the description of the operation that resulted in this wire transfer.
      * @param destination the destination where the money is going to go.
+     * @return true if possible false in not
      */
-    void wireTransfer(BigDecimal amount, LocalDate date, String cause, String destination);
+    boolean wireTransfer(BigDecimal amount, LocalDate date, String cause, String destination);
 
     /*
     The methods we will use to register the payments for buying and seling assets, I will implement these

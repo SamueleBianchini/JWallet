@@ -65,6 +65,14 @@ public interface CardInterface {
     boolean verifyPin(String pin);
 
     /**
+     * Verify if the cvv is correct.
+     * 
+     * @param cvv the cvv to verify.
+     * @return true if correct, false if incorrect.
+     */
+    boolean verifyCvv(String cvv);
+
+    /**
      * Executes a payment of the specified amount.
      * 
      * @param amount the amount to verify.

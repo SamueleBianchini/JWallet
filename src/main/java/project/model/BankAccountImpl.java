@@ -117,7 +117,7 @@ public class BankAccountImpl implements BankAccountInterface {
      * @param destination the destination where the money is going to go.
      */
     @Override
-    public void wireTransfer(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
-
+    public boolean wireTransfer(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
+        return true;
     }
 }

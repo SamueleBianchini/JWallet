@@ -62,7 +62,7 @@ public abstract class AbstractCard implements CardInterface {
      */
     @Override
     public final String getCardNumber() {
-        return this.cardNumber;
+        return cardNumber;
     }
 
     /**
@@ -73,8 +73,12 @@ public abstract class AbstractCard implements CardInterface {
      */
     @Override
     public final String getMaskedCardNumber() {
-        //TODO
-        throw new UnsupportedOperationException();
+        if (cardNumber != null && cardNumber.length() >= 4) {
+            final String prefix = cardNumber.substring(0, cardNumber.length() - 4).replaceAll("[0 - 9]", "*");
+            final String suffix = cardNumber.substring(cardNumber.length() - 4);
+            return prefix.concat(suffix);
+        }
+        return "****************";
     }
 
     /**
@@ -133,11 +137,19 @@ public abstract class AbstractCard implements CardInterface {
      */
     @Override
     public final boolean verifyPin(final String pinInserted) {
-        /*
-         * This line of code is incorrect and temporary, and it is used just to not show the warning regarding the fact
-         * that at the moment pin and cvv are not used anywhere.
-         */
-        return pinInserted.equals(pin) && pin.equals(cvv);
+        return pinInserted != null && pinInserted.equals(pin.trim());
+    }
+
+    /**
+     * This method is used to verify if the cvv passed as a parameter is correct.
+     * 
+     * @return a boolean which is true if the cvv passed as a parameter is equal to the card's one and false otherwise.
+     * 
+     * @see project.model.card.CardInterface#verifyCvv(java.lang.String)
+     */
+    @Override
+    public final boolean verifyCvv(final String cvvInserted) {
+        return cvvInserted != null && cvvInserted.equals(cvv.trim());
     }
 
     /**
