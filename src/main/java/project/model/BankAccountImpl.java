@@ -62,6 +62,20 @@ public class BankAccountImpl implements BankAccountInterface {
     }
 
     /**
+     * This method is used to pre authorize every payment before executing it.
+     * Practically, every type of payment will have to call this method to verify if
+     * the current balance is sufficient to pay the specified amount.
+     * 
+     * @param amount the amount we need to verify.
+     * @return a boolean which is true if there is enough balance to cover the amount,
+     *      false otherwise.
+     */
+    @Override
+    public boolean preAuthorize(final BigDecimal amount) {
+        return this.balance.compareTo(amount) >= 0;
+    }
+
+    /**
      * This method is used to add an amount to the Bank Account balance, as a result of different types of operations,
      * like cash deposit, wire transfer or others.
      * This type of operation will not have a fee because normally the fee is paid by who pays for the operation and
@@ -89,18 +103,25 @@ public class BankAccountImpl implements BankAccountInterface {
      * @param destination the PrepaidCard which we want to recharge (we will use this only if we permit the creation of multiple
      *      prepaid cards).
      * @param date the date of the operation.
+     * @return a boolean which is true if the operation was possible and executed succesfully,
+     *      false otherwise.
      */
     @Override
-    public void prepaidCharge(final BigDecimal amount, final PrepaidCard destination, final LocalDate date) {
-        this.balance = this.balance.subtract(amount.add(BigDecimal.ONE));
-        final Transaction transaction = new Transaction(
-            amount,
-            BigDecimal.ONE,
-            false,
-            date,
-            "Recharging prepaid card",
-            destination.getCardNumber());
-        this.transactionsList.add(transaction);
+    public boolean prepaidCharge(final BigDecimal amount, final PrepaidCard destination, final LocalDate date) {
+        if (preAuthorize(amount.add(BigDecimal.ONE))) {
+            this.balance = this.balance.subtract(amount.add(BigDecimal.ONE));
+            final Transaction transaction = new Transaction(
+                amount,
+                BigDecimal.ONE,
+                false,
+                date,
+                "Recharging prepaid card",
+                destination.getCardNumber());
+            this.transactionsList.add(transaction);
+            return true;
+            } else {
+                return false;
+            }
         /*
             This will be uncommented once the method for the prepaidcard is setup.
 
@@ -166,11 +187,49 @@ public class BankAccountImpl implements BankAccountInterface {
      * @param date the date on which the operation has occurred.
      * @param cause used for the description of the operation that resulted in this wire transfer.
      * @param destination the destination where the money is going to go.
+     * @return a boolean which is true if the operation was possible and executed succesfully,
+     *      false otherwise.
      */
     @Override
-    public void wireTransfer(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
-        this.balance = this.balance.subtract(amount.add(BigDecimal.ONE));
-        final Transaction transaction = new Transaction(amount, BigDecimal.ONE, false, date, cause, destination);
-        this.transactionsList.add(transaction);
+    public boolean wireTransfer(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
+        if (preAuthorize(amount.add(BigDecimal.ONE))) {
+            this.balance = this.balance.subtract(amount.add(BigDecimal.ONE));
+            final Transaction transaction = new Transaction(amount, BigDecimal.ONE, false, date, cause, destination);
+            this.transactionsList.add(transaction);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * This method will be used to extinguish the debit obtained via paying with the credit card.
+     * 
+     * @param amount the total amount spent with the credit card that we need to pay back.
+     * @param interest the total interest we have to pay for the debit. In the transaction,
+     *      this will be put as the fee of the transaction.
+     * @param date the date on which the operation has occurred.
+     * @param cardNumber the number of the card that originated this operation.
+     * @return a boolean which is true if the operation was possible and executed succesfully,
+     *      false otherwise.
+     */
+    @Override
+    public boolean payCreditCard(final BigDecimal amount,
+        final BigDecimal interest,
+        final LocalDate date,
+        final String cardNumber) {
+        if (preAuthorize(amount.add(BigDecimal.ONE))) {
+            this.balance = this.balance.subtract(amount.add(interest));
+            final Transaction transaction = new Transaction(amount,
+                interest,
+                false,
+                date,
+                "Extinguishing credit card debt",
+                cardNumber);
+            this.transactionsList.add(transaction);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

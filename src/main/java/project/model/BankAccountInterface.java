@@ -33,6 +33,17 @@ public interface BankAccountInterface {
     BigDecimal getBalance();
 
     /**
+     * This method is used to pre authorize every payment before executing it.
+     * Practically, every type of payment will have to call this method to verify if
+     * the current balance is sufficient to pay the specified amount.
+     * 
+     * @param amount the amount we need to verify.
+     * @return a boolean which is true if there is enough balance to cover the amount,
+     *      false otherwise.
+     */
+    boolean preAuthorize(BigDecimal amount);
+
+    /**
      * This method is used to add an amount to the Bank Account balance, as a result of different types of operations,
      * like cash deposit, wire transfer or others.
      * 
@@ -52,8 +63,10 @@ public interface BankAccountInterface {
      * @param destination the PrepaidCard which we want to recharge (we will use this only if we permit the creation of multiple
      *      prepaid cards).
      * @param date the date of the operation.
+     * @return a boolean which is true if the operation was possible and executed succesfully,
+     *      false otherwise.
      */
-    void prepaidCharge(BigDecimal amount, PrepaidCard destination, LocalDate date);
+    boolean prepaidCharge(BigDecimal amount, PrepaidCard destination, LocalDate date);
 
     /**
      * This method is used to extract the list of the transactions made with the bank account,
@@ -92,8 +105,23 @@ public interface BankAccountInterface {
      * @param date the date on which the operation has occurred.
      * @param cause used for the description of the operation that resulted in this wire transfer.
      * @param destination the destination where the money is going to go.
+     * @return a boolean which is true if the operation was possible and executed succesfully,
+     *      false otherwise.
      */
-    void wireTransfer(BigDecimal amount, LocalDate date, String cause, String destination);
+    boolean wireTransfer(BigDecimal amount, LocalDate date, String cause, String destination);
+
+    /**
+     * This method will be used to extinguish the debit obtained via paying with the credit card.
+     * 
+     * @param amount the total amount spent with the credit card that we need to pay back.
+     * @param interest the total interest we have to pay for the debit. In the transaction,
+     *      this will be put as the fee of the transaction.
+     * @param date the date on which the operation has occurred.
+     * @param cardNumber the number of the card that originated this operation.
+     * @return a boolean which is true if the operation was possible and executed succesfully,
+     *      false otherwise.
+     */
+    boolean payCreditCard(BigDecimal amount, BigDecimal interest, LocalDate date, String cardNumber);
 
     /*
     The methods we will use to register the payments for buying and seling assets, I will implement these
