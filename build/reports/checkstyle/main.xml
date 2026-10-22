@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <checkstyle version="12.2.0">
-<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\main\java\project\model\assets\AbstractInvestment.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\assets\AbstractInvestment.java">
 </file>
-<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\main\java\project\model\assets\AssetInterface.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\assets\AssetInterface.java">
 </file>
-<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\main\java\project\model\BankAccountImpl.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\BankAccountImpl.java">
 </file>
-<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\main\java\project\model\BankAccountInterface.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\BankAccountInterface.java">
 </file>
-<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\main\java\project\model\card\AbstractCard.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\card\AbstractCard.java">
 </file>
-<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\main\java\project\model\card\CardInterface.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\card\CardInterface.java">
 </file>
-<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\main\java\project\model\card\CreditCard.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\card\CreditCard.java">
 </file>
-<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\main\java\project\model\card\PrepaidCard.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\card\PrepaidCard.java">
 </file>
-<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\main\java\project\model\Transaction.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\Transaction.java">
 </file>
 </checkstyle>

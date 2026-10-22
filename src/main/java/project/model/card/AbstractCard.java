@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import project.model.Transaction;
 
@@ -165,14 +166,56 @@ public abstract class AbstractCard implements CardInterface {
 
     /**
      * This method is used to get the list of the transactions.
-     * It should not be modified by the extensions of this abstract class.
+     * It selects which ones to show based on specific instructions that can be put as parameters
+     * to specify the period, the cause, positive or negative, or the amount of the selected operations.
      * 
-     * @return the lisgt of all transactions.
+     * @param start an optional that may contain a date from where to start the selection.
+     *      If not present, there will not be a minimum date to consider.
+     * @param finish an optional that may contain a date after which the operation is not selected
+     *      anymore. If not present, there will not be a maximum date do consider.
+     * @param cause an optional that may contain the specific cause for the operations we want
+     *      to select. If not present, all possible causes will be considered.
+     * @param isPositive an optional that may contain a boolean which, if positive, means
+     *      that the operations we need to select are only positive, if false only negative ones,
+     *      if not present means both.
+     * @param min an optional containing a minimum amount for the operation to be selected.
+     *      If not present, no minimum will be considered.
+     * @param max an optional containing a maximum amount for the operation to be selected.
+     *      If not present, no maximum will be considered.
+     * @return a list of the transactions relative to this bank account.
      * 
      * @see project.model.card.CardInterface#getTransactionHistory()
      */
     @Override
-    public final List<Transaction> getTransactionHistory() {
-        return List.copyOf(this.cardTransactions);
+    public final List<Transaction> getTransactionHistory(
+        final Optional<LocalDate> start,
+        final Optional<LocalDate> finish,
+        final Optional<String> cause,
+        final Optional<Boolean> isPositive,
+        final Optional<BigDecimal> min,
+        final Optional<BigDecimal> max
+    ) {
+        /*
+            This part checks if the start if after the finish or if the min is higher than the max, in which
+            case it throws an IllegalArgumentException which will need to be handled by the controller when it calls this method.
+        */
+        if (start.isPresent() && finish.isPresent() && start.get().isAfter(finish.get())) {
+            throw new IllegalArgumentException("Starting date cannot be after finishing date");
+        }
+        if (min.isPresent() && max.isPresent() && min.get().compareTo(max.get()) > 0) {
+            throw new IllegalArgumentException("Minimum amount cannot be higher than the maximum amount");
+        }
+        /*
+            This part is the output of the method. It uses stream() to filter for every parameter necessary
+            and then returns the stream as an unmodifiable list.
+        */
+        return this.cardTransactions.stream()
+            .filter(t -> start.isEmpty() || !t.date().isBefore(start.get()))
+            .filter(t -> finish.isEmpty() || !t.date().isAfter(finish.get()))
+            .filter(t -> cause.isEmpty() || t.cause().equals(cause.get()))
+            .filter(t -> isPositive.isEmpty() || t.isPositive() == isPositive.get())
+            .filter(t -> min.isEmpty() || t.amount().compareTo(min.get()) >= 0)
+            .filter(t -> max.isEmpty() || t.amount().compareTo(max.get()) <= 0)
+            .toList();
     }
 }

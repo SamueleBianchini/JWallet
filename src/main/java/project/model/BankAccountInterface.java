@@ -71,7 +71,7 @@ public interface BankAccountInterface {
     /**
      * This method is used to extract the list of the transactions made with the bank account,
      * while also selecting them based on specific instructions that can be put as parameters
-     * to specify the period, the cause, or the amount of the selected operations.
+     * to specify the period, the cause, positive or negative, or the amount of the selected operations.
      * 
      * @param start an optional that may contain a date from where to start the selection.
      *      If not present, there will not be a minimum date to consider.

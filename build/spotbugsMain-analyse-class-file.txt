@@ -1,9 +1,9 @@
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\main\project\model\assets\AbstractInvestment.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\main\project\model\assets\AssetInterface.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\main\project\model\BankAccountImpl.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\main\project\model\BankAccountInterface.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\main\project\model\card\AbstractCard.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\main\project\model\card\CardInterface.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\main\project\model\card\CreditCard.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\main\project\model\card\PrepaidCard.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\main\project\model\Transaction.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\assets\AbstractInvestment.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\assets\AssetInterface.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\BankAccountImpl.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\BankAccountInterface.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\AbstractCard.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\CardInterface.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\CreditCard.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\PrepaidCard.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\Transaction.class

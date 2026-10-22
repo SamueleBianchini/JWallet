@@ -132,7 +132,7 @@ public class BankAccountImpl implements BankAccountInterface {
     /**
      * This method is used to extract the list of the transactions made with the bank account,
      * while also selecting them based on specific instructions that can be put as parameters
-     * to specify the period, the cause, or the amount of the selected operations.
+     * to specify the period, the cause, positive or negative, or the amount of the selected operations.
      * 
      * @param start an optional that may contain a date from where to start the selection.
      *      If not present, there will not be a minimum date to consider.
@@ -140,6 +140,9 @@ public class BankAccountImpl implements BankAccountInterface {
      *      anymore. If not present, there will not be a maximum date do consider.
      * @param cause an optional that may contain the specific cause for the operations we want
      *      to select. If not present, all possible causes will be considered.
+     * @param isPositive an optional that may contain a boolean which, if positive, means
+     *      that the operations we need to select are only positive, if false only negative ones,
+     *      if not present means both.
      * @param min an optional containing a minimum amount for the operation to be selected.
      *      If not present, no minimum will be considered.
      * @param max an optional containing a maximum amount for the operation to be selected.

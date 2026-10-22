@@ -3,6 +3,7 @@ package project.model.card;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import project.model.Transaction;
 
@@ -81,9 +82,32 @@ public interface CardInterface {
     boolean executePayment(BigDecimal amount);
 
     /**
-     * Get the list of past transactions.
+     * This method is used to get the list of the transactions.
+     * It selects which ones to show based on specific instructions that can be put as parameters
+     * to specify the period, the cause, positive or negative, or the amount of the selected operations.
      * 
-     * @return the list of transactions.
+     * @param start an optional that may contain a date from where to start the selection.
+     *      If not present, there will not be a minimum date to consider.
+     * @param finish an optional that may contain a date after which the operation is not selected
+     *      anymore. If not present, there will not be a maximum date do consider.
+     * @param cause an optional that may contain the specific cause for the operations we want
+     *      to select. If not present, all possible causes will be considered.
+     * @param isPositive an optional that may contain a boolean which, if positive, means
+     *      that the operations we need to select are only positive, if false only negative ones,
+     *      if not present means both.
+     * @param min an optional containing a minimum amount for the operation to be selected.
+     *      If not present, no minimum will be considered.
+     * @param max an optional containing a maximum amount for the operation to be selected.
+     *      If not present, no maximum will be considered.
+     * @return a list of the transactions relative to this bank account.
+     * 
+     * @see project.model.card.CardInterface#getTransactionHistory()
      */
-    List<Transaction> getTransactionHistory();
+    List<Transaction> getTransactionHistory(
+        Optional<LocalDate> start,
+        Optional<LocalDate> finish,
+        Optional<String> cause,
+        Optional<Boolean> isPositive,
+        Optional<BigDecimal> min,
+        Optional<BigDecimal> max);
 }
