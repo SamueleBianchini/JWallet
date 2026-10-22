@@ -12,6 +12,38 @@ import java.util.Optional;
 public interface BankAccountInterface {
 
     /**
+     * This method is a getter for the field iban.
+     * 
+     * @return the iban as a String.
+     */
+    String getIban();
+
+    /**
+     * This method is a getter for the field cardHolder.
+     * 
+     * @return the cardHolder's name as a String.
+     */
+    String getCardHolder();
+
+    /**
+     * This method is a getter for the field balance.
+     * 
+     * @return the balance as a BigDecimal.
+     */
+    BigDecimal getBalance();
+
+    /**
+     * This method is used to pre authorize every payment before executing it.
+     * Practically, every type of payment will have to call this method to verify if
+     * the current balance is sufficient to pay the specified amount.
+     * 
+     * @param amount the amount we need to verify.
+     * @return a boolean which is true if there is enough balance to cover the amount,
+     *      false otherwise.
+     */
+    boolean preAuthorize(BigDecimal amount);
+
+    /**
      * This method is used to add an amount to the Bank Account balance, as a result of different types of operations,
      * like cash deposit, wire transfer or others.
      * 
@@ -30,8 +62,11 @@ public interface BankAccountInterface {
      * @param amount the amount we need to recharge.
      * @param destination the PrepaidCard which we want to recharge (we will use this only if we permit the creation of multiple
      *      prepaid cards).
+     * @param date the date of the operation.
+     * @return a boolean which is true if the operation was possible and executed succesfully,
+     *      false otherwise.
      */
-    void prepaidCharge(BigDecimal amount, PrepaidCard destination);
+    boolean prepaidCharge(BigDecimal amount, PrepaidCard destination, LocalDate date);
 
     /**
      * This method is used to extract the list of the transactions made with the bank account,
@@ -44,6 +79,9 @@ public interface BankAccountInterface {
      *      anymore. If not present, there will not be a maximum date do consider.
      * @param cause an optional that may contain the specific cause for the operations we want
      *      to select. If not present, all possible causes will be considered.
+     * @param isPositive an optional that may contain a boolean which, if positive, means
+     *      that the operations we need to select are only positive, if false only negative ones,
+     *      if not present means both.
      * @param min an optional containing a minimum amount for the operation to be selected.
      *      If not present, no minimum will be considered.
      * @param max an optional containing a maximum amount for the operation to be selected.
@@ -54,6 +92,7 @@ public interface BankAccountInterface {
         Optional<LocalDate> start,
         Optional<LocalDate> finish,
         Optional<String> cause,
+        Optional<Boolean> isPositive,
         Optional<BigDecimal> min,
         Optional<BigDecimal> max
     );
@@ -66,9 +105,23 @@ public interface BankAccountInterface {
      * @param date the date on which the operation has occurred.
      * @param cause used for the description of the operation that resulted in this wire transfer.
      * @param destination the destination where the money is going to go.
-     * @return true if possible false in not
+     * @return a boolean which is true if the operation was possible and executed succesfully,
+     *      false otherwise.
      */
     boolean wireTransfer(BigDecimal amount, LocalDate date, String cause, String destination);
+
+    /**
+     * This method will be used to extinguish the debit obtained via paying with the credit card.
+     * 
+     * @param amount the total amount spent with the credit card that we need to pay back.
+     * @param interest the total interest we have to pay for the debit. In the transaction,
+     *      this will be put as the fee of the transaction.
+     * @param date the date on which the operation has occurred.
+     * @param cardNumber the number of the card that originated this operation.
+     * @return a boolean which is true if the operation was possible and executed succesfully,
+     *      false otherwise.
+     */
+    boolean payCreditCard(BigDecimal amount, BigDecimal interest, LocalDate date, String cardNumber);
 
     /*
     The methods we will use to register the payments for buying and seling assets, I will implement these
