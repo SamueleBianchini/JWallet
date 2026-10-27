@@ -63,7 +63,7 @@ public abstract class AbstractCard implements CardInterface {
      */
     @Override
     public final String getCardNumber() {
-        return cardNumber;
+        return this.cardNumber;
     }
 
     /**
@@ -110,7 +110,7 @@ public abstract class AbstractCard implements CardInterface {
      */
     @Override
     public final boolean isFrozen() {
-        return isFrozen;
+        return this.isFrozen;
     }
 
     /**
@@ -118,7 +118,7 @@ public abstract class AbstractCard implements CardInterface {
      */
     @Override
     public final void freeze() {
-        isFrozen = true;
+        this.isFrozen = true;
     }
 
     /**
@@ -126,7 +126,7 @@ public abstract class AbstractCard implements CardInterface {
      */
     @Override
     public final void unfreeze() {
-        isFrozen = false;
+        this.isFrozen = false;
     }
 
     /**
@@ -157,12 +157,26 @@ public abstract class AbstractCard implements CardInterface {
      * This method is used to execute the payment.
      * This method needs to be implemented differently in every single type of card.
      * 
+     * @param amount the amount of the operation.
+     * @param date the date on which the operation has occurred.
+     * @param cause the cause of the operation.
+     * @param destination the destination of the operation.
      * @return a boolean which is true if the operation was successfull and false otherwise.
      * 
      * @see project.model.card.CardInterface#executePayment(java.math.BigDecimal)
      */
     @Override
-    public abstract boolean executePayment(BigDecimal amount);
+    public abstract boolean executePayment(BigDecimal amount, LocalDate date, String cause, String destination);
+
+    /**
+     * This method is used to register a new transaction.
+     * 
+     * @param transaction the transaction we need to register.
+     */
+    @Override
+    public final void registerTransaction(final Transaction transaction) {
+        this.cardTransactions.add(transaction);
+    }
 
     /**
      * This method is used to get the list of the transactions.
@@ -173,8 +187,8 @@ public abstract class AbstractCard implements CardInterface {
      *      If not present, there will not be a minimum date to consider.
      * @param finish an optional that may contain a date after which the operation is not selected
      *      anymore. If not present, there will not be a maximum date do consider.
-     * @param cause an optional that may contain the specific cause for the operations we want
-     *      to select. If not present, all possible causes will be considered.
+     * @param otherParty an optional that may contain the specific otherParty for the operations we want
+     *      to select. If not present, all other parties will be considered.
      * @param isPositive an optional that may contain a boolean which, if positive, means
      *      that the operations we need to select are only positive, if false only negative ones,
      *      if not present means both.
@@ -190,7 +204,7 @@ public abstract class AbstractCard implements CardInterface {
     public final List<Transaction> getTransactionHistory(
         final Optional<LocalDate> start,
         final Optional<LocalDate> finish,
-        final Optional<String> cause,
+        final Optional<String> otherParty,
         final Optional<Boolean> isPositive,
         final Optional<BigDecimal> min,
         final Optional<BigDecimal> max
@@ -212,7 +226,7 @@ public abstract class AbstractCard implements CardInterface {
         return this.cardTransactions.stream()
             .filter(t -> start.isEmpty() || !t.date().isBefore(start.get()))
             .filter(t -> finish.isEmpty() || !t.date().isAfter(finish.get()))
-            .filter(t -> cause.isEmpty() || t.cause().equals(cause.get()))
+            .filter(t -> otherParty.isEmpty() || t.otherParty().equals(otherParty.get()))
             .filter(t -> isPositive.isEmpty() || t.isPositive() == isPositive.get())
             .filter(t -> min.isEmpty() || t.amount().compareTo(min.get()) >= 0)
             .filter(t -> max.isEmpty() || t.amount().compareTo(max.get()) <= 0)

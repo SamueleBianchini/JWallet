@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import project.model.card.PrepaidCard;
 
 /**
  * This class is the implementation of the BankAccountInterface.
@@ -76,57 +75,23 @@ public class BankAccountImpl implements BankAccountInterface {
     }
 
     /**
-     * This method is used to add an amount to the Bank Account balance, as a result of different types of operations,
-     * like cash deposit, wire transfer or others.
-     * This type of operation will not have a fee because normally the fee is paid by who pays for the operation and
-     * not by who receives the money.
+     * This method is used to execute every tipe of transaction that the bankAccount needs to execute.
+     * Since all transactions work in a similar way and the input control and coordination with other
+     * classes will be done by the Controller, this method is enough to execute every type of transaction
+     * and register it without needing more than one method.
      * 
-     * @param amount the amount to deposit.
-     * @param date the date on which the operation has occurred.
-     * @param cause used for the description of the operation that resulted in this deposit.
-     * @param source the source from which the deposit comes.
+     * @param transaction the transaction we need to execute and memorise.
+     * @return a boolean which is true if the execution was successfull, false otherwise.
      */
     @Override
-    public void deposit(final BigDecimal amount, final LocalDate date, final String cause, final String source) {
-        this.balance = this.balance.add(amount);
-        final Transaction transaction = new Transaction(amount, BigDecimal.ZERO, true, date, cause, source);
+    public boolean executeTransaction(final Transaction transaction) {
+        if (transaction.isPositive()) {
+            this.balance = this.balance.add(transaction.amount().add(transaction.fee()));
+        } else {
+            this.balance = this.balance.subtract(transaction.amount().add(transaction.fee()));
+        }
         this.transactionsList.add(transaction);
-    }
-
-    /**
-     * This is the specific method used to recharge a Prepaid Card with a specific amount of money.
-     * It should lower the balance of the bank account by the specified amount and then call a function
-     * of the Prepaid Card to augment its balance.
-     * This type of operation will for now have a fee assigned to 1 euro.
-     * 
-     * @param amount the amount we need to recharge.
-     * @param destination the PrepaidCard which we want to recharge (we will use this only if we permit the creation of multiple
-     *      prepaid cards).
-     * @param date the date of the operation.
-     * @return a boolean which is true if the operation was possible and executed succesfully,
-     *      false otherwise.
-     */
-    @Override
-    public boolean prepaidCharge(final BigDecimal amount, final PrepaidCard destination, final LocalDate date) {
-        if (preAuthorize(amount.add(BigDecimal.ONE))) {
-            this.balance = this.balance.subtract(amount.add(BigDecimal.ONE));
-            final Transaction transaction = new Transaction(
-                amount,
-                BigDecimal.ONE,
-                false,
-                date,
-                "Recharging prepaid card",
-                destination.getCardNumber());
-            this.transactionsList.add(transaction);
-            return true;
-            } else {
-                return false;
-            }
-        /*
-            This will be uncommented once the method for the prepaidcard is setup.
-
-            destination.recharge(amount, date);
-         */
+        return true;
     }
 
     /**
@@ -138,8 +103,8 @@ public class BankAccountImpl implements BankAccountInterface {
      *      If not present, there will not be a minimum date to consider.
      * @param finish an optional that may contain a date after which the operation is not selected
      *      anymore. If not present, there will not be a maximum date do consider.
-     * @param cause an optional that may contain the specific cause for the operations we want
-     *      to select. If not present, all possible causes will be considered.
+     * @param otherParty an optional that may contain the specific other party for the operations we want
+     *      to select. If not present, all possible other parties will be considered.
      * @param isPositive an optional that may contain a boolean which, if positive, means
      *      that the operations we need to select are only positive, if false only negative ones,
      *      if not present means both.
@@ -153,7 +118,7 @@ public class BankAccountImpl implements BankAccountInterface {
     public List<Transaction> viewBankTransactions(
         final Optional<LocalDate> start,
         final Optional<LocalDate> finish,
-        final Optional<String> cause,
+        final Optional<String> otherParty,
         final Optional<Boolean> isPositive,
         final Optional<BigDecimal> min,
         final Optional<BigDecimal> max
@@ -175,14 +140,61 @@ public class BankAccountImpl implements BankAccountInterface {
         return this.transactionsList.stream()
             .filter(t -> start.isEmpty() || !t.date().isBefore(start.get()))
             .filter(t -> finish.isEmpty() || !t.date().isAfter(finish.get()))
-            .filter(t -> cause.isEmpty() || t.cause().equals(cause.get()))
+            .filter(t -> otherParty.isEmpty() || t.otherParty().equals(otherParty.get()))
             .filter(t -> isPositive.isEmpty() || t.isPositive() == isPositive.get())
             .filter(t -> min.isEmpty() || t.amount().compareTo(min.get()) >= 0)
             .filter(t -> max.isEmpty() || t.amount().compareTo(max.get()) <= 0)
             .toList();
     }
 
-    /**
+    /*
+     * This method is used to add an amount to the Bank Account balance, as a result of different types of operations,
+     * like cash deposit, wire transfer or others.
+     * This type of operation will not have a fee because normally the fee is paid by who pays for the operation and
+     * not by who receives the money.
+     * 
+     * @param amount the amount to deposit.
+     * @param date the date on which the operation has occurred.
+     * @param cause used for the description of the operation that resulted in this deposit.
+     * @param source the source from which the deposit comes.
+
+    @Override
+    public void deposit(final BigDecimal amount, final LocalDate date, final String cause, final String source) {
+        this.balance = this.balance.add(amount);
+        final Transaction transaction = new Transaction(amount, BigDecimal.ZERO, true, date, cause, source);
+        this.transactionsList.add(transaction);
+    }
+
+
+     * This is the specific method used to recharge a Prepaid Card with a specific amount of money.
+     * It should lower the balance of the bank account by the specified amount and then call a function
+     * of the Prepaid Card to augment its balance.
+     * This type of operation will for now have a fee assigned to 1 euro.
+     * 
+     * @param amount the amount we need to recharge.
+     * @param destination the number of the designated card which will be recharged.
+     * @param date the date of the operation.
+     * @return a boolean which is true if the operation was possible and executed succesfully,
+     *      false otherwise.
+
+    @Override
+    public boolean prepaidCharge(final BigDecimal amount, final String destination, final LocalDate date) {
+        if (preAuthorize(amount.add(BigDecimal.ONE))) {
+            this.balance = this.balance.subtract(amount.add(BigDecimal.ONE));
+            final Transaction transaction = new Transaction(
+                amount,
+                BigDecimal.ONE,
+                false,
+                date,
+                "Recharging prepaid card",
+                destination);
+            this.transactionsList.add(transaction);
+            return true;
+        }
+        return false;
+    }
+
+
      * This method is used for creating and memorising a negative transaction when we wire 
      * transfer money from our bank account to others.
      * 
@@ -192,7 +204,7 @@ public class BankAccountImpl implements BankAccountInterface {
      * @param destination the destination where the money is going to go.
      * @return a boolean which is true if the operation was possible and executed succesfully,
      *      false otherwise.
-     */
+
     @Override
     public boolean wireTransfer(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
         if (preAuthorize(amount.add(BigDecimal.ONE))) {
@@ -205,7 +217,7 @@ public class BankAccountImpl implements BankAccountInterface {
         }
     }
 
-    /**
+
      * This method will be used to extinguish the debit obtained via paying with the credit card.
      * 
      * @param amount the total amount spent with the credit card that we need to pay back.
@@ -215,7 +227,7 @@ public class BankAccountImpl implements BankAccountInterface {
      * @param cardNumber the number of the card that originated this operation.
      * @return a boolean which is true if the operation was possible and executed succesfully,
      *      false otherwise.
-     */
+
     @Override
     public boolean payCreditCard(final BigDecimal amount,
         final BigDecimal interest,
@@ -234,5 +246,6 @@ public class BankAccountImpl implements BankAccountInterface {
         } else {
             return false;
         }
-    }
+    }*/
+
 }

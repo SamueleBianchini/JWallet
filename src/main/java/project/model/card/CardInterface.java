@@ -77,9 +77,19 @@ public interface CardInterface {
      * Executes a payment of the specified amount.
      * 
      * @param amount the amount to verify.
+     * @param date the date of the operation.
+     * @param cause the cause of the operation.
+     * @param destination the destination of the payment.
      * @return true if possible, false if not possible.
      */
-    boolean executePayment(BigDecimal amount);
+    boolean executePayment(BigDecimal amount, LocalDate date, String cause, String destination);
+
+    /**
+     * This method is used to register a new transaction.
+     * 
+     * @param transaction the transaction we need to register.
+     */
+    void registerTransaction(Transaction transaction);
 
     /**
      * This method is used to get the list of the transactions.
@@ -90,8 +100,8 @@ public interface CardInterface {
      *      If not present, there will not be a minimum date to consider.
      * @param finish an optional that may contain a date after which the operation is not selected
      *      anymore. If not present, there will not be a maximum date do consider.
-     * @param cause an optional that may contain the specific cause for the operations we want
-     *      to select. If not present, all possible causes will be considered.
+     * @param otherParty an optional that may contain the specific other party for the operations we want
+     *      to select. If not present, all other parties will be considered.
      * @param isPositive an optional that may contain a boolean which, if positive, means
      *      that the operations we need to select are only positive, if false only negative ones,
      *      if not present means both.
@@ -106,7 +116,7 @@ public interface CardInterface {
     List<Transaction> getTransactionHistory(
         Optional<LocalDate> start,
         Optional<LocalDate> finish,
-        Optional<String> cause,
+        Optional<String> otherParty,
         Optional<Boolean> isPositive,
         Optional<BigDecimal> min,
         Optional<BigDecimal> max);

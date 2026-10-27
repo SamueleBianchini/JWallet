@@ -5,5 +5,6 @@ C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\mode
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\AbstractCard.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\CardInterface.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\CreditCard.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\DebitCard.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\PrepaidCard.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\Transaction.class

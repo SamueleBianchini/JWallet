@@ -2,7 +2,7 @@ package project.model.card;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import project.model.BankAccountImpl;
+import project.model.Transaction;
 
 /**
  * Represents a credit card implementation of {@link AbstractCard}.
@@ -12,7 +12,6 @@ public final class CreditCard extends AbstractCard {
 
     private final BigDecimal creditLimit;
     private final BigDecimal interestRate;
-    private final BankAccountImpl conto;
     private BigDecimal currentDebt;
 
     /**
@@ -25,7 +24,6 @@ public final class CreditCard extends AbstractCard {
      * @param pin                 the security PIN
      * @param creditLimit         the maximum credit limit
      * @param interestRatePercent the interest rate percentage
-     * @param conto               the associated bank account
      */
     public CreditCard(
         final String cardNumber,
@@ -34,40 +32,35 @@ public final class CreditCard extends AbstractCard {
         final String cvv,
         final String pin,
         final double creditLimit,
-        final double interestRatePercent,
-        final BankAccountImpl conto
+        final double interestRatePercent
     ) {
         super(cardNumber, cardHolder, expiryDate, cvv, pin);
         this.creditLimit = BigDecimal.valueOf(creditLimit);
         this.interestRate = BigDecimal.valueOf(interestRatePercent)
                 .divide(BigDecimal.valueOf(100));
         this.currentDebt = BigDecimal.ZERO;
-        this.conto = conto;
     }
 
     /**
      * Settles the monthly debt by charging the associated bank account.
      *
-     * @return true if settlement was successful or no debt existed, false otherwise
+     * @param date the date of the operation.
+     * @param iban the iban of the otherParty for the transaction, in this case the bankAccount.
+     * @return true if settlement was successful or no debt existed, false otherwise.
      */
-    public boolean endMonth() {
-        if (currentDebt.compareTo(BigDecimal.ZERO) <= 0) {
-            return true;
-        }
+    public boolean endMonth(final LocalDate date, final String iban) {
 
         final BigDecimal withdrawAmount = currentDebt.add(currentDebt.multiply(interestRate));
         final String cause = "addebito mensile estratto conto carta di credito di " + withdrawAmount;
 
-        if (conto.wireTransfer(
-                withdrawAmount,
-                LocalDate.now(),
-                cause,
-                this.getMaskedCardNumber()
-        )) {
-            this.currentDebt = BigDecimal.ZERO;
-            return true;
-        }
-        return false;
+        super.registerTransaction(new Transaction(currentDebt,
+            currentDebt.multiply(interestRate),
+            true,
+            date,
+            cause,
+            iban));
+        this.currentDebt = BigDecimal.ZERO;
+        return true;
     }
 
     /**
@@ -77,10 +70,8 @@ public final class CreditCard extends AbstractCard {
      * @return true if the payment can be afforded, false otherwise
      */
     public boolean canAfford(final BigDecimal amount) {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            return false;
-        }
-        if (isFrozen() || getExpiryDate().isBefore(LocalDate.now())) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0
+        || isFrozen() || getExpiryDate().isBefore(LocalDate.now())) {
             return false;
         }
         return amount.compareTo(getAvailableCredit()) <= 0;
@@ -91,13 +82,31 @@ public final class CreditCard extends AbstractCard {
     }
 
     /**
-     * Executes a payment of the specified amount.
-     *
-     * @param amount the amount of the payment
-     * @return true if the payment was successful, false otherwise
+     * This method is used to execute the payment.
+     * This method needs to be implemented differently in every single type of card.
+     * 
+     * @param amount the amount of the operation.
+     * @param date the date on which the operation has occurred.
+     * @param cause the cause of the operation.
+     * @param destination the destination of the operation.
+     * @return a boolean which is true if the operation was successfull and false otherwise.
+     * 
+     * @see project.model.card.CardInterface#executePayment(java.math.BigDecimal)
      */
     @Override
-    public boolean executePayment(final BigDecimal amount) {
-        throw new UnsupportedOperationException("Unimplemented method 'executePayment'");
+    public boolean executePayment(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
+        if (isFrozen() || amount.compareTo(creditLimit.subtract(currentDebt)) > 0) {
+            return false;
+        }
+        this.currentDebt = this.currentDebt.add(amount);
+        super.registerTransaction(new Transaction(
+                amount,
+                BigDecimal.ZERO,
+                false,
+                date,
+                cause,
+                destination
+            ));
+        return true;
     }
 }

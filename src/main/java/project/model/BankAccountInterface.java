@@ -1,9 +1,8 @@
 package project.model;
 
-import java.util.List;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import project.model.card.PrepaidCard;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -44,29 +43,15 @@ public interface BankAccountInterface {
     boolean preAuthorize(BigDecimal amount);
 
     /**
-     * This method is used to add an amount to the Bank Account balance, as a result of different types of operations,
-     * like cash deposit, wire transfer or others.
+     * This method is used to execute every tipe of transaction that the bankAccount needs to execute.
+     * Since all transactions work in a similar way and the input control and coordination with other
+     * classes will be done by the Controller, this method is enough to execute every type of transaction
+     * and register it without needing more than one method.
      * 
-     * @param amount the amount to deposit.
-     * @param date the date on which the operation has occurred.
-     * @param cause used for the description of the operation that resulted in this deposit.
-     * @param source the source from which the deposit comes.
+     * @param transaction the transaction we need to execute and memorise.
+     * @return a boolean which is true if the execution was successfull, false otherwise.
      */
-    void deposit(BigDecimal amount, LocalDate date, String cause, String source);
-
-    /**
-     * This is the specific method used to recharge a Prepaid Card with a specific amount of money.
-     * It should lower the balance of the bank account by the specified amount and then call a function
-     * of the Prepaid Card to augment its balance.
-     * 
-     * @param amount the amount we need to recharge.
-     * @param destination the PrepaidCard which we want to recharge (we will use this only if we permit the creation of multiple
-     *      prepaid cards).
-     * @param date the date of the operation.
-     * @return a boolean which is true if the operation was possible and executed succesfully,
-     *      false otherwise.
-     */
-    boolean prepaidCharge(BigDecimal amount, PrepaidCard destination, LocalDate date);
+    boolean executeTransaction(Transaction transaction);
 
     /**
      * This method is used to extract the list of the transactions made with the bank account,
@@ -97,7 +82,32 @@ public interface BankAccountInterface {
         Optional<BigDecimal> max
     );
 
-    /**
+    /*
+     * This method is used to add an amount to the Bank Account balance, as a result of different types of operations,
+     * like cash deposit, wire transfer or others.
+     * 
+     * @param amount the amount to deposit.
+     * @param date the date on which the operation has occurred.
+     * @param cause used for the description of the operation that resulted in this deposit.
+     * @param source the source from which the deposit comes.
+
+    void deposit(BigDecimal amount, LocalDate date, String cause, String source);
+
+
+     * This is the specific method used to recharge a Prepaid Card with a specific amount of money.
+     * It should lower the balance of the bank account by the specified amount and then call a function
+     * of the Prepaid Card to augment its balance.
+     * 
+     * @param amount the amount we need to recharge.
+     * @param destination the PrepaidCard which we want to recharge (we will use this only if we permit the creation of multiple
+     *      prepaid cards).
+     * @param date the date of the operation.
+     * @return a boolean which is true if the operation was possible and executed succesfully,
+     *      false otherwise.
+
+    boolean prepaidCharge(BigDecimal amount, String destination, LocalDate date);
+
+
      * This method is used for creating and memorising a negative transaction when we wire 
      * transfer money from our bank account to others.
      * 
@@ -107,10 +117,10 @@ public interface BankAccountInterface {
      * @param destination the destination where the money is going to go.
      * @return a boolean which is true if the operation was possible and executed succesfully,
      *      false otherwise.
-     */
+
     boolean wireTransfer(BigDecimal amount, LocalDate date, String cause, String destination);
 
-    /**
+
      * This method will be used to extinguish the debit obtained via paying with the credit card.
      * 
      * @param amount the total amount spent with the credit card that we need to pay back.
@@ -120,13 +130,7 @@ public interface BankAccountInterface {
      * @param cardNumber the number of the card that originated this operation.
      * @return a boolean which is true if the operation was possible and executed succesfully,
      *      false otherwise.
-     */
     boolean payCreditCard(BigDecimal amount, BigDecimal interest, LocalDate date, String cardNumber);
-
-    /*
-    The methods we will use to register the payments for buying and seling assets, I will implement these
-    once Enrico does the interface for the assets so I know how to call and implement this function.
-    void invest();
-    void retireInvestment();
     */
+
 }

@@ -3,6 +3,8 @@ package project.model.card;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import project.model.Transaction;
+
 /**
  * The implementation of the PrepaidCard.
  * It has its own balance, which can only be increased by recharging it from the bank account,
@@ -48,44 +50,53 @@ public final class PrepaidCard extends AbstractCard {
      * It is meant to be called by the bank account after it has taken the money from its own balance.
      *
      * @param amount the amount to add to the balance of the card, it must be greater than zero.
+     * @param date the date of the operation.
+     * @param iban the iban of the otherParty of the transaction, in this case the bankAccount.
      * @return a boolean which is true if the recharge was executed, false if the amount is not valid
      *      or if the card is frozen or expired.
      */
-    public boolean recharge(final BigDecimal amount) {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0 || !isUsable()) {
+    public boolean recharge(final BigDecimal amount, final LocalDate date, final String iban) {
+        if (super.isFrozen()) {
             return false;
         }
         this.balance = this.balance.add(amount);
+        final Transaction transaction = new Transaction(amount,
+            BigDecimal.ONE,
+            true,
+            date,
+            "Charging the Prepaid Card",
+            iban);
+        super.registerTransaction(transaction);
         return true;
     }
 
     /**
-     * This is the implementation of the method from the AbstractCard.
-     * It executes the payment taking the money from the balance of the card,
-     * only if the card is usable and the balance is sufficient.
-     *
-     * @return a boolean which is true if the operation was successfull or false otherwise.
+     * This method is used to execute the payment.
+     * This method needs to be implemented differently in every single type of card.
+     * 
+     * @param amount the amount of the operation.
+     * @param date the date on which the operation has occurred.
+     * @param cause the cause of the operation.
+     * @param destination the destination of the operation.
+     * @return a boolean which is true if the operation was successfull and false otherwise.
+     * 
+     * @see project.model.card.CardInterface#executePayment(java.math.BigDecimal)
      */
     @Override
-    public boolean executePayment(final BigDecimal amount) {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0 || !isUsable()) {
+    public boolean executePayment(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
+        if (!super.isFrozen() || amount.compareTo(this.balance) > 0) {
             return false;
+        } else {
+            this.balance = this.balance.subtract(amount);
+            super.registerTransaction(new Transaction(
+                amount,
+                BigDecimal.ZERO,
+                false,
+                date,
+                cause,
+                destination
+            ));
         }
-        if (this.balance.compareTo(amount) < 0) {
-            return false;
-        }
-        this.balance = this.balance.subtract(amount);
-        //TODO save the transaction in the card's history, once AbstractCard allows it
         return true;
-    }
-
-    /**
-     * This method is used to check if the card can be used for an operation,
-     * which means that it is not frozen and it is not expired.
-     *
-     * @return a boolean which is true if the card is usable, false otherwise.
-     */
-    private boolean isUsable() {
-        return !isFrozen() && !getExpiryDate().isBefore(LocalDate.now());
     }
 }
