@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <checkstyle version="12.2.0">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\controller\BankAccountControllerImpl.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\controller\BankAccountControllerInterface.java">
+</file>
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\assets\AbstractInvestment.java">
 </file>
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\assets\AssetInterface.java">
@@ -19,5 +23,7 @@
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\card\PrepaidCard.java">
 </file>
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\Transaction.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\view\BankAccountView.java">
 </file>
 </checkstyle>
