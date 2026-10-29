@@ -4,6 +4,12 @@
 </file>
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\controller\BankAccountControllerInterface.java">
 </file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\controller\MasterControllerImpl.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\controller\MasterControllerInterface.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\Main.java">
+</file>
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\assets\AbstractInvestment.java">
 </file>
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\assets\AssetInterface.java">
@@ -25,5 +31,7 @@
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\Transaction.java">
 </file>
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\view\BankAccountView.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\view\LoginView.java">
 </file>
 </checkstyle>

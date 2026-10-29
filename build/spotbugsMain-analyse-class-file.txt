@@ -1,5 +1,8 @@
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\controller\BankAccountControllerImpl.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\controller\BankAccountControllerInterface.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\controller\MasterControllerImpl.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\controller\MasterControllerInterface.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\Main.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\assets\AbstractInvestment.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\assets\AssetInterface.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\BankAccountImpl.class
@@ -11,3 +14,4 @@ C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\mode
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\PrepaidCard.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\Transaction.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\view\BankAccountView.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\view\LoginView.class
