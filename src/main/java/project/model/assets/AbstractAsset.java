@@ -3,6 +3,8 @@ package project.model.assets;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.LinkedHashMap;
 
 /**
@@ -17,10 +19,7 @@ public abstract class AbstractAsset implements AssetInterface{
     private final String assetName;
     private final Map<LocalDate, BigDecimal> variation;
     private LocalDate lastUpdate;
-    private static final String STARTING_PRICE_ERROR = "Starting price should be not null and greater than 0.";
-    private static final String NAME_ERROR = "Name string should be not null and not empty.";
-    private static final String TYPE_ERROR = "Type string showld be not null and not empty.";
-    private static final String EMPTY_STRING = "";
+    private static final String INPUT_ERROR_STRING = " is null or not valid.";
 
     /**
      * This is the costructor for the AbstractAsset class. 
@@ -35,21 +34,28 @@ public abstract class AbstractAsset implements AssetInterface{
         final String name,
         final String type
     ) {
-        if (startingPrice == null || 
-            startingPrice.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException(AbstractAsset.STARTING_PRICE_ERROR);
-        }
-        if (name == null || name == AbstractAsset.EMPTY_STRING) {
-            throw new IllegalArgumentException(AbstractAsset.NAME_ERROR); 
-        }
-        if (type == null || type == AbstractAsset.EMPTY_STRING) {
-            throw new IllegalArgumentException(AbstractAsset.TYPE_ERROR);
-        }
+        this.checkArgument(startingPrice, bd -> ((BigDecimal) bd).compareTo(BigDecimal.ZERO) < 0, "Starting price");
+        this.checkArgument(name, n -> ((String) n).isBlank(), "Name");
+        this.checkArgument(type, t -> ((String) t).isEmpty(), "Type");
         this.assetType = type;
         this.assetName = name;
         this.variation = new LinkedHashMap<>();
         this.lastUpdate = LocalDate.now();
         this.variation.put(this.lastUpdate, startingPrice);
+    }
+
+    /**
+     * Method used to avoid the repetation of the code in che costructor. 
+     * Check for some imperfections on the costructor's parameters. 
+     * 
+     * @param obj the non nullable object
+     * @param predicate second test to validate
+     * @param name string to refere at the parameter name
+     */
+    private void checkArgument(final Object obj, final Predicate<Object> predicate, final String name) {
+        if (Objects.isNull(obj) || predicate.test(obj)) {
+            throw new IllegalArgumentException(name.concat(AbstractAsset.INPUT_ERROR_STRING));
+        }
     }
 
     /**
@@ -119,6 +125,6 @@ public abstract class AbstractAsset implements AssetInterface{
      */
     @Override
     public Map<LocalDate, BigDecimal> getVariationList() {
-        return this.variation; 
+        return new LinkedHashMap<>(this.variation); 
     }
 }

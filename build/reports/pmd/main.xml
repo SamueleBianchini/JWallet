@@ -1,3 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 https://pmd.github.io/schema/report_2_0_0.xsd" version="7.19.0" timestamp="2026-10-29T11:50:57.363">
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 https://pmd.github.io/schema/report_2_0_0.xsd" version="7.19.0" timestamp="2026-11-01T11:21:19.089">
+<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\model\assets\AbstractAsset.java">
+<violation beginline="40" endline="40" begincolumn="48" endcolumn="61" rule="UnnecessaryFullyQualifiedName" ruleset="Code Style" package="project.model.assets" class="AbstractAsset" method="AbstractAsset" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_codestyle.html#unnecessaryfullyqualifiedname" priority="4">
+Unnecessary qualifier 'AbstractAsset': 'STARTING_PRICE_ERROR' is already in scope because it is declared in an enclosing type
+</violation>
+<violation beginline="42" endline="42" begincolumn="29" endcolumn="63" rule="UseEqualsToCompareStrings" ruleset="Error Prone" package="project.model.assets" class="AbstractAsset" method="AbstractAsset" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_errorprone.html#useequalstocomparestrings" priority="3">
+Use equals() to compare strings instead of '==' or '!='
+</violation>
+<violation beginline="42" endline="42" begincolumn="37" endcolumn="50" rule="UnnecessaryFullyQualifiedName" ruleset="Code Style" package="project.model.assets" class="AbstractAsset" method="AbstractAsset" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_codestyle.html#unnecessaryfullyqualifiedname" priority="4">
+Unnecessary qualifier 'AbstractAsset': 'EMPTY_STRING' is already in scope because it is declared in an enclosing type
+</violation>
+<violation beginline="43" endline="43" begincolumn="48" endcolumn="61" rule="UnnecessaryFullyQualifiedName" ruleset="Code Style" package="project.model.assets" class="AbstractAsset" method="AbstractAsset" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_codestyle.html#unnecessaryfullyqualifiedname" priority="4">
+Unnecessary qualifier 'AbstractAsset': 'NAME_ERROR' is already in scope because it is declared in an enclosing type
+</violation>
+<violation beginline="45" endline="45" begincolumn="29" endcolumn="63" rule="UseEqualsToCompareStrings" ruleset="Error Prone" package="project.model.assets" class="AbstractAsset" method="AbstractAsset" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_errorprone.html#useequalstocomparestrings" priority="3">
+Use equals() to compare strings instead of '==' or '!='
+</violation>
+<violation beginline="45" endline="45" begincolumn="37" endcolumn="50" rule="UnnecessaryFullyQualifiedName" ruleset="Code Style" package="project.model.assets" class="AbstractAsset" method="AbstractAsset" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_codestyle.html#unnecessaryfullyqualifiedname" priority="4">
+Unnecessary qualifier 'AbstractAsset': 'EMPTY_STRING' is already in scope because it is declared in an enclosing type
+</violation>
+<violation beginline="46" endline="46" begincolumn="48" endcolumn="61" rule="UnnecessaryFullyQualifiedName" ruleset="Code Style" package="project.model.assets" class="AbstractAsset" method="AbstractAsset" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_codestyle.html#unnecessaryfullyqualifiedname" priority="4">
+Unnecessary qualifier 'AbstractAsset': 'TYPE_ERROR' is already in scope because it is declared in an enclosing type
+</violation>
+<violation beginline="103" endline="103" begincolumn="26" endcolumn="37" rule="LocalVariableNamingConventions" ruleset="Code Style" package="project.model.assets" class="AbstractAsset" method="priceVariation" variable="ONE_HUNDRED" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_codestyle.html#localvariablenamingconventions" priority="1">
+The final local variable name 'ONE_HUNDRED' doesn't match '[a-z][a-zA-Z0-9]*'
+</violation>
+<violation beginline="104" endline="104" begincolumn="20" endcolumn="29" rule="LocalVariableCouldBeFinal" ruleset="Code Style" package="project.model.assets" class="AbstractAsset" method="priceVariation" variable="lastPrice" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_codestyle.html#localvariablecouldbefinal" priority="3">
+Local variable 'lastPrice' could be declared final
+</violation>
+</file>
+<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\model\assets\RandomAsset.java">
+<violation beginline="44" endline="46" begincolumn="16" endcolumn="10" rule="AvoidDecimalLiteralsInBigDecimalConstructor" ruleset="Error Prone" package="project.model.assets" class="RandomAsset" method="getNextRandom" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_errorprone.html#avoiddecimalliteralsinbigdecimalconstructor" priority="3">
+Avoid creating BigDecimal with a decimal (float/double) literal. Use a String literal
+</violation>
+<violation beginline="45" endline="45" begincolumn="34" endcolumn="45" rule="UnnecessaryFullyQualifiedName" ruleset="Code Style" package="project.model.assets" class="RandomAsset" method="getNextRandom" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_codestyle.html#unnecessaryfullyqualifiedname" priority="4">
+Unnecessary qualifier 'RandomAsset': 'RAND_ORIGIN' is already in scope because it is declared in an enclosing type
+</violation>
+<violation beginline="45" endline="45" begincolumn="59" endcolumn="70" rule="UnnecessaryFullyQualifiedName" ruleset="Code Style" package="project.model.assets" class="RandomAsset" method="getNextRandom" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.19.0/pmd_rules_java_codestyle.html#unnecessaryfullyqualifiedname" priority="4">
+Unnecessary qualifier 'RandomAsset': 'RAND_BOUND' is already in scope because it is declared in an enclosing type
+</violation>
+</file>
 </pmd>

@@ -1,17 +1,19 @@
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\controller\BankAccountControllerImpl.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\controller\BankAccountControllerInterface.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\controller\MasterControllerImpl.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\controller\MasterControllerInterface.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\Main.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\assets\AbstractInvestment.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\assets\AssetInterface.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\BankAccountImpl.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\BankAccountInterface.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\AbstractCard.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\CardInterface.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\CreditCard.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\DebitCard.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\card\PrepaidCard.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\Transaction.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\view\BankAccountView.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\view\LoginView.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\controller\BankAccountControllerImpl.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\controller\BankAccountControllerInterface.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\controller\MasterControllerImpl.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\controller\MasterControllerInterface.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\Main.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\assets\AbstractAsset.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\assets\AbstractInvestment.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\assets\AssetInterface.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\assets\RandomAsset.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\BankAccountImpl.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\BankAccountInterface.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\card\AbstractCard.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\card\CardInterface.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\card\CreditCard.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\card\DebitCard.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\card\PrepaidCard.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\Transaction.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\view\BankAccountView.class
+C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\view\LoginView.class
