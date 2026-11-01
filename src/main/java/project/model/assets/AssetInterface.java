@@ -1,7 +1,8 @@
 package project.model.assets;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Map;
+import java.time.LocalDate;
 
 /**
  * This is the interface that will be used for the assets.
@@ -47,5 +48,5 @@ public interface AssetInterface {
      * 
      * @return the List of the recorded price variation.
      */
-    List<BigDecimal> getVariationList();
+    Map<LocalDate, BigDecimal> getVariationList();
 }

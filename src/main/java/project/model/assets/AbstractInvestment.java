@@ -101,9 +101,7 @@ public abstract class AbstractInvestment {
     /**
      * This method is used to update the current value of the asset and assign the necessary modifications.
      */
-    public void updateCurrentValue() {
-        //TODO
-    }
+    public abstract void updateCurrentValue();
 
     /**
      * This method will be used to set the current value, and will be called by the updateCurrentValue
