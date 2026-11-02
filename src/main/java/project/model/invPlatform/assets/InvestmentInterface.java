@@ -1,4 +1,4 @@
-package project.model.assets;
+package project.model.invplatform.assets;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -10,16 +10,6 @@
 </file>
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\Main.java">
 </file>
-<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\assets\AbstractAsset.java">
-</file>
-<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\assets\AbstractInvestment.java">
-</file>
-<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\assets\AssetInterface.java">
-</file>
-<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\assets\InvestmentInterface.java">
-</file>
-<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\assets\RandomAsset.java">
-</file>
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\BankAccountImpl.java">
 </file>
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\BankAccountInterface.java">
@@ -33,6 +23,22 @@
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\card\DebitCard.java">
 </file>
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\card\PrepaidCard.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\assets\AbstractAsset.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\assets\AssetInterface.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\assets\AssetType.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\assets\InvestmentInterface.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\assets\RandomAsset.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\assets\RealAsset.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\investiments\AbstractInvestment.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\investiments\InvestmentInterface.java">
 </file>
 <file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\Transaction.java">
 </file>

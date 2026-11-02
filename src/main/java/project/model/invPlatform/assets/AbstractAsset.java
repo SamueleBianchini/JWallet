@@ -1,4 +1,4 @@
-package project.model.invPlatform.assets;
+package project.model.invplatform.assets;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,7 +16,6 @@ import project.utility.InputValidator;
 public abstract class AbstractAsset implements AssetInterface {
 
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
-    private static final String INPUT_ERROR_STRING = " is null or not valid.";
     private static final String VARIATION_EMPTY_ERROR = "Variation list is empty.";
     private final AssetType assetType;
     private final String assetName;
@@ -33,23 +32,17 @@ public abstract class AbstractAsset implements AssetInterface {
         final String name,
         final AssetType type
     ) {
-<<<<<<< HEAD:src/main/java/project/model/assets/AbstractAsset.java
         /* Input validation */
-        InputValidator.checkArgument(startingPrice, p -> p.compareTo(BigDecimal.ZERO) > 0, "Starting price");
         InputValidator.checkArgument(name, p -> !p.isBlank() && !p.isEmpty(), "Name");
         /* In questo metodo per il controllo imput del tipo, bisognerà ggiungere la verifica del tipo dell'asset
             in modo che la stringa corrisponda a una tra i tre tipi possibili. */
-        InputValidator.checkArgument(type, p -> !p.isBlank() && !p.isEmpty(), "Type");
+        InputValidator.checkArgument(type, p -> true, "Type");
         /* Actual constructor */
-=======
-        this.checkArgument(name, n -> ((String) n).isBlank(), "Name");
-        this.checkArgument(type, t -> ((String) t).isEmpty(), "Type");
->>>>>>> e50f6cfe1e4177365d7fdd416f90e75a1bc061c6:src/main/java/project/model/invPlatform/assets/AbstractAsset.java
+
         this.assetType = type;
         this.assetName = name;
         this.variation = new LinkedHashMap<>();
         this.lastUpdate = LocalDate.now();
-        
     }
 
     /**
@@ -59,22 +52,6 @@ public abstract class AbstractAsset implements AssetInterface {
      */
     protected LocalDate getLastUpdate() {
         return this.lastUpdate;
-    }
-
-    /**
-<<<<<<< HEAD:src/main/java/project/model/assets/AbstractAsset.java
-=======
-     * Method used to avoid the repetation of the code in che costructor. 
-     * Check for some imperfections on the costructor's parameters. 
-     * 
-     * @param obj the non nullable object
-     * @param predicate second test to validate
-     * @param name string to refere at the parameter name
-     */
-    protected  void checkArgument(final Object obj, final Predicate<Object> predicate, final String name) {
-        if (Objects.isNull(obj) || predicate.test(obj)) {
-            throw new IllegalArgumentException(name.concat(INPUT_ERROR_STRING));
-        }
     }
 
     /**
@@ -89,7 +66,6 @@ public abstract class AbstractAsset implements AssetInterface {
     }
 
     /**
->>>>>>> e50f6cfe1e4177365d7fdd416f90e75a1bc061c6:src/main/java/project/model/invPlatform/assets/AbstractAsset.java
      * This method calculate the new price of 
      * the asset.
      * 
