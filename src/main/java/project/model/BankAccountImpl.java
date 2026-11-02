@@ -3,6 +3,9 @@ package project.model;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
+
+import project.utility.InputValidator;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -24,6 +27,10 @@ public class BankAccountImpl implements BankAccountInterface {
      * @param cardHolder the name of the card holder.
      */
     public BankAccountImpl(final String iban, final String cardHolder) {
+        /* Input validation */
+        InputValidator.checkArgument(iban, p -> !p.isBlank() && !p.isEmpty(), "Iban");
+        InputValidator.checkArgument(cardHolder, p -> !p.isBlank() && !p.isEmpty(), "cardHolder");
+        /* Actual constructor */
         this.transactionsList = new ArrayList<>();
         this.iban = iban;
         this.cardHolder = cardHolder;
@@ -71,6 +78,7 @@ public class BankAccountImpl implements BankAccountInterface {
      */
     @Override
     public boolean preAuthorize(final BigDecimal amount) {
+        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, "Amount");
         return this.balance.compareTo(amount) >= 0;
     }
 
@@ -81,17 +89,16 @@ public class BankAccountImpl implements BankAccountInterface {
      * and register it without needing more than one method.
      * 
      * @param transaction the transaction we need to execute and memorise.
-     * @return a boolean which is true if the execution was successfull, false otherwise.
      */
     @Override
-    public boolean executeTransaction(final Transaction transaction) {
+    public void executeTransaction(final Transaction transaction) {
+        InputValidator.checkArgument(transaction, p -> true, "Transaction");
         if (transaction.isPositive()) {
             this.balance = this.balance.add(transaction.amount().add(transaction.fee()));
         } else {
             this.balance = this.balance.subtract(transaction.amount().add(transaction.fee()));
         }
         this.transactionsList.add(transaction);
-        return true;
     }
 
     /**

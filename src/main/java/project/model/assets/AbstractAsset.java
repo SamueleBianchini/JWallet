@@ -3,9 +3,9 @@ package project.model.assets;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Map;
-import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.LinkedHashMap;
+
+import project.utility.InputValidator;
 
 /**
  * This abstract class implements the base functionality
@@ -16,7 +16,6 @@ import java.util.LinkedHashMap;
 public abstract class AbstractAsset implements AssetInterface {
 
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
-    private static final String INPUT_ERROR_STRING = " is null or not valid.";
     private final String assetType;
     private final String assetName;
     private final Map<LocalDate, BigDecimal> variation;
@@ -35,28 +34,18 @@ public abstract class AbstractAsset implements AssetInterface {
         final String name,
         final String type
     ) {
-        this.checkArgument(startingPrice, bd -> ((BigDecimal) bd).compareTo(BigDecimal.ZERO) < 0, "Starting price");
-        this.checkArgument(name, n -> ((String) n).isBlank(), "Name");
-        this.checkArgument(type, t -> ((String) t).isEmpty(), "Type");
+        /* Input validation */
+        InputValidator.checkArgument(startingPrice, p -> p.compareTo(BigDecimal.ZERO) > 0, "Starting price");
+        InputValidator.checkArgument(name, p -> !p.isBlank() && !p.isEmpty(), "Name");
+        /* In questo metodo per il controllo imput del tipo, bisognerà ggiungere la verifica del tipo dell'asset
+            in modo che la stringa corrisponda a una tra i tre tipi possibili. */
+        InputValidator.checkArgument(type, p -> !p.isBlank() && !p.isEmpty(), "Type");
+        /* Actual constructor */
         this.assetType = type;
         this.assetName = name;
         this.variation = new LinkedHashMap<>();
         this.lastUpdate = LocalDate.now();
         this.variation.put(this.lastUpdate, startingPrice);
-    }
-
-    /**
-     * Method used to avoid the repetation of the code in che costructor. 
-     * Check for some imperfections on the costructor's parameters. 
-     * 
-     * @param obj the non nullable object
-     * @param predicate second test to validate
-     * @param name string to refere at the parameter name
-     */
-    private void checkArgument(final Object obj, final Predicate<Object> predicate, final String name) {
-        if (Objects.isNull(obj) || predicate.test(obj)) {
-            throw new IllegalArgumentException(name.concat(INPUT_ERROR_STRING));
-        }
     }
 
     /**

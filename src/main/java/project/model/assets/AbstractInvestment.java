@@ -5,11 +5,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 
+import project.utility.InputValidator;
+
 /**
  * This class will be used as a template for all different types of assets.
  * For this reason, it will only have the fields necessary for every different type of investment.
  */
-public abstract class AbstractInvestment {
+public abstract class AbstractInvestment implements InvestmentInterface {
 
     private final List<BigDecimal> priceVariationList;
     private final AssetInterface asset;
@@ -34,6 +36,12 @@ public abstract class AbstractInvestment {
         final int nBought,
         final LocalDate purchaseDate
     ) {
+        /* Input validation */
+        InputValidator.checkArgument(asset, p -> true, "Asset");
+        InputValidator.checkArgument(originalSingleValue, p -> p.compareTo(BigDecimal.ZERO) > 0, "Original single value");
+        InputValidator.checkArgument(nBought, p -> p > 0, "Number bought");
+        InputValidator.checkArgument(purchaseDate, p -> true, "Purchase date");
+        /* Actual constructor */
         this.priceVariationList = new ArrayList<>();
         this.asset = asset;
         this.originalSingleValue = originalSingleValue;
@@ -49,7 +57,8 @@ public abstract class AbstractInvestment {
      * 
      * @return the asset
      */
-    public AssetInterface getAsset() {
+    @Override
+    public final AssetInterface getAsset() {
         return this.asset;
     }
 
@@ -58,7 +67,8 @@ public abstract class AbstractInvestment {
      * 
      * @return the original value for a single instance of the asset, as it was when the investment started.
      */
-    public BigDecimal getOriginalSingleValue() {
+    @Override
+    public final BigDecimal getOriginalSingleValue() {
         return this.originalSingleValue;
     }
 
@@ -67,7 +77,8 @@ public abstract class AbstractInvestment {
      * 
      * @return the number of assets we bought.
      */
-    public int nBought() {
+    @Override
+    public final int nBought() {
         return this.nBought;
     }
 
@@ -76,7 +87,8 @@ public abstract class AbstractInvestment {
      * 
      * @return the date of the purchase of the investment.
      */
-    public LocalDate getpurchasedDate() {
+    @Override
+    public final LocalDate getpurchasedDate() {
         return this.purchaseDate;
     }
 
@@ -85,7 +97,8 @@ public abstract class AbstractInvestment {
      * 
      * @return the total original value of the investment.
      */
-    public BigDecimal totalOriginalValue() {
+    @Override
+    public final BigDecimal totalOriginalValue() {
         return this.originalSingleValue.multiply(BigDecimal.valueOf(this.nBought));
     }
 
@@ -94,14 +107,18 @@ public abstract class AbstractInvestment {
      * 
      * @return the total current value of the investment.
      */
-    public BigDecimal totalCurrentValue() {
+    @Override
+    public final BigDecimal totalCurrentValue() {
         return this.currentSingleValue.multiply(BigDecimal.valueOf(this.nBought));
     }
 
     /**
      * This method is used to update the current value of the asset and assign the necessary modifications.
      */
-    public abstract void updateCurrentValue();
+    @Override
+    public final void updateCurrentValue() {
+        this.asset.priceVariation();
+    }
 
     /**
      * This method will be used to set the current value, and will be called by the updateCurrentValue
@@ -109,7 +126,8 @@ public abstract class AbstractInvestment {
      * 
      * @param newValue the new value.
      */
-    public void setCurrentValue(final BigDecimal newValue) {
+    @Override
+    public final void setCurrentValue(final BigDecimal newValue) {
         this.currentSingleValue = newValue;
     }
 
@@ -118,7 +136,8 @@ public abstract class AbstractInvestment {
      * 
      * @return the price variation list.
      */
-    public List<BigDecimal> getPriceVariationList() {
+    @Override
+    public final List<BigDecimal> getPriceVariationList() {
         return List.copyOf(this.priceVariationList);
     }
 
@@ -130,5 +149,6 @@ public abstract class AbstractInvestment {
      * 
      * @return the Current total profit made using the ivestment.
      */
+    @Override
     public abstract BigDecimal getCurrentProfit();
 }

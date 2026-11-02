@@ -3,6 +3,7 @@ package project.model.card;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import project.model.Transaction;
+import project.utility.InputValidator;
 
 /**
  * Represents a credit card implementation of {@link AbstractCard}.
@@ -31,13 +32,17 @@ public final class CreditCard extends AbstractCard {
         final LocalDate expiryDate,
         final String cvv,
         final String pin,
-        final double creditLimit,
-        final double interestRatePercent
+        final BigDecimal creditLimit,
+        final BigDecimal interestRatePercent
     ) {
+        /* Super validation and constructor */
         super(cardNumber, cardHolder, expiryDate, cvv, pin);
-        this.creditLimit = BigDecimal.valueOf(creditLimit);
-        this.interestRate = BigDecimal.valueOf(interestRatePercent)
-                .divide(BigDecimal.valueOf(100));
+        /* Input validation */
+        InputValidator.checkArgument(creditLimit, p -> p.compareTo(BigDecimal.ZERO) > 0, "Credit limit");
+        InputValidator.checkArgument(interestRatePercent, p -> p.compareTo(BigDecimal.ZERO) > 0, "Interest rate percent");
+        /* Actual constructor */
+        this.creditLimit = creditLimit;
+        this.interestRate = interestRatePercent;
         this.currentDebt = BigDecimal.ZERO;
     }
 
@@ -49,10 +54,12 @@ public final class CreditCard extends AbstractCard {
      * @return true if settlement was successful or no debt existed, false otherwise.
      */
     public boolean endMonth(final LocalDate date, final String iban) {
-
+        /* Input validation */
+        InputValidator.checkArgument(date, p -> true, "Date");
+        InputValidator.checkArgument(iban, p -> !p.isBlank() && !p.isEmpty(), "Iban");
+        /* Method execution */
         final BigDecimal withdrawAmount = currentDebt.add(currentDebt.multiply(interestRate));
         final String cause = "addebito mensile estratto conto carta di credito di " + withdrawAmount;
-
         super.registerTransaction(new Transaction(currentDebt,
             currentDebt.multiply(interestRate),
             true,
@@ -70,8 +77,10 @@ public final class CreditCard extends AbstractCard {
      * @return true if the payment can be afforded, false otherwise
      */
     public boolean canAfford(final BigDecimal amount) {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0
-        || isFrozen() || getExpiryDate().isBefore(LocalDate.now())) {
+        /* Input validation */
+        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, "Amount");
+        /* Method execution */
+        if (isFrozen() || getExpiryDate().isBefore(LocalDate.now())) {
             return false;
         }
         return amount.compareTo(getAvailableCredit()) <= 0;
@@ -95,18 +104,24 @@ public final class CreditCard extends AbstractCard {
      */
     @Override
     public boolean executePayment(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
+        /* Input validation */
+        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, "Amount");
+        InputValidator.checkArgument(date, p -> true, "Date");
+        InputValidator.checkArgument(cause, p -> !p.isBlank() && !p.isEmpty(), "Cause");
+        InputValidator.checkArgument(destination, p -> !p.isBlank() && !p.isEmpty(), "Destination");
+        /* Method execution */
         if (isFrozen() || amount.compareTo(creditLimit.subtract(currentDebt)) > 0) {
             return false;
         }
         this.currentDebt = this.currentDebt.add(amount);
         super.registerTransaction(new Transaction(
-                amount,
-                BigDecimal.ZERO,
-                false,
-                date,
-                cause,
-                destination
-            ));
+            amount,
+            BigDecimal.ZERO,
+            false,
+            date,
+            cause,
+            destination
+        ));
         return true;
     }
 }

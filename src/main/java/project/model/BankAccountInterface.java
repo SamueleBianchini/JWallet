@@ -49,9 +49,8 @@ public interface BankAccountInterface {
      * and register it without needing more than one method.
      * 
      * @param transaction the transaction we need to execute and memorise.
-     * @return a boolean which is true if the execution was successfull, false otherwise.
      */
-    boolean executeTransaction(Transaction transaction);
+    void executeTransaction(Transaction transaction);
 
     /**
      * This method is used to extract the list of the transactions made with the bank account,

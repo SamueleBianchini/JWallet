@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import project.model.Transaction;
+import project.utility.InputValidator;
 
 /**
  * The implementation of the PrepaidCard.
@@ -33,6 +34,8 @@ public final class PrepaidCard extends AbstractCard {
         final String pin
         ) {
         super(cardNumber, cardHolder, expiryDate, cvv, pin);
+        /* Input validation */
+
         this.balance = BigDecimal.ZERO;
     }
 
@@ -56,17 +59,21 @@ public final class PrepaidCard extends AbstractCard {
      *      or if the card is frozen or expired.
      */
     public boolean recharge(final BigDecimal amount, final LocalDate date, final String iban) {
+        /* Input validation */
+        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, "Amount");
+        InputValidator.checkArgument(date, p -> true, "Date");
+        InputValidator.checkArgument(iban, p -> !p.isBlank() && !p.isEmpty(), "Iban");
+        /* Method execution */
         if (super.isFrozen()) {
             return false;
         }
         this.balance = this.balance.add(amount);
-        final Transaction transaction = new Transaction(amount,
+        super.registerTransaction(new Transaction(amount,
             BigDecimal.ONE,
             true,
             date,
             "Charging the Prepaid Card",
-            iban);
-        super.registerTransaction(transaction);
+            iban));
         return true;
     }
 
@@ -84,6 +91,12 @@ public final class PrepaidCard extends AbstractCard {
      */
     @Override
     public boolean executePayment(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
+        /* Input validation */
+        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, "Amount");
+        InputValidator.checkArgument(date, p -> true, "Date");
+        InputValidator.checkArgument(cause, p -> !p.isBlank() && !p.isEmpty(), "Cause");
+        InputValidator.checkArgument(destination, p -> !p.isBlank() && !p.isEmpty(), "Destination");
+        /* Method execution */
         if (!super.isFrozen() || amount.compareTo(this.balance) > 0) {
             return false;
         } else {
@@ -95,7 +108,7 @@ public final class PrepaidCard extends AbstractCard {
                 date,
                 cause,
                 destination
-            ));
+             ));
         }
         return true;
     }
