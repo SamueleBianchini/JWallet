@@ -1,4 +1,4 @@
-package project.model.assets;
+package project.model.invPlatform.assets;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,7 +17,8 @@ public abstract class AbstractAsset implements AssetInterface {
 
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
     private static final String INPUT_ERROR_STRING = " is null or not valid.";
-    private final String assetType;
+    private static final String VARIATION_EMPTY_ERROR = "Variation list is empty.";
+    private final AssetType assetType;
     private final String assetName;
     private final Map<LocalDate, BigDecimal> variation;
     private LocalDate lastUpdate;
@@ -25,24 +26,29 @@ public abstract class AbstractAsset implements AssetInterface {
     /**
      * This is the costructor for the AbstractAsset class. 
      * 
-     * @param startingPrice the very first price that is memorized
-     *      on the variation
      * @param name the name of the asset
      * @param type the type of asset
      */
     public AbstractAsset(
-        final BigDecimal startingPrice,
         final String name,
-        final String type
+        final AssetType type
     ) {
-        this.checkArgument(startingPrice, bd -> ((BigDecimal) bd).compareTo(BigDecimal.ZERO) < 0, "Starting price");
         this.checkArgument(name, n -> ((String) n).isBlank(), "Name");
         this.checkArgument(type, t -> ((String) t).isEmpty(), "Type");
         this.assetType = type;
         this.assetName = name;
         this.variation = new LinkedHashMap<>();
         this.lastUpdate = LocalDate.now();
-        this.variation.put(this.lastUpdate, startingPrice);
+        
+    }
+
+    /**
+     * Getter to return the last update.
+     * 
+     * @return the LocalDate last price variation list update.
+     */
+    protected LocalDate getLastUpdate() {
+        return this.lastUpdate;
     }
 
     /**
@@ -53,10 +59,21 @@ public abstract class AbstractAsset implements AssetInterface {
      * @param predicate second test to validate
      * @param name string to refere at the parameter name
      */
-    private void checkArgument(final Object obj, final Predicate<Object> predicate, final String name) {
+    protected  void checkArgument(final Object obj, final Predicate<Object> predicate, final String name) {
         if (Objects.isNull(obj) || predicate.test(obj)) {
             throw new IllegalArgumentException(name.concat(INPUT_ERROR_STRING));
         }
+    }
+
+    /**
+     * Method to enable the subclasses to add manually
+     * the prices to the price variation list. 
+     * 
+     * @param price to add
+     * @param date to add the price
+     */
+    protected void addPriceManually(final BigDecimal price, final LocalDate date) {
+        this.variation.put(date, price);
     }
 
     /**
@@ -84,6 +101,9 @@ public abstract class AbstractAsset implements AssetInterface {
      */
     @Override
     public BigDecimal getSinglePrice() {
+        if (this.variation.isEmpty()) {
+            throw new IllegalStateException(VARIATION_EMPTY_ERROR);
+        }
         return ((java.util.SequencedMap<LocalDate, BigDecimal>) this.variation)
             .lastEntry().getValue();
     }
@@ -94,7 +114,7 @@ public abstract class AbstractAsset implements AssetInterface {
      * @return the type of asset as a String.
      */
     @Override
-    public String getAssetType() {
+    public AssetType getAssetType() {
         return this.assetType;
     }
 
