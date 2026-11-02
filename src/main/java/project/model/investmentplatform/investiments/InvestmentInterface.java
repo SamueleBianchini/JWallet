@@ -1,12 +1,17 @@
-package project.model.invplatform.assets;
+package project.model.investmentplatform.investiments;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import project.model.investmentplatform.assets.AssetInterface;
+
 /**
- * This class is the interface for the AbstractInvestment class, therefore it
- * will the interface for all the methods typical of all investments.
+ * InvestimentInterface is the interface that will be used for the investments.
+ * Since we decided that the assets will just be the rapresentation of the things in which you can invest,
+ * and the investments will be the single instances bought and sold, the structure for the investments will only
+ * contain the information about the specific instance of the asset that was bought.
+ * 
  */
 public interface InvestmentInterface {
 
@@ -27,6 +32,28 @@ public interface InvestmentInterface {
     BigDecimal getOriginalSingleValue();
 
     /**
+     * This method is a getter for the date of the purchase of the investment.
+     * 
+     * @return the date of the purchase of the investment.
+     */
+    LocalDate getpurchasedDate();
+
+    /**
+     * This method is the getter for the price variation list, which we will use to make graphs.
+     * 
+     * @return the price variation list.
+     */
+    List<BigDecimal> getPriceVariationList();
+
+    /**
+     * Method to get the value in gain or loss of the investiment in the current
+     * valute. It could be positive or negative
+     * 
+     * @return the value in gain or loss of the investiment in the current valute.
+     */
+    BigDecimal totalInvestedValue();
+
+    /**
      * This method is a getter for the number of instances of the assets we bought.
      * 
      * @return the number of assets we bought.
@@ -34,11 +61,12 @@ public interface InvestmentInterface {
     int nBought();
 
     /**
-     * This method is a getter for the date of the purchase of the investment.
+     * This method will be used to set the current value, and will be called by the updateCurrentValue
+     * or by the asset when it updates, because it should always reflect the last update made.
      * 
-     * @return the date of the purchase of the investment.
+     * @param newValue the new value.
      */
-    LocalDate getpurchasedDate();
+    void setCurrentValue(BigDecimal newValue);
 
     /**
      * This method is a getter for the original total value of the investment.
@@ -60,21 +88,6 @@ public interface InvestmentInterface {
     void updateCurrentValue();
 
     /**
-     * This method will be used to set the current value, and will be called by the updateCurrentValue
-     * or by the asset when it updates, because it should always reflect the last update made.
-     * 
-     * @param newValue the new value.
-     */
-    void setCurrentValue(BigDecimal newValue);
-
-    /**
-     * This method is the getter for the price variation list, which we will use to make graphs.
-     * 
-     * @return the price variation list.
-     */
-    List<BigDecimal> getPriceVariationList();
-
-    /**
      * This method will be used to calculate and return the total current profit made by the asset,
      * which is simply the difference in price for speculative assets, but needs to account for dividends
      * or interests in case of shares or loans. This also means that these two types of investments will need to
@@ -83,4 +96,5 @@ public interface InvestmentInterface {
      * @return the Current total profit made using the ivestment.
      */
     BigDecimal getCurrentProfit();
+
 }
