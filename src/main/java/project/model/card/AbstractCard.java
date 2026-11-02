@@ -66,7 +66,8 @@ public abstract class AbstractCard implements CardInterface {
     }
 
     /**
-     * This method is the getter for the field cardNumber. It should not be modified by the extensions of this abstract class.
+     * This method is the getter for the field cardNumber. 
+     * It should not be modified by the extensions of this abstract class.
      * 
      * @return the card number as a String.
      */

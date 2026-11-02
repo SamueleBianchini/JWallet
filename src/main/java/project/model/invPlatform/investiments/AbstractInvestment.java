@@ -1,8 +1,11 @@
-package project.model.assets;
+package project.model.invPlatform.investiments;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+
+import project.model.invPlatform.assets.AssetInterface;
+
 import java.util.ArrayList;
 
 import project.utility.InputValidator;

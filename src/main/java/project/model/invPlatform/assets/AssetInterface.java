@@ -1,4 +1,4 @@
-package project.model.assets;
+package project.model.invPlatform.assets;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -34,7 +34,7 @@ public interface AssetInterface {
      * 
      * @return the type of asset as a String.
      */
-    String getAssetType();
+    AssetType getAssetType();
 
     /**
      * This method is used to update the price variation.

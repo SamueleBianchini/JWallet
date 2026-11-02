@@ -1,4 +1,4 @@
-package project.model.assets;
+package project.model.invPlatform.assets;
 
 import java.math.BigDecimal;
 import java.util.Random;
@@ -26,9 +26,13 @@ public class RandomAsset extends AbstractAsset {
     public RandomAsset(
         final BigDecimal startingPrice,
         final String name,
-        final String type
+        final AssetType type
     ) {
-        super(startingPrice, name, type);
+        super(name, type);
+        super.checkArgument(startingPrice, 
+                            bd -> ((BigDecimal) bd).compareTo(BigDecimal.ZERO) < 0, 
+                            "Starting price");
+        super.addPriceManually(startingPrice, super.getLastUpdate());
         this.rand = new Random();
     }
 
@@ -58,4 +62,5 @@ public class RandomAsset extends AbstractAsset {
     public BigDecimal getNewPrice() {
         return this.getSinglePrice().multiply(this.getNextRandom());
     }
+
 }
