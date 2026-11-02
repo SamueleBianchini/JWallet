@@ -1,7 +1,8 @@
-package project.model.invPlatform.assets;
+package project.model.invplatform.assets;
 
 import java.math.BigDecimal;
 import java.util.Random;
+import project.utility.InputValidator;
 
 /**
  * RandomAsset extends the AbstractAsset
@@ -29,9 +30,9 @@ public class RandomAsset extends AbstractAsset {
         final AssetType type
     ) {
         super(name, type);
-        super.checkArgument(startingPrice, 
-                            bd -> ((BigDecimal) bd).compareTo(BigDecimal.ZERO) < 0, 
-                            "Starting price");
+        InputValidator.checkArgument(startingPrice, 
+                      bd -> ((BigDecimal) bd).compareTo(BigDecimal.ZERO) < 0, 
+                      "Starting price");
         super.addPriceManually(startingPrice, super.getLastUpdate());
         this.rand = new Random();
     }

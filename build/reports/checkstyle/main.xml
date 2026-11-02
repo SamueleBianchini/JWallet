@@ -1,41 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <checkstyle version="12.2.0">
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\controller\BankAccountControllerImpl.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\controller\BankAccountControllerImpl.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\controller\BankAccountControllerInterface.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\controller\BankAccountControllerInterface.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\controller\MasterControllerImpl.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\controller\MasterControllerImpl.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\controller\MasterControllerInterface.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\controller\MasterControllerInterface.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\Main.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\Main.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\model\assets\AbstractAsset.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\BankAccountImpl.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\model\assets\AbstractInvestment.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\BankAccountInterface.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\model\assets\AssetInterface.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\card\AbstractCard.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\model\assets\RandomAsset.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\card\CardInterface.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\model\BankAccountImpl.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\card\CreditCard.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\model\BankAccountInterface.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\card\DebitCard.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\model\card\AbstractCard.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\card\PrepaidCard.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\model\card\CardInterface.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\assets\AbstractAsset.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\model\card\CreditCard.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\assets\AssetInterface.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\model\card\DebitCard.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\assets\AssetType.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\model\card\PrepaidCard.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\assets\InvestmentInterface.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\model\Transaction.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\assets\RandomAsset.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\view\BankAccountView.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\assets\RealAsset.java">
 </file>
-<file name="C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\src\main\java\project\view\LoginView.java">
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\investiments\AbstractInvestment.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\invplatform\investiments\InvestmentInterface.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\model\Transaction.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\utility\InputValidator.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\view\BankAccountView.java">
+</file>
+<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\main\java\project\view\LoginView.java">
 </file>
 </checkstyle>

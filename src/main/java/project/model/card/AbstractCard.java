@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Optional;
 
 import project.model.Transaction;
+import project.utility.InputValidator;
 
 /**
  * This abstract class implements cardInterface and is used as a template for all other cards that we are going to create.
  * It contains the basic constructor and all the basic methods that will be common for all cards.
  */
 public abstract class AbstractCard implements CardInterface {
+
     private final List<Transaction> cardTransactions;
     private final String cardNumber;
     private final String cardHolder;
@@ -47,6 +49,13 @@ public abstract class AbstractCard implements CardInterface {
         final String cvv,
         final String pin
     ) {
+        /* Input validation */
+        InputValidator.checkArgument(cardNumber, p -> !p.isBlank() && !p.isEmpty(), "Card number");
+        InputValidator.checkArgument(cardHolder, p -> !p.isBlank() && !p.isEmpty(), "Card holder");
+        InputValidator.checkArgument(cvv, p -> !p.isBlank() && !p.isEmpty(), "CVV");
+        InputValidator.checkArgument(pin, p -> !p.isBlank() && !p.isEmpty(), "Pin");
+        InputValidator.checkArgument(expiryDate, p -> true, "Expiry date");
+        /* Actual constructor */
         this.cardNumber = cardNumber;
         this.cardHolder = cardHolder;
         this.expiryDate = expiryDate;
@@ -176,6 +185,9 @@ public abstract class AbstractCard implements CardInterface {
      */
     @Override
     public final void registerTransaction(final Transaction transaction) {
+        if (transaction == null) {
+            throw new IllegalArgumentException("Transaction is null");
+        }
         this.cardTransactions.add(transaction);
     }
 

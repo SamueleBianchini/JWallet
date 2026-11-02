@@ -1,9 +1,10 @@
-package project.model.invPlatform.investiments;
+package project.model.invplatform.investiments;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import project.model.invPlatform.assets.AssetInterface;
+
+import project.model.invplatform.assets.AssetInterface;
 
 /**
  * InvestimentInterface is the interface that will be used for the investments.
@@ -12,7 +13,7 @@ import project.model.invPlatform.assets.AssetInterface;
  * contain the information about the specific instance of the asset that was bought.
  * 
  */
-interface InvestimentInterface {
+public interface InvestmentInterface {
 
     /**
      * This method is the getter for the asset.
@@ -29,7 +30,7 @@ interface InvestimentInterface {
      * @return the original value for a single instance of the asset, as it was when the investment started.
      */
     BigDecimal getOriginalSingleValue();
-    
+
     /**
      * This method is a getter for the date of the purchase of the investment.
      * 
@@ -51,7 +52,7 @@ interface InvestimentInterface {
      * @return the value in gain or loss of the investiment in the current valute.
      */
     BigDecimal totalInvestedValue();
-    
+
     /**
      * This method is a getter for the number of instances of the assets we bought.
      * 
@@ -65,6 +66,35 @@ interface InvestimentInterface {
      * 
      * @param newValue the new value.
      */
-    void setCurrentValue(final BigDecimal newValue);
+    void setCurrentValue(BigDecimal newValue);
+
+    /**
+     * This method is a getter for the original total value of the investment.
+     * 
+     * @return the total original value of the investment.
+     */
+    BigDecimal totalOriginalValue();
+
+    /**
+     * This method is a getter for the current total value of the investment.
+     * 
+     * @return the total current value of the investment.
+     */
+    BigDecimal totalCurrentValue();
+
+    /**
+     * This method is used to update the current value of the asset and assign the necessary modifications.
+     */
+    void updateCurrentValue();
+
+    /**
+     * This method will be used to calculate and return the total current profit made by the asset,
+     * which is simply the difference in price for speculative assets, but needs to account for dividends
+     * or interests in case of shares or loans. This also means that these two types of investments will need to
+     * memorize the revenues they produce, but it will be a job to do on their specific classes and not on this one.
+     * 
+     * @return the Current total profit made using the ivestment.
+     */
+    BigDecimal getCurrentProfit();
 
 }

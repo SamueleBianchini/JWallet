@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import project.model.Transaction;
+import project.utility.InputValidator;
 
 /**
  * The implementation of the DebitCard.
@@ -46,17 +47,23 @@ public final class DebitCard extends AbstractCard {
      */
     @Override
     public boolean executePayment(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
+        /* Input validation */
+        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, "Amount");
+        InputValidator.checkArgument(date, p -> true, "Date");
+        InputValidator.checkArgument(cause, p -> !p.isBlank() && !p.isEmpty(), "Cause");
+        InputValidator.checkArgument(destination, p -> !p.isBlank() && !p.isEmpty(), "Destination");
+        /* Method execution */
         if (super.isFrozen()) {
             return false;
         }
         super.registerTransaction(new Transaction(
-                amount,
-                BigDecimal.ZERO,
-                false,
-                date,
-                cause,
-                destination
-            ));
+            amount,
+            BigDecimal.ZERO,
+            false,
+            date,
+            cause,
+            destination
+        ));
         return true;
     }
 }

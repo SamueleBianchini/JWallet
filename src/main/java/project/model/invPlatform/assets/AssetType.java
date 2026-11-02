@@ -1,8 +1,8 @@
-package project.model.invPlatform.assets;
+package project.model.invplatform.assets;
 
 /**
  * AssetType.
- * As we now, there are many type of assets in the market
+ * As we know, there are many type of assets in the market
  * where we can invest. The ones we choosed are:
  *      FOREX: Foreign Exchange Market (EUR/USD, USD/JPY, etc.)
  *      CRYPTO: Cryptocurrencies (Bitcoin, Ethereum, etc.)

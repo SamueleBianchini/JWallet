@@ -1,4 +1,4 @@
-package project.model.invPlatform.assets;
+package project.model.invplatform.assets;
 
 import java.math.BigDecimal;
 import java.util.Map;

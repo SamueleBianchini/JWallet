@@ -76,9 +76,8 @@ public interface BankAccountControllerInterface {
      * 
      * @param amount the amount we want to deposit.
      * @param date the date on which the deposit has occurred.
-     * @return a boolean which is true if the operation was successfull and false otherwise.
      */
-    boolean deposit(BigDecimal amount, LocalDate date);
+    void deposit(BigDecimal amount, LocalDate date);
 
     /**
      * This method is used to trasnfer the money via wireTransfer.
@@ -88,9 +87,8 @@ public interface BankAccountControllerInterface {
      * @param date the date on which the transfer occurs.
      * @param cause the cause of the operation.
      * @param destination the destination of the wireTransfer.
-     * @return a boolean which is true if the operation was successfull and false otherwise.
      */
-    boolean wiretransfer(BigDecimal amount, LocalDate date, String cause, String destination);
+    void wireTransfer(BigDecimal amount, LocalDate date, String cause, String destination);
 
     /**
      * This method is used to charge a PrepaidCard by adding to its balance money directly taken
@@ -100,8 +98,7 @@ public interface BankAccountControllerInterface {
      * @param amount the amount we want to recharge
      * @param date the date on which we will recherge.
      * @param cardNumber the number of the card we want to recharge.
-     * @return a boolean which is true if the operation was successfull and false otherwise.
      */
-    boolean prepaidCharge(BigDecimal amount, LocalDate date, String cardNumber);
+    void prepaidCharge(BigDecimal amount, LocalDate date, String cardNumber);
 
 }
