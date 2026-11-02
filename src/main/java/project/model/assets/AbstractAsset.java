@@ -13,13 +13,14 @@ import java.util.LinkedHashMap;
  * is still abstract. 
  * 
  */
-public abstract class AbstractAsset implements AssetInterface{
+public abstract class AbstractAsset implements AssetInterface {
 
+    private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
+    private static final String INPUT_ERROR_STRING = " is null or not valid.";
     private final String assetType;
     private final String assetName;
     private final Map<LocalDate, BigDecimal> variation;
     private LocalDate lastUpdate;
-    private static final String INPUT_ERROR_STRING = " is null or not valid.";
 
     /**
      * This is the costructor for the AbstractAsset class. 
@@ -54,7 +55,7 @@ public abstract class AbstractAsset implements AssetInterface{
      */
     private void checkArgument(final Object obj, final Predicate<Object> predicate, final String name) {
         if (Objects.isNull(obj) || predicate.test(obj)) {
-            throw new IllegalArgumentException(name.concat(AbstractAsset.INPUT_ERROR_STRING));
+            throw new IllegalArgumentException(name.concat(INPUT_ERROR_STRING));
         }
     }
 
@@ -64,7 +65,7 @@ public abstract class AbstractAsset implements AssetInterface{
      * 
      * @return the new price calculated
      */
-    protected  abstract BigDecimal getNewPrice();
+    protected abstract BigDecimal getNewPrice();
 
     /**
      * This method returns the name of the asset.
@@ -101,13 +102,13 @@ public abstract class AbstractAsset implements AssetInterface{
      * This method is used to update the price variation.
      * For semplicity, we update che price variation list
      * one time a day. 
+     * 
      * @return the percentage of the price variation as a BigDecimal.
      */
     @Override
     public BigDecimal priceVariation() {
         final LocalDate now = LocalDate.now();
-        final BigDecimal ONE_HUNDRED = new BigDecimal(100);
-        BigDecimal lastPrice = this.getSinglePrice();
+        final BigDecimal lastPrice = this.getSinglePrice();
         BigDecimal newPrice = lastPrice;
 
         if (now.compareTo(this.lastUpdate) != 0) {
@@ -115,7 +116,7 @@ public abstract class AbstractAsset implements AssetInterface{
             this.lastUpdate = now;
             this.variation.put(now, newPrice);
         }
-        return newPrice.subtract(newPrice).multiply(ONE_HUNDRED);
+        return newPrice.subtract(lastPrice).multiply(ONE_HUNDRED);
     }
 
     /**

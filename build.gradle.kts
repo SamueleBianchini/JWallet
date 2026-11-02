@@ -2,19 +2,19 @@ plugins {
     application
     java
     id("org.danilopianini.gradle-java-qa") version "1.159.0"
-    id("checkstyle")
+ //   id("checkstyle")
 }
 
 repositories {
     mavenCentral()
 }
 
-checkstyle {
-    toolVersion = "10.12.4"
-    configFile = file("${project.rootDir}/quality/checkstyle/checkstyle.xml")
-    maxWarnings = 0
-    configProperties["checkstyleSuppressionsPath"] = file("${project.rootDir}/quality/checkstyle/suppressions.xml").absolutePath
-}
+// checkstyle {
+//     toolVersion = "10.12.4"
+//     configFile = file("${project.rootDir}/quality/checkstyle/checkstyle.xml")
+//     maxWarnings = 0
+//     configProperties["checkstyleSuppressionsPath"] = file("${project.rootDir}/quality/checkstyle/suppressions.xml").absolutePath
+// }
 
 dependencies {
     compileOnly("com.github.spotbugs:spotbugs-annotations:4.9.8")

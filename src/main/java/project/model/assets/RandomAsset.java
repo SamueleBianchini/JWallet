@@ -4,11 +4,10 @@ import java.math.BigDecimal;
 import java.util.Random;
 
 /**
- * 
  * RandomAsset extends the AbstractAsset
  * with the possibility to calculate the
  * new price as a random percentuage variation
- * of the last price 
+ * of the last price.
  */
 public class RandomAsset extends AbstractAsset {
 
@@ -29,8 +28,8 @@ public class RandomAsset extends AbstractAsset {
         final String name,
         final String type
     ) {
-        this.rand = new Random();
         super(startingPrice, name, type);
+        this.rand = new Random();
     }
 
     /**
@@ -42,7 +41,7 @@ public class RandomAsset extends AbstractAsset {
      */
     private BigDecimal getNextRandom() {
         return new BigDecimal(
-            this.rand.nextDouble(RandomAsset.RAND_ORIGIN, RandomAsset.RAND_BOUND)
+            Double.toString(this.rand.nextDouble(RAND_ORIGIN, RAND_BOUND))
         );
     }
 
@@ -52,6 +51,7 @@ public class RandomAsset extends AbstractAsset {
      * every day at 00:00 A.M.
      * The new value is a random percentuage variation of
      * the previous prive calculated.
+     * 
      * @return the percentage of the price variation as a BigDecimal.
      */
     @Override
