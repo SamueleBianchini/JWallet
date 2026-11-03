@@ -18,6 +18,9 @@ import project.model.card.PrepaidCard;
  */
 public class BankAccountControllerImpl implements BankAccountControllerInterface {
 
+    private static final String AMOUNT_ERROR_MESSAGE = "Amount";
+    private static final String DATE_ERROR_MESSAGE = "Date";
+
     private final BankAccountInterface bankAccount;
     /*I need to create the controllerMaster to know what and how to import it
      in this class to finish the method for recharging the card without getting warnings.*/
@@ -114,8 +117,8 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
     @Override
     public void deposit(final BigDecimal amount, final LocalDate date) {
         /* Input validation */
-        InputValidator.checkArgument(date, p -> true, "Date");
-        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, "Amount");
+        InputValidator.checkArgument(date, p -> true, DATE_ERROR_MESSAGE);
+        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, AMOUNT_ERROR_MESSAGE);
         /* Method execution */
         this.bankAccount.executeTransaction(new Transaction(
             amount,
@@ -139,8 +142,8 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
     @Override
     public void wireTransfer(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
         /* Input validation */
-        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, "Amount");
-        InputValidator.checkArgument(date, p -> true, "Date");
+        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, AMOUNT_ERROR_MESSAGE);
+        InputValidator.checkArgument(date, p -> true, DATE_ERROR_MESSAGE);
         InputValidator.checkArgument(cause, p -> !p.isBlank(), "Cause");
         InputValidator.checkArgument(destination, p -> !p.isBlank(), "Destination");
         /* Method execution */
@@ -165,13 +168,13 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
      * 
      * @param amount the amount we want to recharge
      * @param date the date on which we will recharge.
-     * @param cardNumber the number of the card we want to recharge.
+     * @param card the card we want to recharge.
      */
     @Override
     public void prepaidCharge(final BigDecimal amount, final LocalDate date, final PrepaidCard card) {
         /* Input validation */
-        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, "Amount");
-        InputValidator.checkArgument(date, p -> true, "Date");
+        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, AMOUNT_ERROR_MESSAGE);
+        InputValidator.checkArgument(date, p -> true, DATE_ERROR_MESSAGE);
         InputValidator.checkArgument(card, p -> true, "Prepaid card");
         /* Method execution */
         if (this.bankAccount.preAuthorize(amount.add(BigDecimal.ONE))) {

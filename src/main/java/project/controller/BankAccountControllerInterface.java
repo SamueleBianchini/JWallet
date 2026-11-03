@@ -98,7 +98,7 @@ public interface BankAccountControllerInterface {
      * 
      * @param amount the amount we want to recharge
      * @param date the date on which we will recharge.
-     * @param cardNumber the number of the card we want to recharge.
+     * @param card the card we want to recharge.
      */
     void prepaidCharge(BigDecimal amount, LocalDate date, PrepaidCard card);
 

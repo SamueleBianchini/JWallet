@@ -17,14 +17,6 @@ C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\mode
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\investmentplatform\assets\RealAsset.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\investmentplatform\investiments\AbstractInvestment.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\investmentplatform\investiments\InvestmentInterface.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\invPlatform\assets\AbstractAsset.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\invPlatform\assets\AssetInterface.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\invPlatform\assets\AssetType.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\invPlatform\assets\InvestmentInterface.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\invPlatform\assets\RandomAsset.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\invPlatform\assets\RealAsset.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\invPlatform\investiments\AbstractInvestment.class
-C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\invPlatform\investiments\InvestmentInterface.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\Transaction.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\utility\InputValidator.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\view\BankAccountView.class

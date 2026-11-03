@@ -42,10 +42,10 @@ public record Transaction(
          *      or the receiver if the transaction is negative
          */
         public Transaction {
-            InputValidator.checkArgument(amount, p-> p.compareTo(BigDecimal.ZERO) > 0, "Amount");
-            InputValidator.checkArgument(fee, p-> p.compareTo(BigDecimal.ZERO) >= 0, "Fee");
-            InputValidator.checkArgument(date, p-> true, "Date");
-            InputValidator.checkArgument(cause, p-> !p.isBlank(), "Cause");
-            InputValidator.checkArgument(otherParty, p-> !p.isBlank(), "Other Party");
+            InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, "Amount");
+            InputValidator.checkArgument(fee, p -> p.compareTo(BigDecimal.ZERO) >= 0, "Fee");
+            InputValidator.checkArgument(date, p -> true, "Date");
+            InputValidator.checkArgument(cause, p -> !p.isBlank(), "Cause");
+            InputValidator.checkArgument(otherParty, p -> !p.isBlank(), "Other Party");
         }
 }
