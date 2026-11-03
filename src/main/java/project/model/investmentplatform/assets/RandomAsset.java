@@ -31,7 +31,7 @@ public class RandomAsset extends AbstractAsset {
     ) {
         super(name, type);
         InputValidator.checkArgument(startingPrice, 
-                      bd -> ((BigDecimal) bd).compareTo(BigDecimal.ZERO) < 0, 
+                      bd -> bd.compareTo(BigDecimal.ZERO) < 0, 
                       "Starting price");
         super.addPriceManually(startingPrice, super.getLastUpdate());
         this.rand = new Random();

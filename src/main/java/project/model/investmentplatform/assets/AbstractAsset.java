@@ -50,7 +50,7 @@ public abstract class AbstractAsset implements AssetInterface {
      * 
      * @return the LocalDate last price variation list update.
      */
-    protected LocalDate getLastUpdate() {
+    protected final LocalDate getLastUpdate() {
         return this.lastUpdate;
     }
 
@@ -89,7 +89,7 @@ public abstract class AbstractAsset implements AssetInterface {
      * @return the current price for a single instance of the asset.
      */
     @Override
-    public BigDecimal getSinglePrice() {
+    public final BigDecimal getSinglePrice() {
         if (this.variation.isEmpty()) {
             throw new IllegalStateException(VARIATION_EMPTY_ERROR);
         }
