@@ -32,7 +32,7 @@ public interface BankAccountInterface {
     BigDecimal getBalance();
 
     /**
-     * This method is used to pre authorize every payment before executing it.
+     * This method is used to pre-authorize every payment before executing it.
      * Practically, every type of payment will have to call this method to verify if
      * the current balance is sufficient to pay the specified amount.
      * 
@@ -43,19 +43,19 @@ public interface BankAccountInterface {
     boolean preAuthorize(BigDecimal amount);
 
     /**
-     * This method is used to execute every tipe of transaction that the bankAccount needs to execute.
+     * This method is used to execute every type of transaction that the bankAccount needs to execute.
      * Since all transactions work in a similar way and the input control and coordination with other
      * classes will be done by the Controller, this method is enough to execute every type of transaction
      * and register it without needing more than one method.
      * 
-     * @param transaction the transaction we need to execute and memorise.
+     * @param transaction the transaction we need to execute and register.
      */
     void executeTransaction(Transaction transaction);
 
     /**
      * This method is used to extract the list of the transactions made with the bank account,
      * while also selecting them based on specific instructions that can be put as parameters
-     * to specify the period, the cause, positive or negative, or the amount of the selected operations.
+     * to specify the period, the other party, positive or negative, or the amount of the selected operations.
      * 
      * @param start an optional that may contain a date from where to start the selection.
      *      If not present, there will not be a minimum date to consider.

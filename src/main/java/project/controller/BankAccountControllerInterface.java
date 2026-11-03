@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import project.model.Transaction;
+import project.model.card.PrepaidCard;
 
 /**
  * This class is an interface used to define all of the methods that BankAccountControllerImpl
@@ -80,7 +81,7 @@ public interface BankAccountControllerInterface {
     void deposit(BigDecimal amount, LocalDate date);
 
     /**
-     * This method is used to trasnfer the money via wireTransfer.
+     * This method is used to transfer the money via wireTransfer.
      * This type of operations will have a fee attached, equal to one euro.
      * 
      * @param amount the amount we want to transfer.
@@ -96,9 +97,9 @@ public interface BankAccountControllerInterface {
      * standard cause "Recharging the Prepaidcard balance".
      * 
      * @param amount the amount we want to recharge
-     * @param date the date on which we will recherge.
-     * @param cardNumber the number of the card we want to recharge.
+     * @param date the date on which we will recharge.
+     * @param card the card we want to recharge.
      */
-    void prepaidCharge(BigDecimal amount, LocalDate date, String cardNumber);
+    void prepaidCharge(BigDecimal amount, LocalDate date, PrepaidCard card);
 
 }

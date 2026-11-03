@@ -1,3 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<<<<<<< HEAD
 <pmd xmlns="http://pmd.sourceforge.net/report/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 https://pmd.github.io/schema/report_2_0_0.xsd" version="7.19.0" timestamp="2026-11-03T16:18:28.823">
+=======
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 https://pmd.github.io/schema/report_2_0_0.xsd" version="7.19.0" timestamp="2026-11-03T11:14:55.102">
+>>>>>>> de77af3344bd16ef120d5926fa7f4b6b55e9bf23
 </pmd>

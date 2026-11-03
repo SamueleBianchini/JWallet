@@ -23,6 +23,14 @@ public interface MasterControllerInterface {
     List<PrepaidCard> getPrepaidCards();
 
     /**
+     * This method is used to get a specific Prepaidcard, chosen by its card number.
+     * 
+     * @param cardNumber a string containing the number of the chosen card.
+     * @return the chosen prepaid card.
+     */
+    PrepaidCard getSinglePrepaidCard(String cardNumber);
+
+    /**
      * This method is the one responsible for verifying the login and, if correct,
      * closing the LoginView and starting the BankAccountView, as well as constructing
      * everything necessary for the application.

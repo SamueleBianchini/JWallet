@@ -8,15 +8,18 @@ import java.util.Optional;
 import project.model.BankAccountInterface;
 import project.model.Transaction;
 import project.utility.InputValidator;
+import project.model.card.PrepaidCard;
 
 /**
  * This class is the implementation of the BankAccountControllerInterface.
  * As the controller, its methods will be called directly by the inputs from
  * the View, and then it will implement all the logic behind the operation and use
  * the methods from the model to execute the operations.
- * BankAccountControllerImpl
  */
 public class BankAccountControllerImpl implements BankAccountControllerInterface {
+
+    private static final String AMOUNT_ERROR_MESSAGE = "Amount";
+    private static final String DATE_ERROR_MESSAGE = "Date";
 
     private final BankAccountInterface bankAccount;
     /*I need to create the controllerMaster to know what and how to import it
@@ -114,8 +117,8 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
     @Override
     public void deposit(final BigDecimal amount, final LocalDate date) {
         /* Input validation */
-        InputValidator.checkArgument(date, p -> true, "Date");
-        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, "Amount");
+        InputValidator.checkArgument(date, p -> true, DATE_ERROR_MESSAGE);
+        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, AMOUNT_ERROR_MESSAGE);
         /* Method execution */
         this.bankAccount.executeTransaction(new Transaction(
             amount,
@@ -128,7 +131,7 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
     }
 
     /**
-     * This method is used to trasnfer the money via wireTransfer.
+     * This method is used to transfer the money via wireTransfer.
      * This type of operations will have a fee attached, equal to one euro.
      * 
      * @param amount the amount we want to transfer.
@@ -139,12 +142,12 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
     @Override
     public void wireTransfer(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
         /* Input validation */
-        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, "Amount");
-        InputValidator.checkArgument(date, p -> true, "Date");
-        InputValidator.checkArgument(cause, p -> !p.isBlank() && !p.isEmpty(), "Cause");
-        InputValidator.checkArgument(destination, p -> !p.isBlank() && !p.isEmpty(), "Destination");
+        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, AMOUNT_ERROR_MESSAGE);
+        InputValidator.checkArgument(date, p -> true, DATE_ERROR_MESSAGE);
+        InputValidator.checkArgument(cause, p -> !p.isBlank(), "Cause");
+        InputValidator.checkArgument(destination, p -> !p.isBlank(), "Destination");
         /* Method execution */
-        if (this.bankAccount.preAuthorize(amount)) {
+        if (this.bankAccount.preAuthorize(amount.add(BigDecimal.ONE))) {
             this.bankAccount.executeTransaction(new Transaction(
                 amount,
                 BigDecimal.ONE,
@@ -153,6 +156,8 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
                 cause,
                 destination
             ));
+        } else {
+            throw new IllegalArgumentException("Not enough balance");
         }
     }
 
@@ -162,25 +167,25 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
      * standard cause "Recharging the Prepaidcard balance".
      * 
      * @param amount the amount we want to recharge
-     * @param date the date on which we will recherge.
-     * @param cardNumber the number of the card we want to recharge.
+     * @param date the date on which we will recharge.
+     * @param card the card we want to recharge.
      */
     @Override
-    public void prepaidCharge(final BigDecimal amount, final LocalDate date, final String cardNumber) {
-        /*This method just needs to know how to get the List of prepaidCards and then it will be ready.
+    public void prepaidCharge(final BigDecimal amount, final LocalDate date, final PrepaidCard card) {
+        /* Input validation */
+        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, AMOUNT_ERROR_MESSAGE);
+        InputValidator.checkArgument(date, p -> true, DATE_ERROR_MESSAGE);
+        InputValidator.checkArgument(card, p -> true, "Prepaid card");
+        /* Method execution */
         if (this.bankAccount.preAuthorize(amount.add(BigDecimal.ONE))) {
-            for (final PrepaidCard card : this.prepaidCards) {
-                if (card.getCardNumber().equals(cardNumber) && card.recharge(amount, date, this.bankAccount.getIban())) {
-                    return this.bankAccount.executeTransaction(new Transaction(
-                        amount,
-                        BigDecimal.ONE,
-                        false,
-                        date,
-                        "Recharging the Prepaidcard balance",
-                        cardNumber
-                    ));
-                }
-            }
-        }*/
+            this.bankAccount.executeTransaction(new Transaction(
+                amount,
+                BigDecimal.ONE,
+                false,
+                date,
+                "Recharging the prepaid card",
+                card.getCardNumber()
+            ));
+        }
     }
 }
