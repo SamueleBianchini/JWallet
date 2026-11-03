@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 /**
  * This class is a utility class, used to validate every type of input by using
  * the method checkArgument to check if it is null and a specific predicate.
- * ImputValidator
  */
 public final class InputValidator {
 
@@ -29,6 +28,9 @@ public final class InputValidator {
      * @param field the name of the field of the input, used to personalize the error message.
      */
     public static <T> void checkArgument(final T obj, final Predicate<? super T> predicate, final String field) {
+        if (predicate == null) {
+            throw new IllegalArgumentException("Predicate is null");
+        }
         if (Objects.isNull(obj) || !predicate.test(obj)) {
             throw new IllegalArgumentException(field.concat(INPUT_ERROR_STRING));
         }

@@ -1,5 +1,6 @@
 package project.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import project.model.card.PrepaidCard;
@@ -13,12 +14,14 @@ import project.model.card.PrepaidCard;
  */
 public class MasterControllerImpl implements MasterControllerInterface {
 
-    /*
-     * This method is the constructor for the MasterControllerImpl.
+    private final List<PrepaidCard> prepaidCards;
 
+    /**
+     * This is the constructor for the master controller.
+     */
     public MasterControllerImpl() {
-
-    }*/
+        this.prepaidCards = new ArrayList<>();
+    }
 
     /**
      * This method is the getter for the list of prepaid cards.
@@ -27,7 +30,23 @@ public class MasterControllerImpl implements MasterControllerInterface {
      */
     @Override
     public List<PrepaidCard> getPrepaidCards() {
-        return List.of();
+        return List.copyOf(prepaidCards);
+    }
+
+    /**
+     * This method is used to get a specific Prepaidcard, chosen by its card number.
+     * 
+     * @param cardNumber a string containing the number of the chosen card.
+     * @return the chosen prepaid card.
+     */
+    @Override
+    public PrepaidCard getSinglePrepaidCard(final String cardNumber) {
+        for (final PrepaidCard card : this.prepaidCards) {
+            if (card.getCardNumber().equals(cardNumber)) {
+                return card;
+            }
+        }
+        throw new IllegalArgumentException("No card registered with that number");
     }
 
     /**

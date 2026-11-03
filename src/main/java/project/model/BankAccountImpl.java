@@ -28,8 +28,8 @@ public class BankAccountImpl implements BankAccountInterface {
      */
     public BankAccountImpl(final String iban, final String cardHolder) {
         /* Input validation */
-        InputValidator.checkArgument(iban, p -> !p.isBlank() && !p.isEmpty(), "Iban");
-        InputValidator.checkArgument(cardHolder, p -> !p.isBlank() && !p.isEmpty(), "cardHolder");
+        InputValidator.checkArgument(iban, p -> !p.isBlank(), "Iban");
+        InputValidator.checkArgument(cardHolder, p -> !p.isBlank(), "cardHolder");
         /* Actual constructor */
         this.transactionsList = new ArrayList<>();
         this.iban = iban;
@@ -83,19 +83,22 @@ public class BankAccountImpl implements BankAccountInterface {
     }
 
     /**
-     * This method is used to execute every tipe of transaction that the bankAccount needs to execute.
+     * This method is used to execute every type of transaction that the bankAccount needs to execute.
      * Since all transactions work in a similar way and the input control and coordination with other
      * classes will be done by the Controller, this method is enough to execute every type of transaction
      * and register it without needing more than one method.
      * 
-     * @param transaction the transaction we need to execute and memorise.
+     * @param transaction the transaction we need to execute and register.
      */
     @Override
     public void executeTransaction(final Transaction transaction) {
         InputValidator.checkArgument(transaction, p -> true, "Transaction");
         if (transaction.isPositive()) {
-            this.balance = this.balance.add(transaction.amount().add(transaction.fee()));
+            this.balance = this.balance.add(transaction.amount());
         } else {
+            if (!this.preAuthorize(transaction.amount().add(transaction.fee()))) {
+                throw new IllegalArgumentException("Not enough balance");
+            }
             this.balance = this.balance.subtract(transaction.amount().add(transaction.fee()));
         }
         this.transactionsList.add(transaction);
@@ -104,7 +107,7 @@ public class BankAccountImpl implements BankAccountInterface {
     /**
      * This method is used to extract the list of the transactions made with the bank account,
      * while also selecting them based on specific instructions that can be put as parameters
-     * to specify the period, the cause, positive or negative, or the amount of the selected operations.
+     * to specify the period, the other party, positive or negative, or the amount of the selected operations.
      * 
      * @param start an optional that may contain a date from where to start the selection.
      *      If not present, there will not be a minimum date to consider.
