@@ -8,8 +8,9 @@ import project.utility.InputValidator;
 
 /**
  * The implementation of the DebitCard.
- * Every payment is reflected directly on the linked bank account,
- * and every payment can only be made using the money currently available on the bank account.
+ * The money used for the payments is the one of the bank account,
+ * which is charged by the controller. The card only checks that it is not frozen or expired,
+ * and then registers the payment in its history.
  */
 public final class DebitCard extends AbstractCard {
 
@@ -53,7 +54,7 @@ public final class DebitCard extends AbstractCard {
         InputValidator.checkArgument(cause, p -> !p.isBlank() && !p.isEmpty(), "Cause");
         InputValidator.checkArgument(destination, p -> !p.isBlank() && !p.isEmpty(), "Destination");
         /* Method execution */
-        if (super.isFrozen()) {
+        if (super.isFrozen() || super.getExpiryDate().isBefore(LocalDate.now())) {
             return false;
         }
         super.registerTransaction(new Transaction(
