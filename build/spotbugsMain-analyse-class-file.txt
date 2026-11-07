@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\controller\BankAccountControllerImpl.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\controller\BankAccountControllerInterface.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\controller\MasterControllerImpl.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\controller\MasterControllerInterface.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\Main.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\BankAccountImpl.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\BankAccountInterface.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\card\AbstractCard.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\card\CardInterface.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\card\CreditCard.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\card\DebitCard.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\card\PrepaidCard.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\investmentplatform\assets\AbstractAsset.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\investmentplatform\assets\AssetInterface.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\investmentplatform\assets\AssetType.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\investmentplatform\assets\RandomAsset.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\investmentplatform\assets\RealAsset.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\investmentplatform\investiments\AbstractInvestment.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\investmentplatform\investiments\InvestmentInterface.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\model\Transaction.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\utility\InputValidator.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\view\BankAccountView.class
-C:\Users\pingu\OneDrive\Desktop\coding\prog-java\prog_oop\build\classes\java\main\project\view\LoginView.class
-=======
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\controller\BankAccountControllerImpl.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\controller\BankAccountControllerInterface.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\controller\MasterControllerImpl.class
@@ -46,4 +21,3 @@ C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\mode
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\utility\InputValidator.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\view\BankAccountView.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\view\LoginView.class
->>>>>>> de77af3344bd16ef120d5926fa7f4b6b55e9bf23
