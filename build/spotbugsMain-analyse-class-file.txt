@@ -18,6 +18,7 @@ C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\mode
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\investmentplatform\investiments\AbstractInvestment.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\investmentplatform\investiments\InvestmentInterface.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\Transaction.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\utility\DialogUtils.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\utility\InputValidator.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\view\BankAccountView.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\view\LoginView.class
