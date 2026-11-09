@@ -18,6 +18,7 @@ repositories {
 
 dependencies {
     compileOnly("com.github.spotbugs:spotbugs-annotations:4.9.8")
+    implementation("com.google.code.gson:gson:2.10.1")
 }
 /*
 application {
