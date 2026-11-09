@@ -111,7 +111,7 @@ public final class BankAccountView extends JFrame {
         /* Input validation */
 
         InputValidator.checkArgument(masterController, p -> true, "Master controller");
-        InputValidator.checkArgument(bankAccount, p -> true, "Master controller");
+        InputValidator.checkArgument(bankAccount, p -> true, "Bank account");
 
         /* Actual constructor (panel creation section) */
 
@@ -124,9 +124,6 @@ public final class BankAccountView extends JFrame {
 
         this.add(this.sideMenu, BorderLayout.WEST);
         this.add(this.mainMenu, BorderLayout.CENTER);
-        this.mainMenu.add(this.infoPanel, BorderLayout.NORTH);
-        this.mainMenu.add(this.buttonsPanel, BorderLayout.SOUTH);
-        this.mainMenu.add(this.transactionsPanel, BorderLayout.CENTER);
 
         /* Actual constructor (buttons creation section) */
 
@@ -141,20 +138,23 @@ public final class BankAccountView extends JFrame {
         this.transactionsFilterButton = new JButton();
         this.transactionsSwitchButton = new JButton();
 
-        /* Actual constructor (view definition section) */
-
-        this.createSideMenu();
-        this.createMainMenu();
-        this.createInfoPanel();
-        this.createButtonsPanel();
-        this.createTransactionsPanel();
-
         /* Actual constructor (controllers section) */
 
         this.bankAccountController = new BankAccountControllerImpl(bankAccount);
         this.masterController = masterController;
 
         this.balanceLabel = new JLabel(this.bankAccountController.getBalance().toString().concat(" €"));
+
+        /* Actual constructor (view definition section) */
+
+        this.createSideMenu();
+        this.createMainMenu();
+        this.mainMenu.add(this.infoPanel, BorderLayout.NORTH);
+        this.mainMenu.add(this.buttonsPanel, BorderLayout.SOUTH);
+        this.mainMenu.add(this.transactionsPanel, BorderLayout.CENTER);
+        this.createInfoPanel();
+        this.createButtonsPanel();
+        this.createTransactionsPanel();
     }
 
     /**
