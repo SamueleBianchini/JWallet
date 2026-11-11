@@ -9,10 +9,13 @@ import project.model.investmentplatform.assets.AssetInterface;
 import project.utility.InputValidator;
 
 /**
- * This class will be used as a template for all different types of assets.
- * For this reason, it will only have the fields necessary for every different type of investment.
+ * This class implements the InvestmentInterface and will be used for speculative
+ * type of investments, because it contains everything needed for a basic investment
+ * which does not provide any income besides its price variation.
+ * It will also be used as a base to be extended by the other types of investment to
+ * reuse the code for all the base implementation of the investment.
  */
-public abstract class AbstractInvestment implements InvestmentInterface {
+public class SpeculativeInvestment implements InvestmentInterface {
 
     private final List<BigDecimal> priceVariationList;
     private final AssetInterface asset;
@@ -22,16 +25,14 @@ public abstract class AbstractInvestment implements InvestmentInterface {
     private BigDecimal currentSingleValue;
 
     /**
-     * This method is the constructor for the basic information needed for the Investments.
+     * This method is the constructor for the speculative investments.
      * 
-     * @param asset the asset to which this investment refers.
-     *      Note that probably it should be a Asset and not a AssetInterface, but right now I will leave
-     *      it like this because we don't have the implementation for the Asset yet.
+     * @param asset the asset to which this investment refers to.
      * @param originalSingleValue the original value for a single instance.
      * @param nBought the number of instances of the asset bought.
      * @param purchaseDate the date on which we purchased the investment.
      */
-    public AbstractInvestment(
+    public SpeculativeInvestment(
         final AssetInterface asset,
         final BigDecimal originalSingleValue,
         final int nBought,
@@ -104,6 +105,17 @@ public abstract class AbstractInvestment implements InvestmentInterface {
     }
 
     /**
+     * Method to get the value in gain or loss of the value of the investment,
+     * regardless of interests or dividends that may have been obtained.
+     * 
+     * @return the value in gain or loss of the investiment in the current valute.
+     */
+    @Override
+    public final BigDecimal totalVariationValue() {
+        return this.totalCurrentValue().subtract(this.totalOriginalValue());
+    }
+
+    /**
      * This method is a getter for the current total value of the investment.
      * 
      * @return the total current value of the investment.
@@ -141,15 +153,4 @@ public abstract class AbstractInvestment implements InvestmentInterface {
     public final List<BigDecimal> getPriceVariationList() {
         return List.copyOf(this.priceVariationList);
     }
-
-    /**
-     * This method will be used to calculate and return the total current profit made by the asset,
-     * which is simply the difference in price for speculative assets, but needs to account for dividends
-     * or interests in case of shares or loans. This also means that these two types of investments will need to
-     * memorize the revenues they produce, but it will be a job to do on their specific classes and not on this one.
-     * 
-     * @return the Current total profit made using the ivestment.
-     */
-    @Override
-    public abstract BigDecimal getCurrentProfit();
 }
