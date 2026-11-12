@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FlowLayout;
+import java.awt.Component;
+import java.awt.CardLayout;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,11 +17,14 @@ import java.time.LocalDate;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -28,12 +33,16 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 
+import org.jfree.chart.ChartPanel;
+
 import project.controller.BankAccountControllerInterface;
 import project.model.BankAccountInterface;
+import project.model.card.PrepaidCard;
 import project.controller.BankAccountControllerImpl;
 import project.controller.MasterControllerInterface;
 import project.utility.InputValidator;
 import project.utility.DialogUtils;
+import project.utility.ChartUtils;
 
 /**
  * This class is the GUI for the window for the BankAccount.
@@ -44,6 +53,15 @@ public final class BankAccountView extends JFrame {
     private static final long serialVersionUID = 1L;
     private static final String FONT = "Arial";
     private static final String INVALID_INPUT = "Invalid input";
+    private static final String INVALID_DATE = "Enter a valid date (dd/MM/yyyy).";
+    private static final String INVALID_AMOUNT = "Enter a valid amount.";
+    private static final String AMOUNT = "Amount (€) :";
+    private static final String CONFIRM = "Confirm";
+    private static final String DATE = "Date :";
+    private static final String AMOUNT_POSITIVE = "Amount must be positive.";
+    private static final String CANCEL = "Cancel";
+    private static final String TABLE = "TABLE";
+    private static final String CHART = "CHART";
 
     private static final int SIDE_MENU_BUTTONS_WIDTH = 180;
     private static final int SIDE_MENU_BUTTONS_HEIGHT = 50;
@@ -99,6 +117,14 @@ public final class BankAccountView extends JFrame {
 
     private final JLabel balanceLabel;
 
+    private final JPanel viewPanel;
+    private final CardLayout viewLayout;
+
+    private final JPanel tablePanel;
+    private final JPanel chartPanel;
+
+    private boolean showingTable;
+
     /**
      * This method is the constructor for the BankAccountView.
      * 
@@ -138,12 +164,20 @@ public final class BankAccountView extends JFrame {
         this.transactionsFilterButton = new JButton();
         this.transactionsSwitchButton = new JButton();
 
-        /* Actual constructor (controllers section) */
+        /* Actual constructor (inizialitation section) */
 
         this.bankAccountController = new BankAccountControllerImpl(bankAccount);
         this.masterController = masterController;
 
         this.balanceLabel = new JLabel(this.bankAccountController.getBalance().toString().concat(" €"));
+
+        this.viewLayout = new CardLayout();
+        this.viewPanel = new JPanel(this.viewLayout);
+
+        this.tablePanel = new JPanel(new BorderLayout());
+        this.chartPanel = new JPanel(new BorderLayout());
+
+        this.showingTable = true;
 
         /* Actual constructor (view definition section) */
 
@@ -268,13 +302,7 @@ public final class BankAccountView extends JFrame {
         }
 
         /* This listener is just temporary until Davide finishes the masterController */
-        this.prepaidChargeButton.addActionListener(p -> {
-            this.bankAccountController.prepaidCharge(
-                BigDecimal.ZERO,
-                LocalDate.now(),
-                this.masterController.getSinglePrepaidCard("Numero carta"));
-        });
-
+        this.prepaidChargeButton.addActionListener(p -> this.showPrepaidChargeDialog());
         this.depositButton.addActionListener(p -> this.showDepositDialog());
         this.wireTransferButton.addActionListener(p -> this.showWireTransferDialog());
     }
@@ -300,7 +328,8 @@ public final class BankAccountView extends JFrame {
         title.setFont(new Font(FONT, Font.BOLD, TRANSACTIONS_PANEL_FONT_SIZE));
 
         this.transactionsFilterButton.setText("Filter");
-        this.transactionsSwitchButton.setText("Switch view");
+        this.transactionsSwitchButton.setText("Show chart");
+        this.transactionsSwitchButton.addActionListener(p -> this.switchTransactionsView());
 
         final JPanel headerButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         headerButtons.add(this.transactionsFilterButton);
@@ -334,11 +363,33 @@ public final class BankAccountView extends JFrame {
         transactionsTable.setFillsViewportHeight(true);
 
         final JScrollPane scrollPane = new JScrollPane(transactionsTable);
+        this.tablePanel.add(scrollPane);
+
+        /* Transactions graph */
+
+        final ChartPanel chartComponent = new ChartPanel(
+            ChartUtils.createNetCashFlowChart(this.bankAccountController.viewBankTransactions(
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty()
+            )));
+
+        this.chartPanel.setLayout(new BorderLayout());
+        this.chartPanel.add(chartComponent, BorderLayout.CENTER);
+
+        /*this.chartPanel.revalidate();
+        this.chartPanel.repaint();*/
 
         /* Final panel composition */
 
         this.transactionsPanel.add(headerPanel, BorderLayout.NORTH);
-        this.transactionsPanel.add(scrollPane, BorderLayout.CENTER);
+        this.viewPanel.add(tablePanel, TABLE);
+        this.viewPanel.add(chartPanel, CHART);
+        this.transactionsPanel.add(viewPanel, BorderLayout.CENTER);
+        this.viewLayout.show(this.viewPanel, TABLE);
     }
 
     /**
@@ -346,6 +397,21 @@ public final class BankAccountView extends JFrame {
      */
     private void updateBalance() {
         this.balanceLabel.setText(this.bankAccountController.getBalance().toString().concat(" €"));
+    }
+
+    /**
+     * This method is used by the switchTransactionsView button to switch the view
+     * of the transactions, alternating the table view and the chart view.
+     */
+    private void switchTransactionsView() {
+        if (this.showingTable) {
+            this.viewLayout.show(this.viewPanel, CHART);
+            this.transactionsSwitchButton.setText("Show table");
+        } else {
+            this.viewLayout.show(this.viewPanel, TABLE);
+            this.transactionsSwitchButton.setText("Show chart");
+        }
+        this.showingTable = !this.showingTable;
     }
 
     /**
@@ -359,10 +425,10 @@ public final class BankAccountView extends JFrame {
         final JTextField amountField = DialogUtils.createTextField();
         final JTextField dateField = DialogUtils.createDateField();
 
-        DialogUtils.addField(formPanel, "Amount (€) :", amountField, 0);
-        DialogUtils.addField(formPanel, "Date :", dateField, 1);
+        DialogUtils.addField(formPanel, AMOUNT, amountField, 0);
+        DialogUtils.addField(formPanel, DATE, dateField, 1);
 
-        final JButton confirmButton = new JButton("Confirm");
+        final JButton confirmButton = new JButton(CONFIRM);
 
         confirmButton.addActionListener(p -> {
             final BigDecimal amount;
@@ -371,7 +437,7 @@ public final class BankAccountView extends JFrame {
             } catch (final IllegalArgumentException e) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Enter a valid amount.",
+                    INVALID_AMOUNT,
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -381,7 +447,7 @@ public final class BankAccountView extends JFrame {
             if (amount.compareTo(BigDecimal.ZERO) <= 0) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Amount must be positive.",
+                    AMOUNT_POSITIVE,
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -395,7 +461,7 @@ public final class BankAccountView extends JFrame {
             } catch (final DateTimeParseException e) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Enter a valid date (dd/MM/yyyy).",
+                    INVALID_DATE,
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -417,7 +483,7 @@ public final class BankAccountView extends JFrame {
             this.updateBalance();
             dialog.dispose();
         });
-        final JButton cancelButton = new JButton("Cancel");
+        final JButton cancelButton = new JButton(CANCEL);
         cancelButton.addActionListener(p -> dialog.dispose());
 
         final JPanel depositPanel = DialogUtils.createDialogButtons(confirmButton, cancelButton);
@@ -446,12 +512,12 @@ public final class BankAccountView extends JFrame {
         final JTextField causeField = DialogUtils.createTextField();
         final JTextField destinationField = DialogUtils.createTextField();
 
-        DialogUtils.addField(formPanel, "Amount (€) :", amountField, 0);
-        DialogUtils.addField(formPanel, "Date :", dateField, 1);
+        DialogUtils.addField(formPanel, AMOUNT, amountField, 0);
+        DialogUtils.addField(formPanel, DATE, dateField, 1);
         DialogUtils.addField(formPanel, "Cause :", causeField, 2);
         DialogUtils.addField(formPanel, "Destination :", destinationField, 3);
 
-        final JButton confirmButton = new JButton("Confirm");
+        final JButton confirmButton = new JButton(CONFIRM);
 
         confirmButton.addActionListener(p -> {
             final BigDecimal amount;
@@ -460,7 +526,7 @@ public final class BankAccountView extends JFrame {
             } catch (final IllegalArgumentException e) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Enter a valid amount.",
+                    INVALID_AMOUNT,
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -470,7 +536,7 @@ public final class BankAccountView extends JFrame {
             if (amount.compareTo(BigDecimal.ZERO) <= 0) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Amount must be positive.",
+                    AMOUNT_POSITIVE,
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -484,7 +550,7 @@ public final class BankAccountView extends JFrame {
             } catch (final DateTimeParseException e) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Enter a valid date (dd/MM/yyyy).",
+                    INVALID_DATE,
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -505,7 +571,7 @@ public final class BankAccountView extends JFrame {
             } else if (destinationField.getText().isBlank()) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Insert a cause",
+                    "Insert a destination",
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -530,16 +596,161 @@ public final class BankAccountView extends JFrame {
             this.updateBalance();
             dialog.dispose();
         });
-        final JButton cancelButton = new JButton("Cancel");
+        final JButton cancelButton = new JButton(CANCEL);
         cancelButton.addActionListener(p -> dialog.dispose());
 
-        final JPanel depositPanel = DialogUtils.createDialogButtons(confirmButton, cancelButton);
+        final JPanel wireTransferPanel = DialogUtils.createDialogButtons(confirmButton, cancelButton);
 
-        depositPanel.add(cancelButton);
-        depositPanel.add(confirmButton);
+        wireTransferPanel.add(cancelButton);
+        wireTransferPanel.add(confirmButton);
 
         dialog.add(formPanel, BorderLayout.CENTER);
-        dialog.add(depositPanel, BorderLayout.SOUTH);
+        dialog.add(wireTransferPanel, BorderLayout.SOUTH);
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    /**
+     * This method is used to create the dialog for the prepaidCharge operation.
+     */
+    private void showPrepaidChargeDialog() {
+        final JDialog dialog = DialogUtils.createDialog(SwingUtilities.getWindowAncestor(this), "Prepaid charge");
+
+        final JPanel formPanel = DialogUtils.createFormPanel();
+
+        final JTextField amountField = DialogUtils.createTextField();
+        final JTextField dateField = DialogUtils.createDateField();
+        final JComboBox<PrepaidCard> cardField = new JComboBox<>();
+
+        for (final PrepaidCard card : this.masterController.getPrepaidCards()) {
+            cardField.addItem(card);
+        }
+
+        /* This part of the code rewrites the renderer of the JComboBox for the cards
+            so that the ComboBox shows the cardNumber instead of the string version of the whole class */
+        cardField.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(
+                final JList<?> list,
+                final Object value,
+                final int index,
+                final boolean isSelected,
+                final boolean cellHasFocus) {
+
+            super.getListCellRendererComponent(
+                list, value, index, isSelected, cellHasFocus
+            );
+
+            if (value instanceof PrepaidCard card) {
+                setText(card.getCardNumber());
+            }
+
+            return this;
+        }
+        });
+
+        DialogUtils.addField(formPanel, AMOUNT, amountField, 0);
+        DialogUtils.addField(formPanel, DATE, dateField, 1);
+        DialogUtils.addField(formPanel, "Card : ", cardField, 2);
+
+        final JButton confirmButton = new JButton(CONFIRM);
+
+        confirmButton.addActionListener(p -> {
+            final BigDecimal amount;
+            try {
+                amount = DialogUtils.getBigDecimalValue(amountField);
+            } catch (final IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    INVALID_AMOUNT,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    AMOUNT_POSITIVE,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            final LocalDate date;
+
+            try {
+                date = DialogUtils.getLocalDateValue(dateField);
+            } catch (final DateTimeParseException e) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    INVALID_DATE,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            final PrepaidCard chosenCard;
+
+            try {
+                chosenCard = (PrepaidCard) cardField.getSelectedItem();
+            } catch (final IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    "Error while converting the selected card",
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+            if (chosenCard == null) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    "No card was chosen",
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            /* This if is just temporary to avoid getting a warning for not using the field date.
+                once the next method is ready and uncommented this if should be eliminated */
+            if (date == null) {
+                throw new IllegalArgumentException("Temporary");
+            }
+            /*
+                This part needs the implementation from the masterController.
+            try {
+                this.masterController.prepaidCharge(amount, date, chosenCard);
+            } catch (final IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    "Internal error",
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }*/
+
+            this.updateBalance();
+            dialog.dispose();
+        });
+
+        final JButton cancelButton = new JButton(CANCEL);
+        cancelButton.addActionListener(p -> dialog.dispose());
+
+        final JPanel prepaidChargePanel = DialogUtils.createDialogButtons(confirmButton, cancelButton);
+
+        prepaidChargePanel.add(cancelButton);
+        prepaidChargePanel.add(confirmButton);
+
+        dialog.add(formPanel, BorderLayout.CENTER);
+        dialog.add(prepaidChargePanel, BorderLayout.SOUTH);
 
         dialog.pack();
         dialog.setLocationRelativeTo(this);

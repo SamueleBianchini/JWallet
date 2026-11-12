@@ -22,7 +22,9 @@ C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\mode
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\model\Transaction.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\persistence\GsonPersistenceManager.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\persistence\PersistenceManager.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\utility\ChartUtils.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\utility\DialogUtils.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\utility\InputValidator.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\view\BankAccountView$1.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\view\BankAccountView.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\main\project\view\LoginView.class

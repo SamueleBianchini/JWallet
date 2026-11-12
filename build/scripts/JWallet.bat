@@ -70,7 +70,7 @@ echo location of your Java installation. 1>&2
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\lib\JWallet.jar;%APP_HOME%\lib\gson-2.10.1.jar
+set CLASSPATH=%APP_HOME%\lib\JWallet.jar;%APP_HOME%\lib\gson-2.10.1.jar;%APP_HOME%\lib\jfreechart-1.5.6.jar
 
 
 @rem Execute JWallet
