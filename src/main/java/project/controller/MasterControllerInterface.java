@@ -2,6 +2,7 @@ package project.controller;
 
 import java.util.List;
 
+import project.model.card.DebitCard;
 import project.model.card.PrepaidCard;
 
 /**
@@ -29,6 +30,13 @@ public interface MasterControllerInterface {
      * @return the chosen prepaid card.
      */
     PrepaidCard getSinglePrepaidCard(String cardNumber);
+
+    /**
+     * This method is the getter for the debit card of the user.
+     *
+     * @return the debit card created after the login.
+     */
+    DebitCard getDebitCard();
 
     /**
      * This method is the one responsible for verifying the login and, if correct,
