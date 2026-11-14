@@ -46,12 +46,12 @@ public interface InvestmentInterface {
     List<BigDecimal> getPriceVariationList();
 
     /**
-     * Method to get the value in gain or loss of the investiment in the current
-     * valute. It could be positive or negative
+     * Method to get the value in gain or loss of the value of the investment,
+     * regardless of interests or dividends that may have been obtained.
      * 
      * @return the value in gain or loss of the investiment in the current valute.
      */
-    BigDecimal totalInvestedValue();
+    BigDecimal totalVariationValue();
 
     /**
      * This method is a getter for the number of instances of the assets we bought.
@@ -86,15 +86,5 @@ public interface InvestmentInterface {
      * This method is used to update the current value of the asset and assign the necessary modifications.
      */
     void updateCurrentValue();
-
-    /**
-     * This method will be used to calculate and return the total current profit made by the asset,
-     * which is simply the difference in price for speculative assets, but needs to account for dividends
-     * or interests in case of shares or loans. This also means that these two types of investments will need to
-     * memorize the revenues they produce, but it will be a job to do on their specific classes and not on this one.
-     * 
-     * @return the Current total profit made using the ivestment.
-     */
-    BigDecimal getCurrentProfit();
 
 }

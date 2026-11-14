@@ -6,6 +6,9 @@ import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FlowLayout;
+import java.awt.Component;
+import java.awt.CardLayout;
+
 import java.util.List;
 import java.util.Optional;
 import java.math.BigDecimal;
@@ -13,24 +16,33 @@ import java.time.format.DateTimeParseException;
 import java.time.LocalDate;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+
 import project.controller.BankAccountControllerInterface;
 import project.model.BankAccountInterface;
+import project.model.card.PrepaidCard;
 import project.controller.BankAccountControllerImpl;
 import project.controller.MasterControllerInterface;
 import project.utility.InputValidator;
 import project.utility.DialogUtils;
+import project.utility.ChartUtils;
+import project.model.Transaction;
 
 /**
  * This class is the GUI for the window for the BankAccount.
@@ -41,6 +53,16 @@ public final class BankAccountView extends JFrame {
     private static final long serialVersionUID = 1L;
     private static final String FONT = "Arial";
     private static final String INVALID_INPUT = "Invalid input";
+    private static final String INVALID_DATE = "Enter a valid date (dd/MM/yyyy).";
+    private static final String INVALID_AMOUNT = "Enter a valid amount.";
+    private static final String AMOUNT = "Amount (€) :";
+    private static final String CONFIRM = "Confirm";
+    private static final String DATE = "Date :";
+    private static final String AMOUNT_POSITIVE = "Amount must be positive.";
+    private static final String CANCEL = "Cancel";
+    private static final String TABLE = "TABLE";
+    private static final String CHART = "CHART";
+    private static final String INTERNAL_ERROR = "Internal error";
 
     private static final int SIDE_MENU_BUTTONS_WIDTH = 180;
     private static final int SIDE_MENU_BUTTONS_HEIGHT = 50;
@@ -96,6 +118,14 @@ public final class BankAccountView extends JFrame {
 
     private final JLabel balanceLabel;
 
+    private final JPanel viewPanel;
+    private final CardLayout viewLayout;
+
+    private final JPanel tablePanel;
+    private final JPanel chartPanel;
+
+    private boolean showingTable;
+
     /**
      * This method is the constructor for the BankAccountView.
      * 
@@ -135,12 +165,20 @@ public final class BankAccountView extends JFrame {
         this.transactionsFilterButton = new JButton();
         this.transactionsSwitchButton = new JButton();
 
-        /* Actual constructor (controllers section) */
+        /* Actual constructor (inizialitation section) */
 
         this.bankAccountController = new BankAccountControllerImpl(bankAccount);
         this.masterController = masterController;
 
         this.balanceLabel = new JLabel(this.bankAccountController.getBalance().toString().concat(" €"));
+
+        this.viewLayout = new CardLayout();
+        this.viewPanel = new JPanel(this.viewLayout);
+
+        this.tablePanel = new JPanel(new BorderLayout());
+        this.chartPanel = new JPanel(new BorderLayout());
+
+        this.showingTable = true;
 
         /* Actual constructor (view definition section) */
 
@@ -265,13 +303,7 @@ public final class BankAccountView extends JFrame {
         }
 
         /* This listener is just temporary until Davide finishes the masterController */
-        this.prepaidChargeButton.addActionListener(p -> {
-            this.bankAccountController.prepaidCharge(
-                BigDecimal.ZERO,
-                LocalDate.now(),
-                this.masterController.getSinglePrepaidCard("Numero carta"));
-        });
-
+        this.prepaidChargeButton.addActionListener(p -> this.showPrepaidChargeDialog());
         this.depositButton.addActionListener(p -> this.showDepositDialog());
         this.wireTransferButton.addActionListener(p -> this.showWireTransferDialog());
     }
@@ -297,7 +329,9 @@ public final class BankAccountView extends JFrame {
         title.setFont(new Font(FONT, Font.BOLD, TRANSACTIONS_PANEL_FONT_SIZE));
 
         this.transactionsFilterButton.setText("Filter");
-        this.transactionsSwitchButton.setText("Switch view");
+        this.transactionsFilterButton.addActionListener(p -> this.showTransactionsFilterDialog());
+        this.transactionsSwitchButton.setText("Show chart");
+        this.transactionsSwitchButton.addActionListener(p -> this.switchTransactionsView());
 
         final JPanel headerButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         headerButtons.add(this.transactionsFilterButton);
@@ -308,19 +342,61 @@ public final class BankAccountView extends JFrame {
 
         /* Transactions table */
 
-        final String[] columns = {"Date", "Cause", "Other party", "Amount", "Fee", "Direction"};
+        this.tablePanel.setLayout(new BorderLayout());
+        this.updateTransactionsTable(this.bankAccountController.viewBankTransactions(
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty()
+        ));
 
-        final JTable transactionsTable = new JTable(
-            this.bankAccountController.viewBankTransactions(
+        /* Transactions graph */
+
+        this.chartPanel.setLayout(new BorderLayout());
+
+        this.updateTransactionsChart(this.bankAccountController.viewBankTransactions(
                 Optional.empty(),
                 Optional.empty(),
                 Optional.empty(),
                 Optional.empty(),
                 Optional.empty(),
                 Optional.empty()
-            ).size(),
-            columns.length
-        );
+            ));
+
+        /*this.chartPanel.revalidate();
+        this.chartPanel.repaint();*/
+
+        /* Final panel composition */
+
+        this.transactionsPanel.add(headerPanel, BorderLayout.NORTH);
+        this.viewPanel.add(tablePanel, TABLE);
+        this.viewPanel.add(chartPanel, CHART);
+        this.transactionsPanel.add(viewPanel, BorderLayout.CENTER);
+        this.viewLayout.show(this.viewPanel, TABLE);
+    }
+
+    /**
+     * This method is used to update the balance in the view.
+     */
+    private void updateBalance() {
+        this.balanceLabel.setText(this.bankAccountController.getBalance().toString().concat(" €"));
+    }
+
+    /**
+     * This method is used to recreate the JScrollPane for the table view of the transactions
+     * with a new list of transactions.
+     * 
+     * @param transactions the new list of transactions.
+     */
+    private void updateTransactionsTable(final List<Transaction> transactions) {
+        /* This method does not really need a input validation because that part will be done by the button's
+            method which executes this method, and since it is in the same file we do not need to duplicate the validation */
+
+        final String[] columns = {"Date", "Cause", "Other party", "Amount", "Fee", "Direction"};
+
+        final JTable transactionsTable = new JTable(transactions.size(), columns.length);
 
         transactionsTable.setFont(new Font(FONT, Font.PLAIN, TRANSACTIONS_PANEL_TABLE_FONT_SIZE));
         transactionsTable.setRowHeight(TRANSACTIONS_PANEL_TABLE_ROW_HEIGHT);
@@ -330,19 +406,37 @@ public final class BankAccountView extends JFrame {
 
         transactionsTable.setFillsViewportHeight(true);
 
-        final JScrollPane scrollPane = new JScrollPane(transactionsTable);
-
-        /* Final panel composition */
-
-        this.transactionsPanel.add(headerPanel, BorderLayout.NORTH);
-        this.transactionsPanel.add(scrollPane, BorderLayout.CENTER);
+        this.tablePanel.removeAll();
+        this.tablePanel.add(new JScrollPane(transactionsTable), BorderLayout.CENTER);
     }
 
     /**
-     * This method is used to update the balance in the view.
+     * This method is used to recreate the ChartPanel for the chart view of the transactions
+     * with a new list of transactions.
+     * 
+     * @param transactions the list of transactions
      */
-    private void updateBalance() {
-        this.balanceLabel.setText(this.bankAccountController.getBalance().toString().concat(" €"));
+    private void updateTransactionsChart(final List<Transaction> transactions) {
+        /* This method does not really need a input validation because that part will be done by the button's
+            method which executes this method, and since it is in the same file we do not need to duplicate the validation */
+        this.chartPanel.removeAll();
+        this.chartPanel.add(new ChartPanel(
+            ChartUtils.createNetCashFlowChart(transactions)), BorderLayout.CENTER);
+    }
+
+    /**
+     * This method is used by the switchTransactionsView button to switch the view
+     * of the transactions, alternating the table view and the chart view.
+     */
+    private void switchTransactionsView() {
+        if (this.showingTable) {
+            this.viewLayout.show(this.viewPanel, CHART);
+            this.transactionsSwitchButton.setText("Show table");
+        } else {
+            this.viewLayout.show(this.viewPanel, TABLE);
+            this.transactionsSwitchButton.setText("Show chart");
+        }
+        this.showingTable = !this.showingTable;
     }
 
     /**
@@ -356,10 +450,10 @@ public final class BankAccountView extends JFrame {
         final JTextField amountField = DialogUtils.createTextField();
         final JTextField dateField = DialogUtils.createDateField();
 
-        DialogUtils.addField(formPanel, "Amount (€) :", amountField, 0);
-        DialogUtils.addField(formPanel, "Date :", dateField, 1);
+        DialogUtils.addField(formPanel, AMOUNT, amountField, 0);
+        DialogUtils.addField(formPanel, DATE, dateField, 1);
 
-        final JButton confirmButton = new JButton("Confirm");
+        final JButton confirmButton = new JButton(CONFIRM);
 
         confirmButton.addActionListener(p -> {
             final BigDecimal amount;
@@ -368,7 +462,7 @@ public final class BankAccountView extends JFrame {
             } catch (final IllegalArgumentException e) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Enter a valid amount.",
+                    INVALID_AMOUNT,
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -378,7 +472,7 @@ public final class BankAccountView extends JFrame {
             if (amount.compareTo(BigDecimal.ZERO) <= 0) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Amount must be positive.",
+                    AMOUNT_POSITIVE,
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -392,7 +486,7 @@ public final class BankAccountView extends JFrame {
             } catch (final DateTimeParseException e) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Enter a valid date (dd/MM/yyyy).",
+                    INVALID_DATE,
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -404,7 +498,7 @@ public final class BankAccountView extends JFrame {
             } catch (final IllegalArgumentException e) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Internal error",
+                    INTERNAL_ERROR,
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -414,7 +508,7 @@ public final class BankAccountView extends JFrame {
             this.updateBalance();
             dialog.dispose();
         });
-        final JButton cancelButton = new JButton("Cancel");
+        final JButton cancelButton = new JButton(CANCEL);
         cancelButton.addActionListener(p -> dialog.dispose());
 
         final JPanel depositPanel = DialogUtils.createDialogButtons(confirmButton, cancelButton);
@@ -443,12 +537,12 @@ public final class BankAccountView extends JFrame {
         final JTextField causeField = DialogUtils.createTextField();
         final JTextField destinationField = DialogUtils.createTextField();
 
-        DialogUtils.addField(formPanel, "Amount (€) :", amountField, 0);
-        DialogUtils.addField(formPanel, "Date :", dateField, 1);
+        DialogUtils.addField(formPanel, AMOUNT, amountField, 0);
+        DialogUtils.addField(formPanel, DATE, dateField, 1);
         DialogUtils.addField(formPanel, "Cause :", causeField, 2);
         DialogUtils.addField(formPanel, "Destination :", destinationField, 3);
 
-        final JButton confirmButton = new JButton("Confirm");
+        final JButton confirmButton = new JButton(CONFIRM);
 
         confirmButton.addActionListener(p -> {
             final BigDecimal amount;
@@ -457,7 +551,7 @@ public final class BankAccountView extends JFrame {
             } catch (final IllegalArgumentException e) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Enter a valid amount.",
+                    INVALID_AMOUNT,
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -467,7 +561,7 @@ public final class BankAccountView extends JFrame {
             if (amount.compareTo(BigDecimal.ZERO) <= 0) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Amount must be positive.",
+                    AMOUNT_POSITIVE,
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -481,7 +575,7 @@ public final class BankAccountView extends JFrame {
             } catch (final DateTimeParseException e) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Enter a valid date (dd/MM/yyyy).",
+                    INVALID_DATE,
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -502,7 +596,7 @@ public final class BankAccountView extends JFrame {
             } else if (destinationField.getText().isBlank()) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    "Insert a cause",
+                    "Insert a destination",
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -527,16 +621,363 @@ public final class BankAccountView extends JFrame {
             this.updateBalance();
             dialog.dispose();
         });
-        final JButton cancelButton = new JButton("Cancel");
+        final JButton cancelButton = new JButton(CANCEL);
         cancelButton.addActionListener(p -> dialog.dispose());
 
-        final JPanel depositPanel = DialogUtils.createDialogButtons(confirmButton, cancelButton);
+        final JPanel wireTransferPanel = DialogUtils.createDialogButtons(confirmButton, cancelButton);
 
-        depositPanel.add(cancelButton);
-        depositPanel.add(confirmButton);
+        wireTransferPanel.add(cancelButton);
+        wireTransferPanel.add(confirmButton);
 
         dialog.add(formPanel, BorderLayout.CENTER);
-        dialog.add(depositPanel, BorderLayout.SOUTH);
+        dialog.add(wireTransferPanel, BorderLayout.SOUTH);
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    /**
+     * This method is used to create the dialog for the prepaidCharge operation.
+     */
+    private void showPrepaidChargeDialog() {
+        final JDialog dialog = DialogUtils.createDialog(SwingUtilities.getWindowAncestor(this), "Prepaid charge");
+
+        final JPanel formPanel = DialogUtils.createFormPanel();
+
+        final JTextField amountField = DialogUtils.createTextField();
+        final JTextField dateField = DialogUtils.createDateField();
+        final JComboBox<PrepaidCard> cardField = new JComboBox<>();
+
+        for (final PrepaidCard card : this.masterController.getPrepaidCards()) {
+            cardField.addItem(card);
+        }
+
+        /* This part of the code rewrites the renderer of the JComboBox for the cards
+            so that the ComboBox shows the cardNumber instead of the string version of the whole class */
+        cardField.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(
+                final JList<?> list,
+                final Object value,
+                final int index,
+                final boolean isSelected,
+                final boolean cellHasFocus) {
+
+            super.getListCellRendererComponent(
+                list, value, index, isSelected, cellHasFocus
+            );
+
+            if (value instanceof PrepaidCard card) {
+                setText(card.getCardNumber());
+            }
+
+            return this;
+        }
+        });
+
+        DialogUtils.addField(formPanel, AMOUNT, amountField, 0);
+        DialogUtils.addField(formPanel, DATE, dateField, 1);
+        DialogUtils.addField(formPanel, "Card : ", cardField, 2);
+
+        final JButton confirmButton = new JButton(CONFIRM);
+
+        confirmButton.addActionListener(p -> {
+            final BigDecimal amount;
+            try {
+                amount = DialogUtils.getBigDecimalValue(amountField);
+            } catch (final IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    INVALID_AMOUNT,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    AMOUNT_POSITIVE,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            final LocalDate date;
+
+            try {
+                date = DialogUtils.getLocalDateValue(dateField);
+            } catch (final DateTimeParseException e) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    INVALID_DATE,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            final PrepaidCard chosenCard;
+
+            try {
+                chosenCard = (PrepaidCard) cardField.getSelectedItem();
+            } catch (final IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    "Error while converting the selected card",
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+            if (chosenCard == null) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    "No card was chosen",
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            /* This if is just temporary to avoid getting a warning for not using the field date.
+                once the next method is ready and uncommented this if should be eliminated */
+            if (date == null) {
+                throw new IllegalArgumentException("Temporary");
+            }
+            /*
+                This part needs the implementation from the masterController.
+            try {
+                this.masterController.prepaidCharge(amount, date, chosenCard);
+            } catch (final IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    INTERNAL_ERROR,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }*/
+
+            this.updateBalance();
+            dialog.dispose();
+        });
+
+        final JButton cancelButton = new JButton(CANCEL);
+        cancelButton.addActionListener(p -> dialog.dispose());
+
+        final JPanel prepaidChargePanel = DialogUtils.createDialogButtons(confirmButton, cancelButton);
+
+        prepaidChargePanel.add(cancelButton);
+        prepaidChargePanel.add(confirmButton);
+
+        dialog.add(formPanel, BorderLayout.CENTER);
+        dialog.add(prepaidChargePanel, BorderLayout.SOUTH);
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    /**
+     * This method is used to create the dialog for filtering the transactions.
+     */
+    private void showTransactionsFilterDialog() {
+        final JDialog dialog = DialogUtils.createDialog(SwingUtilities.getWindowAncestor(this), "Filter transactions");
+
+        final JPanel formPanel = DialogUtils.createFormPanel();
+
+        final JTextField startField = DialogUtils.createDateField();
+        final JTextField finishField = DialogUtils.createDateField();
+        final JTextField otherPartyField = DialogUtils.createTextField();
+        final JTextField minField = DialogUtils.createTextField();
+        final JTextField maxField = DialogUtils.createTextField();
+
+        DialogUtils.addField(formPanel, "Starting date :", startField, 0);
+        DialogUtils.addField(formPanel, "Finishing date :", finishField, 1);
+        DialogUtils.addField(formPanel, "OtherParty :", otherPartyField, 2);
+        DialogUtils.addField(formPanel, "Minimum amount :", minField, 3);
+        DialogUtils.addField(formPanel, "Maximum amount :", maxField, 4);
+
+        final JPanel positiveFilterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        final JRadioButton positiveButton = new JRadioButton("Positive");
+        final JRadioButton negativeButton = new JRadioButton("Negative");
+
+        final ButtonGroup transactionTypeGroup = new ButtonGroup();
+
+        transactionTypeGroup.add(positiveButton);
+        transactionTypeGroup.add(negativeButton);
+
+        positiveFilterPanel.add(positiveButton);
+        positiveFilterPanel.add(negativeButton);
+
+        final JButton confirmButton = new JButton(CONFIRM);
+
+        confirmButton.addActionListener(p -> {
+            final Optional<BigDecimal> min;
+            if (minField.getText().isBlank()) {
+                min = Optional.empty();
+            } else {
+                try {
+                    min = Optional.of(DialogUtils.getBigDecimalValue(minField));
+                } catch (final IllegalArgumentException e) {
+                    JOptionPane.showMessageDialog(
+                        dialog,
+                        INVALID_AMOUNT,
+                        INVALID_INPUT,
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+            }
+
+            if (min.isPresent() && min.get().compareTo(BigDecimal.ZERO) <= 0) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    AMOUNT_POSITIVE,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            final Optional<BigDecimal> max;
+            if (maxField.getText().isBlank()) {
+                max = Optional.empty();
+            } else {
+                try {
+                    max = Optional.of(DialogUtils.getBigDecimalValue(maxField));
+                } catch (final IllegalArgumentException e) {
+                    JOptionPane.showMessageDialog(
+                        dialog,
+                        INVALID_AMOUNT,
+                        INVALID_INPUT,
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+            }
+
+            if (max.isPresent() && max.get().compareTo(BigDecimal.ZERO) <= 0) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    AMOUNT_POSITIVE,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            if (min.isPresent() && max.isPresent() && max.get().compareTo(min.get()) < 0) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    "Maximum amount cannot be lower than minimum amount",
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            final Optional<LocalDate> start;
+            if (startField.getText().isBlank()) {
+                start = Optional.empty();
+            } else {
+                try {
+                    start = Optional.of(DialogUtils.getLocalDateValue(startField));
+                } catch (final DateTimeParseException e) {
+                    JOptionPane.showMessageDialog(
+                        dialog,
+                        INVALID_DATE,
+                        INVALID_INPUT,
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+            }
+
+            final Optional<LocalDate> finish;
+            if (finishField.getText().isBlank()) {
+                finish = Optional.empty();
+            } else {
+                try {
+                    finish = Optional.of(DialogUtils.getLocalDateValue(finishField));
+                } catch (final DateTimeParseException e) {
+                    JOptionPane.showMessageDialog(
+                        dialog,
+                        INVALID_DATE,
+                        INVALID_INPUT,
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+            }
+
+            if (start.isPresent() && finish.isPresent() && finish.get().compareTo(start.get()) < 0) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    "Finishing date cannot be earlier than starting date",
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            final Optional<String> otherParty;
+
+            if (otherPartyField.getText().isBlank()) {
+                otherParty = Optional.empty();
+            } else {
+                otherParty = Optional.of(otherPartyField.getText());
+            }
+
+            final Optional<Boolean> positiveFilter;
+
+            if (positiveButton.isSelected()) {
+                positiveFilter = Optional.of(true);
+            } else if (negativeButton.isSelected()) {
+                positiveFilter = Optional.of(false);
+            } else {
+                positiveFilter = Optional.empty();
+            }
+
+            final List<Transaction> transactions;
+            try {
+                transactions = this.bankAccountController.viewBankTransactions(
+                    start,
+                    finish,
+                    otherParty,
+                    positiveFilter,
+                    min,
+                    max
+                );
+            } catch (final IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    INTERNAL_ERROR,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            this.updateTransactionsTable(transactions);
+            this.updateTransactionsChart(transactions);
+            dialog.dispose();
+        });
+        final JButton cancelButton = new JButton(CANCEL);
+        cancelButton.addActionListener(p -> dialog.dispose());
+
+        final JPanel wireTransferPanel = DialogUtils.createDialogButtons(confirmButton, cancelButton);
+
+        wireTransferPanel.add(cancelButton);
+        wireTransferPanel.add(confirmButton);
+
+        dialog.add(formPanel, BorderLayout.CENTER);
+        dialog.add(wireTransferPanel, BorderLayout.SOUTH);
 
         dialog.pack();
         dialog.setLocationRelativeTo(this);

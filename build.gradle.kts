@@ -19,7 +19,9 @@ repositories {
 dependencies {
     compileOnly("com.github.spotbugs:spotbugs-annotations:4.9.8")
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation("org.jfree:jfreechart:1.5.6")
 }
+
 /*
 application {
     this will be useful once we know what the main class is. 
