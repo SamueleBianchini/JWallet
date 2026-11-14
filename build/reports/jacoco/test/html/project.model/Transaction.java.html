@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Transaction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JWallet</a> &gt; <a href="index.source.html" class="el_package">project.model</a> &gt; <span class="el_source">Transaction.java</span></div><h1>Transaction.java</h1><pre class="source lang-java linenums">package project.model;
+
+import java.time.LocalDate;
+import java.math.BigDecimal;
+
+import project.utility.InputValidator;
+
+/**
+ * This is a record used to store the data regarding the transactions, which we will need both
+ * for storage and also for creating graphs.
+ * 
+ * @param amount the amount of money for the transaction.
+ * @param fee the fee paid for the specific operation. Can be 0 if no fee was applied, or any specific amount
+ *      depending on the operation that resulted in this fee.
+ * @param isPositive this boolean is used to represent if the transaction is positive or negative. A positive value means that the
+ *      transaction resulted in adding the amount to the balance, a negative value means that we subtracted the
+ *      amount from the balance.
+ * @param date the date on which the transaction has taken place.
+ * @param cause the description of the operation that originated this transaction.
+ * @param otherParty used to define the other party involved in the transaction. Essentially, if the transaction is
+ *      a positive one, this will contain the name or IBAN of who is paying, and if the transaction is a negative one,
+ *      this will contain the name or IBAN of who is receiving the money.
+ */
+public record Transaction(
+    BigDecimal amount,
+    BigDecimal fee,
+    boolean isPositive,
+    LocalDate date,
+    String cause,
+    String otherParty) {
+
+        /**
+         * This constructor is specified because we need to implement the Input validation process
+         * before creating the actual Transaction.
+         * 
+         * @param amount the amount of money
+         * @param fee the fee paid for the specific operation
+         * @param isPositive true if the operation is positive, false if it is negative
+         * @param date the date of the transaction
+         * @param cause the cause of the transaction
+         * @param otherParty the other party in the transaction, which is the payer if the transaction is positive
+         *      or the receiver if the transaction is negative
+         */
+<span class="fc" id="L44">        public Transaction {</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">            InputValidator.checkArgument(amount, p -&gt; p.compareTo(BigDecimal.ZERO) &gt; 0, &quot;Amount&quot;);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">            InputValidator.checkArgument(fee, p -&gt; p.compareTo(BigDecimal.ZERO) &gt;= 0, &quot;Fee&quot;);</span>
+<span class="fc" id="L47">            InputValidator.checkArgument(date, p -&gt; true, &quot;Date&quot;);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">            InputValidator.checkArgument(cause, p -&gt; !p.isBlank(), &quot;Cause&quot;);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">            InputValidator.checkArgument(otherParty, p -&gt; !p.isBlank(), &quot;Other Party&quot;);</span>
+<span class="fc" id="L50">        }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

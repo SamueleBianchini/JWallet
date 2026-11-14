@@ -1,0 +1,991 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BankAccountView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JWallet</a> &gt; <a href="index.source.html" class="el_package">project.view</a> &gt; <span class="el_source">BankAccountView.java</span></div><h1>BankAccountView.java</h1><pre class="source lang-java linenums">package project.view;
+
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FlowLayout;
+import java.awt.Component;
+import java.awt.CardLayout;
+
+import java.util.List;
+import java.util.Optional;
+import java.math.BigDecimal;
+import java.time.format.DateTimeParseException;
+import java.time.LocalDate;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+
+import org.jfree.chart.ChartPanel;
+
+import project.controller.BankAccountControllerInterface;
+import project.model.BankAccountInterface;
+import project.model.card.PrepaidCard;
+import project.controller.BankAccountControllerImpl;
+import project.controller.MasterControllerInterface;
+import project.utility.InputValidator;
+import project.utility.DialogUtils;
+import project.utility.ChartUtils;
+import project.model.Transaction;
+
+/**
+ * This class is the GUI for the window for the BankAccount.
+ * BankAccountView
+ */
+public final class BankAccountView extends JFrame {
+
+    private static final long serialVersionUID = 1L;
+    private static final String FONT = &quot;Arial&quot;;
+    private static final String INVALID_INPUT = &quot;Invalid input&quot;;
+    private static final String INVALID_DATE = &quot;Enter a valid date (dd/MM/yyyy).&quot;;
+    private static final String INVALID_AMOUNT = &quot;Enter a valid amount.&quot;;
+    private static final String AMOUNT = &quot;Amount (€) :&quot;;
+    private static final String CONFIRM = &quot;Confirm&quot;;
+    private static final String DATE = &quot;Date :&quot;;
+    private static final String AMOUNT_POSITIVE = &quot;Amount must be positive.&quot;;
+    private static final String CANCEL = &quot;Cancel&quot;;
+    private static final String TABLE = &quot;TABLE&quot;;
+    private static final String CHART = &quot;CHART&quot;;
+    private static final String INTERNAL_ERROR = &quot;Internal error&quot;;
+
+    private static final int SIDE_MENU_BUTTONS_WIDTH = 180;
+    private static final int SIDE_MENU_BUTTONS_HEIGHT = 50;
+    private static final int SIDE_MENU_BUTTONS_DISTANCE = 15;
+    private static final int SIDE_MENU_WIDTH = 200;
+    private static final int SIDE_MENU_VERTICAL_BORDER = 20;
+    private static final int SIDE_MENU_HORIZONTAL_BORDER = 10;
+
+    private static final int MAIN_MENU_VERTICAL_GAP = 20;
+    private static final int MAIN_MENU_VERTICAL_BORDER = 25;
+    private static final int MAIN_MENU_HORIZONTAL_BORDER = 30;
+    private static final int MAIN_MENU_RED = 245;
+    private static final int MAIN_MENU_GREEN = 247;
+    private static final int MAIN_MENU_BLUE = 250;
+
+    private static final int INFO_PANEL_VERTICAL_BORDER = 20;
+    private static final int INFO_PANEL_HORIZONTAL_BORDER = 25;
+    private static final int INFO_PANEL_FONT_TITLE_SIZE = 16;
+    private static final int INFO_PANEL_FONT_NUMBER_SIZE = 34;
+    private static final int INFO_PANEL_TITLE_SPACING = 10;
+    private static final int INFO_PANEL_IBAN_SPACING = 15;
+
+    private static final int BUTTONS_PANEL_GRID_ROWS = 1;
+    private static final int BUTTONS_PANEL_GRID_COLS = 3;
+    private static final int BUTTONS_PANEL_GRID_SPACING = 15;
+    private static final int BUTTONS_PANEL_VERTICAL_BORDER = 10;
+    private static final int BUTTONS_PANEL_FONT_SIZE = 14;
+
+    private static final int TRANSACTIONS_PANEL_VERTICAL_GAP = 15;
+    private static final int TRANSACTIONS_PANEL_BORDER_NORTH = 15;
+    private static final int TRANSACTIONS_PANEL_FONT_SIZE = 20;
+    private static final int TRANSACTIONS_PANEL_TABLE_FONT_SIZE = 13;
+    private static final int TRANSACTIONS_PANEL_TABLE_TITLE_FONT_SIZE = 16;
+    private static final int TRANSACTIONS_PANEL_TABLE_ROW_HEIGHT = 35;
+
+    private final transient BankAccountControllerInterface bankAccountController;
+    private final transient MasterControllerInterface masterController;
+
+    private final JPanel sideMenu;                    //Contains the buttons to switch GUI
+    private final JPanel mainMenu;                    //Contains the rest of the panels
+    private final JPanel infoPanel;                   //Contains the info about the bankAccount
+    private final JPanel buttonsPanel;                //Contains the buttons to make new operations
+    private final JPanel transactionsPanel;           //Contains the view of previous operations
+
+    private final JButton goToInvestmentsButton;      //Switches to the Investments GUI
+    private final JButton goToAssetsButton;           //Switches to the Assets GUI
+    private final JButton goToCardsButton;            //Switches to the cards GUI
+    private final JButton depositButton;              //Opens the deposit input prompt
+    private final JButton wireTransferButton;         //Opens the wireTransfer input prompt
+    private final JButton prepaidChargeButton;        //Opens the prepaidCharge input prompt
+    private final JButton transactionsFilterButton;   //Opens the transactions selecion filter prompt
+    private final JButton transactionsSwitchButton;   //Switches the type of view from list to graph
+
+    private final JLabel balanceLabel;
+
+    private final JPanel viewPanel;
+    private final CardLayout viewLayout;
+
+    private final JPanel tablePanel;
+    private final JPanel chartPanel;
+
+    private boolean showingTable;
+
+    /**
+     * This method is the constructor for the BankAccountView.
+     * 
+     * @param masterController the masterController this class will use.
+     * @param bankAccount the bankAccount this class will control.
+     */
+    public BankAccountView(final MasterControllerInterface masterController, final BankAccountInterface bankAccount) {
+<span class="nc" id="L139">        super();</span>
+
+        /* Input validation */
+
+<span class="nc" id="L143">        InputValidator.checkArgument(masterController, p -&gt; true, &quot;Master controller&quot;);</span>
+<span class="nc" id="L144">        InputValidator.checkArgument(bankAccount, p -&gt; true, &quot;Bank account&quot;);</span>
+
+        /* Actual constructor (panel creation section) */
+
+<span class="nc" id="L148">        this.setLayout(new BorderLayout());</span>
+<span class="nc" id="L149">        this.sideMenu = new JPanel();</span>
+<span class="nc" id="L150">        this.mainMenu = new JPanel();</span>
+<span class="nc" id="L151">        this.infoPanel = new JPanel();</span>
+<span class="nc" id="L152">        this.buttonsPanel = new JPanel();</span>
+<span class="nc" id="L153">        this.transactionsPanel = new JPanel();</span>
+
+<span class="nc" id="L155">        this.add(this.sideMenu, BorderLayout.WEST);</span>
+<span class="nc" id="L156">        this.add(this.mainMenu, BorderLayout.CENTER);</span>
+
+        /* Actual constructor (buttons creation section) */
+
+<span class="nc" id="L160">        this.goToInvestmentsButton = new JButton();</span>
+<span class="nc" id="L161">        this.goToAssetsButton = new JButton();</span>
+<span class="nc" id="L162">        this.goToCardsButton = new JButton();</span>
+
+<span class="nc" id="L164">        this.depositButton = new JButton();</span>
+<span class="nc" id="L165">        this.wireTransferButton = new JButton();</span>
+<span class="nc" id="L166">        this.prepaidChargeButton = new JButton();</span>
+
+<span class="nc" id="L168">        this.transactionsFilterButton = new JButton();</span>
+<span class="nc" id="L169">        this.transactionsSwitchButton = new JButton();</span>
+
+        /* Actual constructor (inizialitation section) */
+
+<span class="nc" id="L173">        this.bankAccountController = new BankAccountControllerImpl(bankAccount);</span>
+<span class="nc" id="L174">        this.masterController = masterController;</span>
+
+<span class="nc" id="L176">        this.balanceLabel = new JLabel(this.bankAccountController.getBalance().toString().concat(&quot; €&quot;));</span>
+
+<span class="nc" id="L178">        this.viewLayout = new CardLayout();</span>
+<span class="nc" id="L179">        this.viewPanel = new JPanel(this.viewLayout);</span>
+
+<span class="nc" id="L181">        this.tablePanel = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L182">        this.chartPanel = new JPanel(new BorderLayout());</span>
+
+<span class="nc" id="L184">        this.showingTable = true;</span>
+
+        /* Actual constructor (view definition section) */
+
+<span class="nc" id="L188">        this.createSideMenu();</span>
+<span class="nc" id="L189">        this.createMainMenu();</span>
+<span class="nc" id="L190">        this.mainMenu.add(this.infoPanel, BorderLayout.NORTH);</span>
+<span class="nc" id="L191">        this.mainMenu.add(this.buttonsPanel, BorderLayout.SOUTH);</span>
+<span class="nc" id="L192">        this.mainMenu.add(this.transactionsPanel, BorderLayout.CENTER);</span>
+<span class="nc" id="L193">        this.createInfoPanel();</span>
+<span class="nc" id="L194">        this.createButtonsPanel();</span>
+<span class="nc" id="L195">        this.createTransactionsPanel();</span>
+<span class="nc" id="L196">    }</span>
+
+    /**
+     * This method is used by the constructor to setup the sideMenu.
+     */
+    private void createSideMenu() {
+<span class="nc" id="L202">        this.sideMenu.setLayout(new BoxLayout(this.sideMenu, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L203">        this.sideMenu.setPreferredSize(new Dimension(SIDE_MENU_WIDTH, 0));</span>
+<span class="nc" id="L204">        this.sideMenu.setBorder(BorderFactory.createEmptyBorder(</span>
+            SIDE_MENU_VERTICAL_BORDER,
+            SIDE_MENU_HORIZONTAL_BORDER,
+            SIDE_MENU_VERTICAL_BORDER,
+            SIDE_MENU_HORIZONTAL_BORDER
+        ));
+
+<span class="nc" id="L211">        this.goToInvestmentsButton.setText(&quot;Investments&quot;);</span>
+<span class="nc" id="L212">        this.goToAssetsButton.setText(&quot;Assets&quot;);</span>
+<span class="nc" id="L213">        this.goToCardsButton.setText(&quot;Cards&quot;);</span>
+
+<span class="nc" id="L215">        final Dimension buttonSize = new Dimension(SIDE_MENU_BUTTONS_WIDTH, SIDE_MENU_BUTTONS_HEIGHT);</span>
+
+<span class="nc bnc" id="L217" title="All 2 branches missed.">        for (final JButton button : List.of(</span>
+            this.goToInvestmentsButton,
+            this.goToAssetsButton,
+            this.goToCardsButton)) {
+
+<span class="nc" id="L222">            button.setMaximumSize(buttonSize);</span>
+
+<span class="nc" id="L224">            this.sideMenu.add(button);</span>
+<span class="nc" id="L225">            this.sideMenu.add(Box.createVerticalStrut(SIDE_MENU_BUTTONS_DISTANCE));</span>
+<span class="nc" id="L226">        }</span>
+<span class="nc" id="L227">    }</span>
+
+    /**
+     * This method is used by the constructor to setup the mainMenu.
+     */
+    private void createMainMenu() {
+<span class="nc" id="L233">        this.mainMenu.setLayout(new BorderLayout(0, MAIN_MENU_VERTICAL_GAP));</span>
+<span class="nc" id="L234">        this.mainMenu.setBorder(BorderFactory.createEmptyBorder(</span>
+            MAIN_MENU_VERTICAL_BORDER,
+            MAIN_MENU_HORIZONTAL_BORDER,
+            MAIN_MENU_VERTICAL_BORDER,
+            MAIN_MENU_HORIZONTAL_BORDER
+        ));
+<span class="nc" id="L240">        this.mainMenu.setBackground(new Color(MAIN_MENU_RED, MAIN_MENU_GREEN, MAIN_MENU_BLUE));</span>
+<span class="nc" id="L241">    }</span>
+
+    /**
+     * This method is used by the constructor to setup the infoPanel.
+     */
+    private void createInfoPanel() {
+<span class="nc" id="L247">        this.infoPanel.setLayout(new BoxLayout(this.infoPanel, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L248">        this.infoPanel.setBorder(BorderFactory.createEmptyBorder(</span>
+            INFO_PANEL_VERTICAL_BORDER,
+            INFO_PANEL_HORIZONTAL_BORDER,
+            INFO_PANEL_VERTICAL_BORDER,
+            INFO_PANEL_HORIZONTAL_BORDER
+        ));
+<span class="nc" id="L254">        this.infoPanel.setBackground(Color.WHITE);</span>
+
+<span class="nc" id="L256">        final JLabel balanceTitle = new JLabel(&quot;Current balance&quot;);</span>
+<span class="nc" id="L257">        balanceTitle.setFont(new Font(FONT, Font.PLAIN, INFO_PANEL_FONT_TITLE_SIZE));</span>
+<span class="nc" id="L258">        balanceTitle.setForeground(Color.GRAY);</span>
+
+<span class="nc" id="L260">        balanceLabel.setFont(new Font(FONT, Font.BOLD, INFO_PANEL_FONT_NUMBER_SIZE));</span>
+<span class="nc" id="L261">        balanceLabel.setForeground(Color.BLACK);</span>
+
+<span class="nc" id="L263">        final JLabel ibanLabel = new JLabel(this.bankAccountController.getIban());</span>
+<span class="nc" id="L264">        ibanLabel.setFont(new Font(FONT, Font.PLAIN, INFO_PANEL_FONT_TITLE_SIZE));</span>
+<span class="nc" id="L265">        ibanLabel.setForeground(Color.GRAY);</span>
+
+<span class="nc" id="L267">        this.infoPanel.add(balanceTitle);</span>
+<span class="nc" id="L268">        this.infoPanel.add(Box.createVerticalStrut(INFO_PANEL_TITLE_SPACING));</span>
+<span class="nc" id="L269">        this.infoPanel.add(balanceLabel);</span>
+<span class="nc" id="L270">        this.infoPanel.add(Box.createVerticalStrut(INFO_PANEL_IBAN_SPACING));</span>
+<span class="nc" id="L271">        this.infoPanel.add(ibanLabel);</span>
+<span class="nc" id="L272">    }</span>
+
+    /**
+     * This method is used by the constructor to setup the transactionsPanel.
+     */
+    private void createButtonsPanel() {
+<span class="nc" id="L278">        this.buttonsPanel.setLayout(new GridLayout(</span>
+            BUTTONS_PANEL_GRID_ROWS,
+            BUTTONS_PANEL_GRID_COLS,
+            BUTTONS_PANEL_GRID_SPACING,
+            0
+        ));
+<span class="nc" id="L284">        this.buttonsPanel.setBorder(BorderFactory.createEmptyBorder(</span>
+            BUTTONS_PANEL_VERTICAL_BORDER,
+            0,
+            BUTTONS_PANEL_VERTICAL_BORDER,
+            0
+        ));
+
+<span class="nc" id="L291">        this.depositButton.setText(&quot;Deposit&quot;);</span>
+<span class="nc" id="L292">        this.wireTransferButton.setText(&quot;Wire transfer&quot;);</span>
+<span class="nc" id="L293">        this.prepaidChargeButton.setText(&quot;Prepaid card recharge&quot;);</span>
+
+<span class="nc bnc" id="L295" title="All 2 branches missed.">        for (final JButton button : List.of(</span>
+            this.depositButton,
+            this.wireTransferButton,
+            this.prepaidChargeButton
+        )) {
+<span class="nc" id="L300">            button.setFont(new Font(FONT, Font.BOLD, BUTTONS_PANEL_FONT_SIZE));</span>
+<span class="nc" id="L301">            button.setForeground(Color.WHITE);</span>
+<span class="nc" id="L302">            button.setBackground(Color.GRAY);</span>
+<span class="nc" id="L303">            button.setFocusPainted(false);</span>
+<span class="nc" id="L304">            button.setBorderPainted(false);</span>
+<span class="nc" id="L305">            button.setOpaque(true);</span>
+<span class="nc" id="L306">        }</span>
+
+        /* This listener is just temporary until Davide finishes the masterController */
+<span class="nc" id="L309">        this.prepaidChargeButton.addActionListener(p -&gt; this.showPrepaidChargeDialog());</span>
+<span class="nc" id="L310">        this.depositButton.addActionListener(p -&gt; this.showDepositDialog());</span>
+<span class="nc" id="L311">        this.wireTransferButton.addActionListener(p -&gt; this.showWireTransferDialog());</span>
+<span class="nc" id="L312">    }</span>
+
+    /**
+     * This method is used by the constructor to setup the buttonsPanel.
+     */
+    private void createTransactionsPanel() {
+<span class="nc" id="L318">        this.transactionsPanel.setLayout(new BorderLayout(0, TRANSACTIONS_PANEL_VERTICAL_GAP));</span>
+
+<span class="nc" id="L320">        this.transactionsPanel.setBorder(BorderFactory.createEmptyBorder(</span>
+            TRANSACTIONS_PANEL_BORDER_NORTH,
+            0,
+            0,
+            0
+        ));
+
+        /* Panel header */
+
+<span class="nc" id="L329">        final JPanel headerPanel = new JPanel(new BorderLayout());</span>
+
+<span class="nc" id="L331">        final JLabel title = new JLabel(&quot;Recent transactions&quot;);</span>
+<span class="nc" id="L332">        title.setFont(new Font(FONT, Font.BOLD, TRANSACTIONS_PANEL_FONT_SIZE));</span>
+
+<span class="nc" id="L334">        this.transactionsFilterButton.setText(&quot;Filter&quot;);</span>
+<span class="nc" id="L335">        this.transactionsFilterButton.addActionListener(p -&gt; this.showTransactionsFilterDialog());</span>
+<span class="nc" id="L336">        this.transactionsSwitchButton.setText(&quot;Show chart&quot;);</span>
+<span class="nc" id="L337">        this.transactionsSwitchButton.addActionListener(p -&gt; this.switchTransactionsView());</span>
+
+<span class="nc" id="L339">        final JPanel headerButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));</span>
+<span class="nc" id="L340">        headerButtons.add(this.transactionsFilterButton);</span>
+<span class="nc" id="L341">        headerButtons.add(this.transactionsSwitchButton);</span>
+
+<span class="nc" id="L343">        headerPanel.add(title, BorderLayout.WEST);</span>
+<span class="nc" id="L344">        headerPanel.add(headerButtons, BorderLayout.EAST);</span>
+
+        /* Transactions table */
+
+<span class="nc" id="L348">        this.tablePanel.setLayout(new BorderLayout());</span>
+<span class="nc" id="L349">        this.updateTransactionsTable(this.bankAccountController.viewBankTransactions(</span>
+<span class="nc" id="L350">            Optional.empty(),</span>
+<span class="nc" id="L351">            Optional.empty(),</span>
+<span class="nc" id="L352">            Optional.empty(),</span>
+<span class="nc" id="L353">            Optional.empty(),</span>
+<span class="nc" id="L354">            Optional.empty(),</span>
+<span class="nc" id="L355">            Optional.empty()</span>
+        ));
+
+        /* Transactions graph */
+
+<span class="nc" id="L360">        this.chartPanel.setLayout(new BorderLayout());</span>
+
+<span class="nc" id="L362">        this.updateTransactionsChart(this.bankAccountController.viewBankTransactions(</span>
+<span class="nc" id="L363">                Optional.empty(),</span>
+<span class="nc" id="L364">                Optional.empty(),</span>
+<span class="nc" id="L365">                Optional.empty(),</span>
+<span class="nc" id="L366">                Optional.empty(),</span>
+<span class="nc" id="L367">                Optional.empty(),</span>
+<span class="nc" id="L368">                Optional.empty()</span>
+            ));
+
+        /*this.chartPanel.revalidate();
+        this.chartPanel.repaint();*/
+
+        /* Final panel composition */
+
+<span class="nc" id="L376">        this.transactionsPanel.add(headerPanel, BorderLayout.NORTH);</span>
+<span class="nc" id="L377">        this.viewPanel.add(tablePanel, TABLE);</span>
+<span class="nc" id="L378">        this.viewPanel.add(chartPanel, CHART);</span>
+<span class="nc" id="L379">        this.transactionsPanel.add(viewPanel, BorderLayout.CENTER);</span>
+<span class="nc" id="L380">        this.viewLayout.show(this.viewPanel, TABLE);</span>
+<span class="nc" id="L381">    }</span>
+
+    /**
+     * This method is used to update the balance in the view.
+     */
+    private void updateBalance() {
+<span class="nc" id="L387">        this.balanceLabel.setText(this.bankAccountController.getBalance().toString().concat(&quot; €&quot;));</span>
+<span class="nc" id="L388">    }</span>
+
+    /**
+     * This method is used to recreate the JScrollPane for the table view of the transactions
+     * with a new list of transactions.
+     * 
+     * @param transactions the new list of transactions.
+     */
+    private void updateTransactionsTable(final List&lt;Transaction&gt; transactions) {
+        /* This method does not really need a input validation because that part will be done by the button's
+            method which executes this method, and since it is in the same file we do not need to duplicate the validation */
+
+<span class="nc" id="L400">        final String[] columns = {&quot;Date&quot;, &quot;Cause&quot;, &quot;Other party&quot;, &quot;Amount&quot;, &quot;Fee&quot;, &quot;Direction&quot;};</span>
+
+<span class="nc" id="L402">        final JTable transactionsTable = new JTable(transactions.size(), columns.length);</span>
+
+<span class="nc" id="L404">        transactionsTable.setFont(new Font(FONT, Font.PLAIN, TRANSACTIONS_PANEL_TABLE_FONT_SIZE));</span>
+<span class="nc" id="L405">        transactionsTable.setRowHeight(TRANSACTIONS_PANEL_TABLE_ROW_HEIGHT);</span>
+<span class="nc" id="L406">        transactionsTable.getTableHeader().setFont(new Font(FONT, Font.BOLD, TRANSACTIONS_PANEL_TABLE_TITLE_FONT_SIZE));</span>
+
+<span class="nc" id="L408">        transactionsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);</span>
+
+<span class="nc" id="L410">        transactionsTable.setFillsViewportHeight(true);</span>
+
+<span class="nc" id="L412">        this.tablePanel.removeAll();</span>
+<span class="nc" id="L413">        this.tablePanel.add(new JScrollPane(transactionsTable), BorderLayout.CENTER);</span>
+<span class="nc" id="L414">    }</span>
+
+    /**
+     * This method is used to recreate the ChartPanel for the chart view of the transactions
+     * with a new list of transactions.
+     * 
+     * @param transactions the list of transactions
+     */
+    private void updateTransactionsChart(final List&lt;Transaction&gt; transactions) {
+        /* This method does not really need a input validation because that part will be done by the button's
+            method which executes this method, and since it is in the same file we do not need to duplicate the validation */
+<span class="nc" id="L425">        this.chartPanel.removeAll();</span>
+<span class="nc" id="L426">        this.chartPanel.add(new ChartPanel(</span>
+<span class="nc" id="L427">            ChartUtils.createNetCashFlowChart(transactions)), BorderLayout.CENTER);</span>
+<span class="nc" id="L428">    }</span>
+
+    /**
+     * This method is used by the switchTransactionsView button to switch the view
+     * of the transactions, alternating the table view and the chart view.
+     */
+    private void switchTransactionsView() {
+<span class="nc bnc" id="L435" title="All 2 branches missed.">        if (this.showingTable) {</span>
+<span class="nc" id="L436">            this.viewLayout.show(this.viewPanel, CHART);</span>
+<span class="nc" id="L437">            this.transactionsSwitchButton.setText(&quot;Show table&quot;);</span>
+        } else {
+<span class="nc" id="L439">            this.viewLayout.show(this.viewPanel, TABLE);</span>
+<span class="nc" id="L440">            this.transactionsSwitchButton.setText(&quot;Show chart&quot;);</span>
+        }
+<span class="nc bnc" id="L442" title="All 2 branches missed.">        this.showingTable = !this.showingTable;</span>
+<span class="nc" id="L443">    }</span>
+
+    /**
+     * This method is used to create the dialog for the operation deposit.
+     */
+    private void showDepositDialog() {
+<span class="nc" id="L449">        final JDialog dialog = DialogUtils.createDialog(SwingUtilities.getWindowAncestor(this), &quot;Deposit&quot;);</span>
+
+<span class="nc" id="L451">        final JPanel formPanel = DialogUtils.createFormPanel();</span>
+
+<span class="nc" id="L453">        final JTextField amountField = DialogUtils.createTextField();</span>
+<span class="nc" id="L454">        final JTextField dateField = DialogUtils.createDateField();</span>
+
+<span class="nc" id="L456">        DialogUtils.addField(formPanel, AMOUNT, amountField, 0);</span>
+<span class="nc" id="L457">        DialogUtils.addField(formPanel, DATE, dateField, 1);</span>
+
+<span class="nc" id="L459">        final JButton confirmButton = new JButton(CONFIRM);</span>
+
+<span class="nc" id="L461">        confirmButton.addActionListener(p -&gt; {</span>
+            final BigDecimal amount;
+            try {
+<span class="nc" id="L464">                amount = DialogUtils.getBigDecimalValue(amountField);</span>
+<span class="nc" id="L465">            } catch (final IllegalArgumentException e) {</span>
+<span class="nc" id="L466">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    INVALID_AMOUNT,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L472">                return;</span>
+<span class="nc" id="L473">            }</span>
+
+<span class="nc bnc" id="L475" title="All 2 branches missed.">            if (amount.compareTo(BigDecimal.ZERO) &lt;= 0) {</span>
+<span class="nc" id="L476">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    AMOUNT_POSITIVE,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L482">                return;</span>
+            }
+
+            final LocalDate date;
+
+            try {
+<span class="nc" id="L488">                date = DialogUtils.getLocalDateValue(dateField);</span>
+<span class="nc" id="L489">            } catch (final DateTimeParseException e) {</span>
+<span class="nc" id="L490">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    INVALID_DATE,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L496">                return;</span>
+<span class="nc" id="L497">            }</span>
+
+            try {
+<span class="nc" id="L500">                this.bankAccountController.deposit(amount, date);</span>
+<span class="nc" id="L501">            } catch (final IllegalArgumentException e) {</span>
+<span class="nc" id="L502">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    INTERNAL_ERROR,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L508">                return;</span>
+<span class="nc" id="L509">            }</span>
+
+<span class="nc" id="L511">            this.updateBalance();</span>
+<span class="nc" id="L512">            dialog.dispose();</span>
+<span class="nc" id="L513">        });</span>
+<span class="nc" id="L514">        final JButton cancelButton = new JButton(CANCEL);</span>
+<span class="nc" id="L515">        cancelButton.addActionListener(p -&gt; dialog.dispose());</span>
+
+<span class="nc" id="L517">        final JPanel depositPanel = DialogUtils.createDialogButtons(confirmButton, cancelButton);</span>
+
+<span class="nc" id="L519">        depositPanel.add(cancelButton);</span>
+<span class="nc" id="L520">        depositPanel.add(confirmButton);</span>
+
+<span class="nc" id="L522">        dialog.add(formPanel, BorderLayout.CENTER);</span>
+<span class="nc" id="L523">        dialog.add(depositPanel, BorderLayout.SOUTH);</span>
+
+<span class="nc" id="L525">        dialog.pack();</span>
+<span class="nc" id="L526">        dialog.setLocationRelativeTo(this);</span>
+<span class="nc" id="L527">        dialog.setVisible(true);</span>
+<span class="nc" id="L528">    }</span>
+
+    /**
+     * This method is used to create the dialog for the operation wireTransfer.
+     */
+    private void showWireTransferDialog() {
+<span class="nc" id="L534">        final JDialog dialog = DialogUtils.createDialog(SwingUtilities.getWindowAncestor(this), &quot;Wire transfer&quot;);</span>
+
+<span class="nc" id="L536">        final JPanel formPanel = DialogUtils.createFormPanel();</span>
+
+<span class="nc" id="L538">        final JTextField amountField = DialogUtils.createTextField();</span>
+<span class="nc" id="L539">        final JTextField dateField = DialogUtils.createDateField();</span>
+<span class="nc" id="L540">        final JTextField causeField = DialogUtils.createTextField();</span>
+<span class="nc" id="L541">        final JTextField destinationField = DialogUtils.createTextField();</span>
+
+<span class="nc" id="L543">        DialogUtils.addField(formPanel, AMOUNT, amountField, 0);</span>
+<span class="nc" id="L544">        DialogUtils.addField(formPanel, DATE, dateField, 1);</span>
+<span class="nc" id="L545">        DialogUtils.addField(formPanel, &quot;Cause :&quot;, causeField, 2);</span>
+<span class="nc" id="L546">        DialogUtils.addField(formPanel, &quot;Destination :&quot;, destinationField, 3);</span>
+
+<span class="nc" id="L548">        final JButton confirmButton = new JButton(CONFIRM);</span>
+
+<span class="nc" id="L550">        confirmButton.addActionListener(p -&gt; {</span>
+            final BigDecimal amount;
+            try {
+<span class="nc" id="L553">                amount = DialogUtils.getBigDecimalValue(amountField);</span>
+<span class="nc" id="L554">            } catch (final IllegalArgumentException e) {</span>
+<span class="nc" id="L555">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    INVALID_AMOUNT,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L561">                return;</span>
+<span class="nc" id="L562">            }</span>
+
+<span class="nc bnc" id="L564" title="All 2 branches missed.">            if (amount.compareTo(BigDecimal.ZERO) &lt;= 0) {</span>
+<span class="nc" id="L565">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    AMOUNT_POSITIVE,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L571">                return;</span>
+            }
+
+            final LocalDate date;
+
+            try {
+<span class="nc" id="L577">                date = DialogUtils.getLocalDateValue(dateField);</span>
+<span class="nc" id="L578">            } catch (final DateTimeParseException e) {</span>
+<span class="nc" id="L579">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    INVALID_DATE,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L585">                return;</span>
+<span class="nc" id="L586">            }</span>
+
+            final String cause;
+            final String destination;
+
+<span class="nc bnc" id="L591" title="All 2 branches missed.">            if (causeField.getText().isBlank()) {</span>
+<span class="nc" id="L592">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    &quot;Insert a cause&quot;,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L598">                return;</span>
+<span class="nc bnc" id="L599" title="All 2 branches missed.">            } else if (destinationField.getText().isBlank()) {</span>
+<span class="nc" id="L600">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    &quot;Insert a destination&quot;,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L606">                return;</span>
+            } else {
+<span class="nc" id="L608">                cause = causeField.getText();</span>
+<span class="nc" id="L609">                destination = destinationField.getText();</span>
+            }
+
+            try {
+<span class="nc" id="L613">                this.bankAccountController.wireTransfer(amount, date, cause, destination);</span>
+<span class="nc" id="L614">            } catch (final IllegalArgumentException e) {</span>
+<span class="nc" id="L615">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    &quot;Not enough balance or internal error&quot;,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L621">                return;</span>
+<span class="nc" id="L622">            }</span>
+
+<span class="nc" id="L624">            this.updateBalance();</span>
+<span class="nc" id="L625">            dialog.dispose();</span>
+<span class="nc" id="L626">        });</span>
+<span class="nc" id="L627">        final JButton cancelButton = new JButton(CANCEL);</span>
+<span class="nc" id="L628">        cancelButton.addActionListener(p -&gt; dialog.dispose());</span>
+
+<span class="nc" id="L630">        final JPanel wireTransferPanel = DialogUtils.createDialogButtons(confirmButton, cancelButton);</span>
+
+<span class="nc" id="L632">        wireTransferPanel.add(cancelButton);</span>
+<span class="nc" id="L633">        wireTransferPanel.add(confirmButton);</span>
+
+<span class="nc" id="L635">        dialog.add(formPanel, BorderLayout.CENTER);</span>
+<span class="nc" id="L636">        dialog.add(wireTransferPanel, BorderLayout.SOUTH);</span>
+
+<span class="nc" id="L638">        dialog.pack();</span>
+<span class="nc" id="L639">        dialog.setLocationRelativeTo(this);</span>
+<span class="nc" id="L640">        dialog.setVisible(true);</span>
+<span class="nc" id="L641">    }</span>
+
+    /**
+     * This method is used to create the dialog for the prepaidCharge operation.
+     */
+    private void showPrepaidChargeDialog() {
+<span class="nc" id="L647">        final JDialog dialog = DialogUtils.createDialog(SwingUtilities.getWindowAncestor(this), &quot;Prepaid charge&quot;);</span>
+
+<span class="nc" id="L649">        final JPanel formPanel = DialogUtils.createFormPanel();</span>
+
+<span class="nc" id="L651">        final JTextField amountField = DialogUtils.createTextField();</span>
+<span class="nc" id="L652">        final JTextField dateField = DialogUtils.createDateField();</span>
+<span class="nc" id="L653">        final JComboBox&lt;PrepaidCard&gt; cardField = new JComboBox&lt;&gt;();</span>
+
+<span class="nc bnc" id="L655" title="All 2 branches missed.">        for (final PrepaidCard card : this.masterController.getPrepaidCards()) {</span>
+<span class="nc" id="L656">            cardField.addItem(card);</span>
+<span class="nc" id="L657">        }</span>
+
+        /* This part of the code rewrites the renderer of the JComboBox for the cards
+            so that the ComboBox shows the cardNumber instead of the string version of the whole class */
+<span class="nc" id="L661">        cardField.setRenderer(new DefaultListCellRenderer() {</span>
+            @Override
+            public Component getListCellRendererComponent(
+                final JList&lt;?&gt; list,
+                final Object value,
+                final int index,
+                final boolean isSelected,
+                final boolean cellHasFocus) {
+
+<span class="nc" id="L670">            super.getListCellRendererComponent(</span>
+                list, value, index, isSelected, cellHasFocus
+            );
+
+<span class="nc bnc" id="L674" title="All 2 branches missed.">            if (value instanceof PrepaidCard card) {</span>
+<span class="nc" id="L675">                setText(card.getCardNumber());</span>
+            }
+
+<span class="nc" id="L678">            return this;</span>
+        }
+        });
+
+<span class="nc" id="L682">        DialogUtils.addField(formPanel, AMOUNT, amountField, 0);</span>
+<span class="nc" id="L683">        DialogUtils.addField(formPanel, DATE, dateField, 1);</span>
+<span class="nc" id="L684">        DialogUtils.addField(formPanel, &quot;Card : &quot;, cardField, 2);</span>
+
+<span class="nc" id="L686">        final JButton confirmButton = new JButton(CONFIRM);</span>
+
+<span class="nc" id="L688">        confirmButton.addActionListener(p -&gt; {</span>
+            final BigDecimal amount;
+            try {
+<span class="nc" id="L691">                amount = DialogUtils.getBigDecimalValue(amountField);</span>
+<span class="nc" id="L692">            } catch (final IllegalArgumentException e) {</span>
+<span class="nc" id="L693">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    INVALID_AMOUNT,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L699">                return;</span>
+<span class="nc" id="L700">            }</span>
+
+<span class="nc bnc" id="L702" title="All 2 branches missed.">            if (amount.compareTo(BigDecimal.ZERO) &lt;= 0) {</span>
+<span class="nc" id="L703">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    AMOUNT_POSITIVE,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L709">                return;</span>
+            }
+
+            final LocalDate date;
+
+            try {
+<span class="nc" id="L715">                date = DialogUtils.getLocalDateValue(dateField);</span>
+<span class="nc" id="L716">            } catch (final DateTimeParseException e) {</span>
+<span class="nc" id="L717">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    INVALID_DATE,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L723">                return;</span>
+<span class="nc" id="L724">            }</span>
+
+            final PrepaidCard chosenCard;
+
+            try {
+<span class="nc" id="L729">                chosenCard = (PrepaidCard) cardField.getSelectedItem();</span>
+<span class="nc" id="L730">            } catch (final IllegalArgumentException e) {</span>
+<span class="nc" id="L731">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    &quot;Error while converting the selected card&quot;,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L737">                return;</span>
+<span class="nc" id="L738">            }</span>
+<span class="nc bnc" id="L739" title="All 2 branches missed.">            if (chosenCard == null) {</span>
+<span class="nc" id="L740">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    &quot;No card was chosen&quot;,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L746">                return;</span>
+            }
+
+            /* This if is just temporary to avoid getting a warning for not using the field date.
+                once the next method is ready and uncommented this if should be eliminated */
+<span class="nc bnc" id="L751" title="All 2 branches missed.">            if (date == null) {</span>
+<span class="nc" id="L752">                throw new IllegalArgumentException(&quot;Temporary&quot;);</span>
+            }
+            /*
+                This part needs the implementation from the masterController.
+            try {
+                this.masterController.prepaidCharge(amount, date, chosenCard);
+            } catch (final IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(
+                    dialog,
+                    INTERNAL_ERROR,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }*/
+
+<span class="nc" id="L768">            this.updateBalance();</span>
+<span class="nc" id="L769">            dialog.dispose();</span>
+<span class="nc" id="L770">        });</span>
+
+<span class="nc" id="L772">        final JButton cancelButton = new JButton(CANCEL);</span>
+<span class="nc" id="L773">        cancelButton.addActionListener(p -&gt; dialog.dispose());</span>
+
+<span class="nc" id="L775">        final JPanel prepaidChargePanel = DialogUtils.createDialogButtons(confirmButton, cancelButton);</span>
+
+<span class="nc" id="L777">        prepaidChargePanel.add(cancelButton);</span>
+<span class="nc" id="L778">        prepaidChargePanel.add(confirmButton);</span>
+
+<span class="nc" id="L780">        dialog.add(formPanel, BorderLayout.CENTER);</span>
+<span class="nc" id="L781">        dialog.add(prepaidChargePanel, BorderLayout.SOUTH);</span>
+
+<span class="nc" id="L783">        dialog.pack();</span>
+<span class="nc" id="L784">        dialog.setLocationRelativeTo(this);</span>
+<span class="nc" id="L785">        dialog.setVisible(true);</span>
+<span class="nc" id="L786">    }</span>
+
+    /**
+     * This method is used to create the dialog for filtering the transactions.
+     */
+    private void showTransactionsFilterDialog() {
+<span class="nc" id="L792">        final JDialog dialog = DialogUtils.createDialog(SwingUtilities.getWindowAncestor(this), &quot;Filter transactions&quot;);</span>
+
+<span class="nc" id="L794">        final JPanel formPanel = DialogUtils.createFormPanel();</span>
+
+<span class="nc" id="L796">        final JTextField startField = DialogUtils.createDateField();</span>
+<span class="nc" id="L797">        final JTextField finishField = DialogUtils.createDateField();</span>
+<span class="nc" id="L798">        final JTextField otherPartyField = DialogUtils.createTextField();</span>
+<span class="nc" id="L799">        final JTextField minField = DialogUtils.createTextField();</span>
+<span class="nc" id="L800">        final JTextField maxField = DialogUtils.createTextField();</span>
+
+<span class="nc" id="L802">        DialogUtils.addField(formPanel, &quot;Starting date :&quot;, startField, 0);</span>
+<span class="nc" id="L803">        DialogUtils.addField(formPanel, &quot;Finishing date :&quot;, finishField, 1);</span>
+<span class="nc" id="L804">        DialogUtils.addField(formPanel, &quot;OtherParty :&quot;, otherPartyField, 2);</span>
+<span class="nc" id="L805">        DialogUtils.addField(formPanel, &quot;Minimum amount :&quot;, minField, 3);</span>
+<span class="nc" id="L806">        DialogUtils.addField(formPanel, &quot;Maximum amount :&quot;, maxField, 4);</span>
+
+<span class="nc" id="L808">        final JPanel positiveFilterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));</span>
+
+<span class="nc" id="L810">        final JRadioButton positiveButton = new JRadioButton(&quot;Positive&quot;);</span>
+<span class="nc" id="L811">        final JRadioButton negativeButton = new JRadioButton(&quot;Negative&quot;);</span>
+
+<span class="nc" id="L813">        final ButtonGroup transactionTypeGroup = new ButtonGroup();</span>
+
+<span class="nc" id="L815">        transactionTypeGroup.add(positiveButton);</span>
+<span class="nc" id="L816">        transactionTypeGroup.add(negativeButton);</span>
+
+<span class="nc" id="L818">        positiveFilterPanel.add(positiveButton);</span>
+<span class="nc" id="L819">        positiveFilterPanel.add(negativeButton);</span>
+
+<span class="nc" id="L821">        final JButton confirmButton = new JButton(CONFIRM);</span>
+
+<span class="nc" id="L823">        confirmButton.addActionListener(p -&gt; {</span>
+            final Optional&lt;BigDecimal&gt; min;
+<span class="nc bnc" id="L825" title="All 2 branches missed.">            if (minField.getText().isBlank()) {</span>
+<span class="nc" id="L826">                min = Optional.empty();</span>
+            } else {
+                try {
+<span class="nc" id="L829">                    min = Optional.of(DialogUtils.getBigDecimalValue(minField));</span>
+<span class="nc" id="L830">                } catch (final IllegalArgumentException e) {</span>
+<span class="nc" id="L831">                    JOptionPane.showMessageDialog(</span>
+                        dialog,
+                        INVALID_AMOUNT,
+                        INVALID_INPUT,
+                        JOptionPane.ERROR_MESSAGE
+                    );
+<span class="nc" id="L837">                    return;</span>
+<span class="nc" id="L838">                }</span>
+            }
+
+<span class="nc bnc" id="L841" title="All 4 branches missed.">            if (min.isPresent() &amp;&amp; min.get().compareTo(BigDecimal.ZERO) &lt;= 0) {</span>
+<span class="nc" id="L842">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    AMOUNT_POSITIVE,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L848">                return;</span>
+            }
+
+            final Optional&lt;BigDecimal&gt; max;
+<span class="nc bnc" id="L852" title="All 2 branches missed.">            if (maxField.getText().isBlank()) {</span>
+<span class="nc" id="L853">                max = Optional.empty();</span>
+            } else {
+                try {
+<span class="nc" id="L856">                    max = Optional.of(DialogUtils.getBigDecimalValue(maxField));</span>
+<span class="nc" id="L857">                } catch (final IllegalArgumentException e) {</span>
+<span class="nc" id="L858">                    JOptionPane.showMessageDialog(</span>
+                        dialog,
+                        INVALID_AMOUNT,
+                        INVALID_INPUT,
+                        JOptionPane.ERROR_MESSAGE
+                    );
+<span class="nc" id="L864">                    return;</span>
+<span class="nc" id="L865">                }</span>
+            }
+
+<span class="nc bnc" id="L868" title="All 4 branches missed.">            if (max.isPresent() &amp;&amp; max.get().compareTo(BigDecimal.ZERO) &lt;= 0) {</span>
+<span class="nc" id="L869">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    AMOUNT_POSITIVE,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L875">                return;</span>
+            }
+
+<span class="nc bnc" id="L878" title="All 6 branches missed.">            if (min.isPresent() &amp;&amp; max.isPresent() &amp;&amp; max.get().compareTo(min.get()) &lt; 0) {</span>
+<span class="nc" id="L879">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    &quot;Maximum amount cannot be lower than minimum amount&quot;,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L885">                return;</span>
+            }
+
+            final Optional&lt;LocalDate&gt; start;
+<span class="nc bnc" id="L889" title="All 2 branches missed.">            if (startField.getText().isBlank()) {</span>
+<span class="nc" id="L890">                start = Optional.empty();</span>
+            } else {
+                try {
+<span class="nc" id="L893">                    start = Optional.of(DialogUtils.getLocalDateValue(startField));</span>
+<span class="nc" id="L894">                } catch (final DateTimeParseException e) {</span>
+<span class="nc" id="L895">                    JOptionPane.showMessageDialog(</span>
+                        dialog,
+                        INVALID_DATE,
+                        INVALID_INPUT,
+                        JOptionPane.ERROR_MESSAGE
+                    );
+<span class="nc" id="L901">                    return;</span>
+<span class="nc" id="L902">                }</span>
+            }
+
+            final Optional&lt;LocalDate&gt; finish;
+<span class="nc bnc" id="L906" title="All 2 branches missed.">            if (finishField.getText().isBlank()) {</span>
+<span class="nc" id="L907">                finish = Optional.empty();</span>
+            } else {
+                try {
+<span class="nc" id="L910">                    finish = Optional.of(DialogUtils.getLocalDateValue(finishField));</span>
+<span class="nc" id="L911">                } catch (final DateTimeParseException e) {</span>
+<span class="nc" id="L912">                    JOptionPane.showMessageDialog(</span>
+                        dialog,
+                        INVALID_DATE,
+                        INVALID_INPUT,
+                        JOptionPane.ERROR_MESSAGE
+                    );
+<span class="nc" id="L918">                    return;</span>
+<span class="nc" id="L919">                }</span>
+            }
+
+<span class="nc bnc" id="L922" title="All 6 branches missed.">            if (start.isPresent() &amp;&amp; finish.isPresent() &amp;&amp; finish.get().compareTo(start.get()) &lt; 0) {</span>
+<span class="nc" id="L923">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    &quot;Finishing date cannot be earlier than starting date&quot;,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L929">                return;</span>
+            }
+
+            final Optional&lt;String&gt; otherParty;
+
+<span class="nc bnc" id="L934" title="All 2 branches missed.">            if (otherPartyField.getText().isBlank()) {</span>
+<span class="nc" id="L935">                otherParty = Optional.empty();</span>
+            } else {
+<span class="nc" id="L937">                otherParty = Optional.of(otherPartyField.getText());</span>
+            }
+
+            final Optional&lt;Boolean&gt; positiveFilter;
+
+<span class="nc bnc" id="L942" title="All 2 branches missed.">            if (positiveButton.isSelected()) {</span>
+<span class="nc" id="L943">                positiveFilter = Optional.of(true);</span>
+<span class="nc bnc" id="L944" title="All 2 branches missed.">            } else if (negativeButton.isSelected()) {</span>
+<span class="nc" id="L945">                positiveFilter = Optional.of(false);</span>
+            } else {
+<span class="nc" id="L947">                positiveFilter = Optional.empty();</span>
+            }
+
+            final List&lt;Transaction&gt; transactions;
+            try {
+<span class="nc" id="L952">                transactions = this.bankAccountController.viewBankTransactions(</span>
+                    start,
+                    finish,
+                    otherParty,
+                    positiveFilter,
+                    min,
+                    max
+                );
+<span class="nc" id="L960">            } catch (final IllegalArgumentException e) {</span>
+<span class="nc" id="L961">                JOptionPane.showMessageDialog(</span>
+                    dialog,
+                    INTERNAL_ERROR,
+                    INVALID_INPUT,
+                    JOptionPane.ERROR_MESSAGE
+                );
+<span class="nc" id="L967">                return;</span>
+<span class="nc" id="L968">            }</span>
+
+<span class="nc" id="L970">            this.updateTransactionsTable(transactions);</span>
+<span class="nc" id="L971">            this.updateTransactionsChart(transactions);</span>
+<span class="nc" id="L972">            dialog.dispose();</span>
+<span class="nc" id="L973">        });</span>
+<span class="nc" id="L974">        final JButton cancelButton = new JButton(CANCEL);</span>
+<span class="nc" id="L975">        cancelButton.addActionListener(p -&gt; dialog.dispose());</span>
+
+<span class="nc" id="L977">        final JPanel wireTransferPanel = DialogUtils.createDialogButtons(confirmButton, cancelButton);</span>
+
+<span class="nc" id="L979">        wireTransferPanel.add(cancelButton);</span>
+<span class="nc" id="L980">        wireTransferPanel.add(confirmButton);</span>
+
+<span class="nc" id="L982">        dialog.add(formPanel, BorderLayout.CENTER);</span>
+<span class="nc" id="L983">        dialog.add(wireTransferPanel, BorderLayout.SOUTH);</span>
+
+<span class="nc" id="L985">        dialog.pack();</span>
+<span class="nc" id="L986">        dialog.setLocationRelativeTo(this);</span>
+<span class="nc" id="L987">        dialog.setVisible(true);</span>
+<span class="nc" id="L988">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

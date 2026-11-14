@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MasterControllerImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JWallet</a> &gt; <a href="index.source.html" class="el_package">project.controller</a> &gt; <span class="el_source">MasterControllerImpl.java</span></div><h1>MasterControllerImpl.java</h1><pre class="source lang-java linenums">package project.controller;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JFrame;
+
+import project.model.BankAccountImpl;
+import project.model.BankAccountInterface;
+import project.model.card.DebitCard;
+import project.model.card.PrepaidCard;
+import project.view.BankAccountView;
+
+/**
+ * This is the MasterController for the project, and as such it will have many purposes.
+ * It should be created by the LoginController, and it should create every class needed
+ * by the application, as this situation is considered the true start of the application.
+ * (The classes needed are the BankAccount, all the cards and the assets/investments)
+ * It should also be the responsible of switching between different views.
+ */
+public class MasterControllerImpl implements MasterControllerInterface {
+
+    /** The username used to log-in during the tests. */
+    private static final String TEST_USERNAME = &quot;user1&quot;;
+    /** The password used to log-in during the tests. */
+    private static final String TEST_PASSWORD = &quot;password&quot;;
+
+    /** The number of years of validity of the cards created during the tests. */
+    private static final int CARD_VALIDITY_YEARS = 5;
+    /** The width of the bank account window. */
+    private static final int WINDOW_WIDTH = 900;
+    /** The height of the bank account window. */
+    private static final int WINDOW_HEIGHT = 600;
+
+    private DebitCard debitCard;
+
+    private final List&lt;PrepaidCard&gt; prepaidCards;
+
+    /**
+     * This is the constructor for the master controller.
+     */
+<span class="nc" id="L43">    public MasterControllerImpl() {</span>
+<span class="nc" id="L44">        this.prepaidCards = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L45">    }</span>
+
+    /**
+     * This method is the getter for the list of prepaid cards.
+     * 
+     * @return an immodifyable copy of the PrepaidCards list.
+     */
+    @Override
+    public List&lt;PrepaidCard&gt; getPrepaidCards() {
+<span class="nc" id="L54">        return List.copyOf(prepaidCards);</span>
+    }
+
+    /**
+     * This method is used to get a specific Prepaidcard, chosen by its card number.
+     * 
+     * @param cardNumber a string containing the number of the chosen card.
+     * @return the chosen prepaid card.
+     */
+    @Override
+    public PrepaidCard getSinglePrepaidCard(final String cardNumber) {
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        for (final PrepaidCard card : this.prepaidCards) {</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">            if (card.getCardNumber().equals(cardNumber)) {</span>
+<span class="nc" id="L67">                return card;</span>
+            }
+<span class="nc" id="L69">        }</span>
+<span class="nc" id="L70">        throw new IllegalArgumentException(&quot;No card registered with that number&quot;);</span>
+    }
+
+    /**
+     * This method is the getter for the debit card of the user.
+     *
+     * @return the debit card created after the login.
+     */
+    @Override
+    public DebitCard getDebitCard() {
+<span class="nc" id="L80">        return this.debitCard;</span>
+    }
+
+    /**
+     * This method is the one responsible for verifying the login and, if correct,
+     * closing the LoginView and starting the BankAccountView, as well as constructing
+     * everything necessary for the application.
+     * 
+     * @param username the username to verify.
+     * @param password the password to verify.
+     * @return returns true if the username and password were correct and the application
+     *      started successfully, false otherwise.
+     */
+    @Override
+    public boolean login(final String username, final String password) {
+<span class="nc bnc" id="L95" title="All 4 branches missed.">        if (!TEST_USERNAME.equals(username) || !TEST_PASSWORD.equals(password)) {</span>
+<span class="nc" id="L96">            return false;</span>
+        }
+
+<span class="nc" id="L99">        final BankAccountInterface bankAccount = new BankAccountImpl(&quot;IT60X0542811101000000123456&quot;, &quot;user&quot;);</span>
+<span class="nc" id="L100">        this.debitCard = new DebitCard(</span>
+            &quot;4000123412341234&quot;,
+            &quot;user&quot;,
+<span class="nc" id="L103">            LocalDate.now().plusYears(CARD_VALIDITY_YEARS),</span>
+            &quot;132&quot;,
+            &quot;12345&quot;
+        );
+<span class="nc" id="L107">        final BankAccountView view = new BankAccountView(this, bankAccount);</span>
+<span class="nc" id="L108">        view.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span>
+<span class="nc" id="L109">        view.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);</span>
+<span class="nc" id="L110">        view.setLocationRelativeTo(null);</span>
+<span class="nc" id="L111">        view.setVisible(true);</span>
+<span class="nc" id="L112">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

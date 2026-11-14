@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SpeculativeInvestment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JWallet</a> &gt; <a href="index.source.html" class="el_package">project.model.investmentplatform.investiments</a> &gt; <span class="el_source">SpeculativeInvestment.java</span></div><h1>SpeculativeInvestment.java</h1><pre class="source lang-java linenums">package project.model.investmentplatform.investiments;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.ArrayList;
+
+import project.model.investmentplatform.assets.AssetInterface;
+import project.utility.InputValidator;
+
+/**
+ * This class implements the InvestmentInterface and will be used for speculative
+ * type of investments, because it contains everything needed for a basic investment
+ * which does not provide any income besides its price variation.
+ * It will also be used as a base to be extended by the other types of investment to
+ * reuse the code for all the base implementation of the investment.
+ */
+public class SpeculativeInvestment implements InvestmentInterface {
+
+    private final List&lt;BigDecimal&gt; priceVariationList;
+    private final AssetInterface asset;
+    private final LocalDate purchaseDate;
+    private final BigDecimal originalSingleValue;
+    private final int nBought;
+    private BigDecimal currentSingleValue;
+
+    /**
+     * This method is the constructor for the speculative investments.
+     * 
+     * @param asset the asset to which this investment refers to.
+     * @param originalSingleValue the original value for a single instance.
+     * @param nBought the number of instances of the asset bought.
+     * @param purchaseDate the date on which we purchased the investment.
+     */
+    public SpeculativeInvestment(
+        final AssetInterface asset,
+        final BigDecimal originalSingleValue,
+        final int nBought,
+        final LocalDate purchaseDate
+<span class="nc" id="L40">    ) {</span>
+        /* Input validation */
+<span class="nc" id="L42">        InputValidator.checkArgument(asset, p -&gt; true, &quot;Asset&quot;);</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        InputValidator.checkArgument(originalSingleValue, p -&gt; p.compareTo(BigDecimal.ZERO) &gt; 0, &quot;Original single value&quot;);</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        InputValidator.checkArgument(nBought, p -&gt; p &gt; 0, &quot;Number bought&quot;);</span>
+<span class="nc" id="L45">        InputValidator.checkArgument(purchaseDate, p -&gt; true, &quot;Purchase date&quot;);</span>
+        /* Actual constructor */
+<span class="nc" id="L47">        this.priceVariationList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L48">        this.asset = asset;</span>
+<span class="nc" id="L49">        this.originalSingleValue = originalSingleValue;</span>
+<span class="nc" id="L50">        this.nBought = nBought;</span>
+<span class="nc" id="L51">        this.currentSingleValue = originalSingleValue;</span>
+<span class="nc" id="L52">        this.purchaseDate = purchaseDate;</span>
+<span class="nc" id="L53">    }</span>
+
+    /**
+     * This method is the getter for the asset.
+     * Note that probably it should return a Asset and not a AssetInterface, but right now I will leave
+     * it like this because we don't have the implementation for the Asset yet.
+     * 
+     * @return the asset
+     */
+    @Override
+    public final AssetInterface getAsset() {
+<span class="nc" id="L64">        return this.asset;</span>
+    }
+
+    /**
+     * This method is a getter for the original value of a single instance of the asset.
+     * 
+     * @return the original value for a single instance of the asset, as it was when the investment started.
+     */
+    @Override
+    public final BigDecimal getOriginalSingleValue() {
+<span class="nc" id="L74">        return this.originalSingleValue;</span>
+    }
+
+    /**
+     * This method is a getter for the number of instances of the assets we bought.
+     * 
+     * @return the number of assets we bought.
+     */
+    @Override
+    public final int nBought() {
+<span class="nc" id="L84">        return this.nBought;</span>
+    }
+
+    /**
+     * This method is a getter for the date of the purchase of the investment.
+     * 
+     * @return the date of the purchase of the investment.
+     */
+    @Override
+    public final LocalDate getpurchasedDate() {
+<span class="nc" id="L94">        return this.purchaseDate;</span>
+    }
+
+    /**
+     * This method is a getter for the original total value of the investment.
+     * 
+     * @return the total original value of the investment.
+     */
+    @Override
+    public final BigDecimal totalOriginalValue() {
+<span class="nc" id="L104">        return this.originalSingleValue.multiply(BigDecimal.valueOf(this.nBought));</span>
+    }
+
+    /**
+     * Method to get the value in gain or loss of the value of the investment,
+     * regardless of interests or dividends that may have been obtained.
+     * 
+     * @return the value in gain or loss of the investiment in the current valute.
+     */
+    @Override
+    public final BigDecimal totalVariationValue() {
+<span class="nc" id="L115">        return this.totalCurrentValue().subtract(this.totalOriginalValue());</span>
+    }
+
+    /**
+     * This method is a getter for the current total value of the investment.
+     * 
+     * @return the total current value of the investment.
+     */
+    @Override
+    public final BigDecimal totalCurrentValue() {
+<span class="nc" id="L125">        return this.currentSingleValue.multiply(BigDecimal.valueOf(this.nBought));</span>
+    }
+
+    /**
+     * This method is used to update the current value of the asset and assign the necessary modifications.
+     */
+    @Override
+    public final void updateCurrentValue() {
+<span class="nc" id="L133">        this.asset.priceVariation();</span>
+<span class="nc" id="L134">    }</span>
+
+    /**
+     * This method will be used to set the current value, and will be called by the updateCurrentValue
+     * or by the asset when it updates, because it should always reflect the last update made.
+     * 
+     * @param newValue the new value.
+     */
+    @Override
+    public final void setCurrentValue(final BigDecimal newValue) {
+<span class="nc" id="L144">        this.currentSingleValue = newValue;</span>
+<span class="nc" id="L145">    }</span>
+
+    /**
+     * This method is the getter for the price variation list, which we will use to make graphs.
+     * 
+     * @return the price variation list.
+     */
+    @Override
+    public final List&lt;BigDecimal&gt; getPriceVariationList() {
+<span class="nc" id="L154">        return List.copyOf(this.priceVariationList);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

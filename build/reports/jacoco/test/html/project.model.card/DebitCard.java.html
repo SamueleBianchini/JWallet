@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DebitCard.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JWallet</a> &gt; <a href="index.source.html" class="el_package">project.model.card</a> &gt; <span class="el_source">DebitCard.java</span></div><h1>DebitCard.java</h1><pre class="source lang-java linenums">package project.model.card;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import project.model.Transaction;
+import project.utility.InputValidator;
+
+/**
+ * The implementation of the DebitCard.
+ * The money used for the payments is the one of the bank account,
+ * which is charged by the controller. The card only checks that it is not frozen or expired,
+ * and then registers the payment in its history.
+ */
+public final class DebitCard extends AbstractCard {
+
+    /**
+     * This method is the constructor for the Debit Card.
+     * It should call the super constructor of the AbstractCard to save the basic card details.
+     *
+     * @param cardNumber the card number.
+     * @param cardHolder the card holder's name.
+     * @param expiryDate the expiry date of the card.
+     * @param cvv the card's cvv.
+     * @param pin the card's pin.
+     */
+    public DebitCard(
+        final String cardNumber,
+        final String cardHolder,
+        final LocalDate expiryDate,
+        final String cvv,
+        final String pin
+    ) {
+<span class="nc" id="L34">        super(cardNumber, cardHolder, expiryDate, cvv, pin);</span>
+<span class="nc" id="L35">    }</span>
+
+    /**
+     * This method is used to execute the payment.
+     * This method needs to be implemented differently in every single type of card.
+     * 
+     * @param amount the amount of the operation.
+     * @param date the date on which the operation has occurred.
+     * @param cause the cause of the operation.
+     * @param destination the destination of the operation.
+     * @return a boolean which is true if the operation was successfull and false otherwise.
+     * 
+     * @see project.model.card.CardInterface#executePayment(java.math.BigDecimal)
+     */
+    @Override
+    public boolean executePayment(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
+        /* Input validation */
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        InputValidator.checkArgument(amount, p -&gt; p.compareTo(BigDecimal.ZERO) &gt; 0, &quot;Amount&quot;);</span>
+<span class="nc" id="L53">        InputValidator.checkArgument(date, p -&gt; true, &quot;Date&quot;);</span>
+<span class="nc bnc" id="L54" title="All 4 branches missed.">        InputValidator.checkArgument(cause, p -&gt; !p.isBlank() &amp;&amp; !p.isEmpty(), &quot;Cause&quot;);</span>
+<span class="nc bnc" id="L55" title="All 4 branches missed.">        InputValidator.checkArgument(destination, p -&gt; !p.isBlank() &amp;&amp; !p.isEmpty(), &quot;Destination&quot;);</span>
+        /* Method execution */
+<span class="nc bnc" id="L57" title="All 4 branches missed.">        if (super.isFrozen() || super.getExpiryDate().isBefore(LocalDate.now())) {</span>
+<span class="nc" id="L58">            return false;</span>
+        }
+<span class="nc" id="L60">        super.registerTransaction(new Transaction(</span>
+            amount,
+            BigDecimal.ZERO,
+            false,
+            date,
+            cause,
+            destination
+        ));
+<span class="nc" id="L68">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

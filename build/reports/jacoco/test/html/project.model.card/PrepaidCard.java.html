@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrepaidCard.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JWallet</a> &gt; <a href="index.source.html" class="el_package">project.model.card</a> &gt; <span class="el_source">PrepaidCard.java</span></div><h1>PrepaidCard.java</h1><pre class="source lang-java linenums">package project.model.card;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import project.model.Transaction;
+import project.utility.InputValidator;
+
+/**
+ * The implementation of the PrepaidCard.
+ * It has its own balance, which can only be increased by recharging it from the bank account,
+ * and every payment can only be made using the money currently available on the card.
+ */
+public final class PrepaidCard extends AbstractCard {
+
+    private BigDecimal balance;
+
+    /**
+     * This method is the constructor for the Prepaid card.
+     * It should call the super constructor of the AbstractInfterface to save the basic card details.
+     * The balance of a new prepaid card always starts from zero.
+     *
+     * @param cardNumber the card number.
+     * @param cardHolder the card holder's name.
+     * @param expiryDate the expiry date of the card.
+     * @param cvv the card's cvv.
+     * @param pin the card's pin.
+     */
+    public PrepaidCard(
+        final String cardNumber,
+        final String cardHolder,
+        final LocalDate expiryDate,
+        final String cvv,
+        final String pin
+        ) {
+<span class="nc" id="L36">        super(cardNumber, cardHolder, expiryDate, cvv, pin);</span>
+        /* Input validation */
+
+<span class="nc" id="L39">        this.balance = BigDecimal.ZERO;</span>
+<span class="nc" id="L40">    }</span>
+
+    /**
+     * This method is a getter for the field balance.
+     *
+     * @return the money currently available on the card as a BigDecimal.
+     */
+    public BigDecimal getBalance() {
+<span class="nc" id="L48">        return this.balance;</span>
+    }
+
+    /**
+     * This method is used to increase the balance of the card.
+     * It is meant to be called by the bank account after it has taken the money from its own balance.
+     *
+     * @param amount the amount to add to the balance of the card, it must be greater than zero.
+     * @param date the date of the operation.
+     * @param iban the iban of the otherParty of the transaction, in this case the bankAccount.
+     * @return a boolean which is true if the recharge was executed, false if the amount is not valid
+     *      or if the card is frozen or expired.
+     */
+    public boolean recharge(final BigDecimal amount, final LocalDate date, final String iban) {
+        /* Input validation */
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        InputValidator.checkArgument(amount, p -&gt; p.compareTo(BigDecimal.ZERO) &gt; 0, &quot;Amount&quot;);</span>
+<span class="nc" id="L64">        InputValidator.checkArgument(date, p -&gt; true, &quot;Date&quot;);</span>
+<span class="nc bnc" id="L65" title="All 4 branches missed.">        InputValidator.checkArgument(iban, p -&gt; !p.isBlank() &amp;&amp; !p.isEmpty(), &quot;Iban&quot;);</span>
+        /* Method execution */
+<span class="nc bnc" id="L67" title="All 4 branches missed.">        if (super.isFrozen() || super.getExpiryDate().isBefore(LocalDate.now())) {</span>
+<span class="nc" id="L68">            return false;</span>
+        }
+<span class="nc" id="L70">        this.balance = this.balance.add(amount);</span>
+<span class="nc" id="L71">        super.registerTransaction(new Transaction(amount,</span>
+            BigDecimal.ONE,
+            true,
+            date,
+            &quot;Charging the Prepaid Card&quot;,
+            iban));
+<span class="nc" id="L77">        return true;</span>
+    }
+
+    /**
+     * This method is used to execute the payment.
+     * This method needs to be implemented differently in every single type of card.
+     * 
+     * @param amount the amount of the operation.
+     * @param date the date on which the operation has occurred.
+     * @param cause the cause of the operation.
+     * @param destination the destination of the operation.
+     * @return a boolean which is true if the operation was successfull and false otherwise.
+     * 
+     * @see project.model.card.CardInterface#executePayment(java.math.BigDecimal)
+     */
+    @Override
+    public boolean executePayment(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
+        /* Input validation */
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        InputValidator.checkArgument(amount, p -&gt; p.compareTo(BigDecimal.ZERO) &gt; 0, &quot;Amount&quot;);</span>
+<span class="nc" id="L96">        InputValidator.checkArgument(date, p -&gt; true, &quot;Date&quot;);</span>
+<span class="nc bnc" id="L97" title="All 4 branches missed.">        InputValidator.checkArgument(cause, p -&gt; !p.isBlank() &amp;&amp; !p.isEmpty(), &quot;Cause&quot;);</span>
+<span class="nc bnc" id="L98" title="All 4 branches missed.">        InputValidator.checkArgument(destination, p -&gt; !p.isBlank() &amp;&amp; !p.isEmpty(), &quot;Destination&quot;);</span>
+        /* Method execution */
+<span class="nc bnc" id="L100" title="All 6 branches missed.">        if (super.isFrozen() || amount.compareTo(this.balance) &gt; 0 || super.getExpiryDate().isBefore(LocalDate.now())) {</span>
+<span class="nc" id="L101">            return false;</span>
+        } else {
+<span class="nc" id="L103">            this.balance = this.balance.subtract(amount);</span>
+<span class="nc" id="L104">            super.registerTransaction(new Transaction(</span>
+                amount,
+                BigDecimal.ZERO,
+                false,
+                date,
+                cause,
+                destination
+             ));
+        }
+<span class="nc" id="L113">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BankAccountImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JWallet</a> &gt; <a href="index.source.html" class="el_package">project.model</a> &gt; <span class="el_source">BankAccountImpl.java</span></div><h1>BankAccountImpl.java</h1><pre class="source lang-java linenums">package project.model;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
+
+import project.utility.InputValidator;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+/**
+ * This class is the implementation of the BankAccountInterface.
+ * It will be used to control and manage all the functions necessary for the BankAccount.
+ */
+public class BankAccountImpl implements BankAccountInterface {
+
+    private final List&lt;Transaction&gt; transactionsList;
+    private final String iban;
+    private final String cardHolder;
+    private BigDecimal balance;
+
+    /**
+     * This method is the constructor for the BankAccount implementation.
+     * 
+     * @param iban the IBAN of the BankAccount.
+     * @param cardHolder the name of the card holder.
+     */
+<span class="fc" id="L29">    public BankAccountImpl(final String iban, final String cardHolder) {</span>
+        /* Input validation */
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        InputValidator.checkArgument(iban, p -&gt; !p.isBlank(), &quot;Iban&quot;);</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        InputValidator.checkArgument(cardHolder, p -&gt; !p.isBlank(), &quot;cardHolder&quot;);</span>
+        /* Actual constructor */
+<span class="fc" id="L34">        this.transactionsList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L35">        this.iban = iban;</span>
+<span class="fc" id="L36">        this.cardHolder = cardHolder;</span>
+<span class="fc" id="L37">        this.balance = BigDecimal.ZERO;</span>
+<span class="fc" id="L38">    }</span>
+
+    /**
+     * This method is a getter for the field iban.
+     * 
+     * @return the iban as a String.
+     */
+    @Override
+    public String getIban() {
+<span class="fc" id="L47">        return this.iban;</span>
+    }
+
+    /**
+     * This method is a getter for the field cardHolder.
+     * 
+     * @return the cardHolder's name as a String.
+     */
+    @Override
+    public String getCardHolder() {
+<span class="fc" id="L57">        return this.cardHolder;</span>
+    }
+
+    /**
+     * This method is a getter for the field balance.
+     * 
+     * @return the balance as a BigDecimal.
+     */
+    @Override
+    public BigDecimal getBalance() {
+<span class="fc" id="L67">        return this.balance;</span>
+    }
+
+    /**
+     * This method is used to pre authorize every payment before executing it.
+     * Practically, every type of payment will have to call this method to verify if
+     * the current balance is sufficient to pay the specified amount.
+     * 
+     * @param amount the amount we need to verify.
+     * @return a boolean which is true if there is enough balance to cover the amount,
+     *      false otherwise.
+     */
+    @Override
+    public boolean preAuthorize(final BigDecimal amount) {
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        InputValidator.checkArgument(amount, p -&gt; p.compareTo(BigDecimal.ZERO) &gt; 0, &quot;Amount&quot;);</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        return this.balance.compareTo(amount) &gt;= 0;</span>
+    }
+
+    /**
+     * This method is used to execute every type of transaction that the bankAccount needs to execute.
+     * Since all transactions work in a similar way and the input control and coordination with other
+     * classes will be done by the Controller, this method is enough to execute every type of transaction
+     * and register it without needing more than one method.
+     * 
+     * @param transaction the transaction we need to execute and register.
+     */
+    @Override
+    public void executeTransaction(final Transaction transaction) {
+<span class="fc" id="L95">        InputValidator.checkArgument(transaction, p -&gt; true, &quot;Transaction&quot;);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        if (transaction.isPositive()) {</span>
+<span class="fc" id="L97">            this.balance = this.balance.add(transaction.amount());</span>
+        } else {
+<span class="fc bfc" id="L99" title="All 2 branches covered.">            if (!this.preAuthorize(transaction.amount().add(transaction.fee()))) {</span>
+<span class="fc" id="L100">                throw new IllegalArgumentException(&quot;Not enough balance&quot;);</span>
+            }
+<span class="fc" id="L102">            this.balance = this.balance.subtract(transaction.amount().add(transaction.fee()));</span>
+        }
+<span class="fc" id="L104">        this.transactionsList.add(transaction);</span>
+<span class="fc" id="L105">    }</span>
+
+    /**
+     * This method is used to extract the list of the transactions made with the bank account,
+     * while also selecting them based on specific instructions that can be put as parameters
+     * to specify the period, the other party, positive or negative, or the amount of the selected operations.
+     * 
+     * @param start an optional that may contain a date from where to start the selection.
+     *      If not present, there will not be a minimum date to consider.
+     * @param finish an optional that may contain a date after which the operation is not selected
+     *      anymore. If not present, there will not be a maximum date do consider.
+     * @param otherParty an optional that may contain the specific other party for the operations we want
+     *      to select. If not present, all possible other parties will be considered.
+     * @param isPositive an optional that may contain a boolean which, if positive, means
+     *      that the operations we need to select are only positive, if false only negative ones,
+     *      if not present means both.
+     * @param min an optional containing a minimum amount for the operation to be selected.
+     *      If not present, no minimum will be considered.
+     * @param max an optional containing a maximum amount for the operation to be selected.
+     *      If not present, no maximum will be considered.
+     * @return a list of the transactions relative to this bank account.
+     */
+    @Override
+    public List&lt;Transaction&gt; viewBankTransactions(
+        final Optional&lt;LocalDate&gt; start,
+        final Optional&lt;LocalDate&gt; finish,
+        final Optional&lt;String&gt; otherParty,
+        final Optional&lt;Boolean&gt; isPositive,
+        final Optional&lt;BigDecimal&gt; min,
+        final Optional&lt;BigDecimal&gt; max
+    ) {
+        /*
+            This part checks if the start if after the finish or if the min is higher than the max, in which
+            case it throws an IllegalArgumentException which will need to be handled by the controller when it calls this method.
+        */
+<span class="nc bnc" id="L140" title="All 6 branches missed.">        if (start.isPresent() &amp;&amp; finish.isPresent() &amp;&amp; start.get().isAfter(finish.get())) {</span>
+<span class="nc" id="L141">            throw new IllegalArgumentException(&quot;Starting date cannot be after finishing date&quot;);</span>
+        }
+<span class="nc bnc" id="L143" title="All 6 branches missed.">        if (min.isPresent() &amp;&amp; max.isPresent() &amp;&amp; min.get().compareTo(max.get()) &gt; 0) {</span>
+<span class="nc" id="L144">            throw new IllegalArgumentException(&quot;Minimum amount cannot be higher than the maximum amount&quot;);</span>
+        }
+        /*
+            This part is the output of the method. It uses stream() to filter for every parameter necessary
+            and then returns the stream as an unmodifiable list.
+        */
+<span class="nc" id="L150">        return this.transactionsList.stream()</span>
+<span class="nc bnc" id="L151" title="All 4 branches missed.">            .filter(t -&gt; start.isEmpty() || !t.date().isBefore(start.get()))</span>
+<span class="nc bnc" id="L152" title="All 4 branches missed.">            .filter(t -&gt; finish.isEmpty() || !t.date().isAfter(finish.get()))</span>
+<span class="nc bnc" id="L153" title="All 4 branches missed.">            .filter(t -&gt; otherParty.isEmpty() || t.otherParty().equals(otherParty.get()))</span>
+<span class="nc bnc" id="L154" title="All 4 branches missed.">            .filter(t -&gt; isPositive.isEmpty() || t.isPositive() == isPositive.get())</span>
+<span class="nc bnc" id="L155" title="All 4 branches missed.">            .filter(t -&gt; min.isEmpty() || t.amount().compareTo(min.get()) &gt;= 0)</span>
+<span class="nc bnc" id="L156" title="All 4 branches missed.">            .filter(t -&gt; max.isEmpty() || t.amount().compareTo(max.get()) &lt;= 0)</span>
+<span class="nc" id="L157">            .toList();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

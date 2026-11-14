@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="it"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RealAsset.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JWallet</a> &gt; <a href="index.source.html" class="el_package">project.model.investmentplatform.assets</a> &gt; <span class="el_source">RealAsset.java</span></div><h1>RealAsset.java</h1><pre class="source lang-java linenums">package project.model.investmentplatform.assets;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+/**
+ * RealAsset is the class rappresanting the asset that price
+ * is based on real market data. It is possible using the 
+ * Alpha Vantage API.
+ * Url: https://www.alphavantage.co/
+ * 
+ */
+public class RealAsset extends AbstractAsset {
+    private static final String API_KEY = &quot;C3HKOUKP2G55WZAG&quot;;
+    private static final String URL_BASE = &quot;https://www.alphavantage.co/query?function=GLOBAL_QUOTE&amp;symbol=&quot;;
+<span class="nc" id="L20">    private static final HttpClient CLIENT = HttpClient.newHttpClient();</span>
+
+    /**
+     * Costructor for the real asset.
+     * 
+     * @param symbol from Alpha Vantage to use
+     * @param type of the asset 
+     */
+    public RealAsset(final String symbol, 
+                     final AssetType type) {
+<span class="nc" id="L30">        super(symbol, type);</span>
+<span class="nc" id="L31">        super.addPriceManually(getNewPrice(), getLastUpdate());</span>
+<span class="nc" id="L32">    }</span>
+
+    /**
+     * Private method to build the entyre URL
+     * adding the symbol of the asset and the api key.
+     * 
+     * @return the builded URL.
+     */
+    private String buildURL() {
+<span class="nc" id="L41">        return URL_BASE + super.getAssetName() + &quot;&amp;apikey=&quot; + API_KEY;</span>
+    }
+
+    /**
+     * Metohd to build the request to the API
+     * to ask data. 
+     * 
+     * @return the HttpRequest builded with the URL.
+     */
+    private HttpRequest buildRequest() {
+<span class="nc" id="L51">        return HttpRequest.newBuilder()</span>
+<span class="nc" id="L52">                    .uri(URI.create(this.buildURL()))</span>
+<span class="nc" id="L53">                    .GET()</span>
+<span class="nc" id="L54">                    .build();</span>
+    }
+
+    /**
+     * Method to extract the price column from the json body
+     * response. 
+     * 
+     * @param body the request body in json format. 
+     * @return the price column.
+     */
+    private BigDecimal extractData(final String body) {
+<span class="nc" id="L65">        final String priceKey = &quot;\&quot;05. price\&quot;: \&quot;&quot;;</span>
+        final int endIndex;
+        final String priceStr;
+<span class="nc" id="L68">        int startIndex = body.indexOf(priceKey);</span>
+
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (startIndex != -1) {</span>
+<span class="nc" id="L71">            startIndex += priceKey.length();</span>
+<span class="nc" id="L72">            endIndex = body.indexOf('\&quot;', startIndex);</span>
+<span class="nc" id="L73">            priceStr = body.substring(startIndex, endIndex);</span>
+<span class="nc" id="L74">            return new BigDecimal(priceStr);</span>
+        }
+<span class="nc" id="L76">        return super.getSinglePrice();</span>
+    }
+
+    /**
+     * Method to extract the current asset price
+     * in the real market at the call moment. 
+     * 
+     * @return the current price.     * 
+     */
+    @Override
+    protected final BigDecimal getNewPrice() {
+        final HttpRequest request;
+        final HttpResponse&lt;String&gt; response;
+        try {
+<span class="nc" id="L90">            request = this.buildRequest();</span>
+<span class="nc" id="L91">            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());</span>
+<span class="nc" id="L92">            return this.extractData(response.body());</span>
+<span class="nc" id="L93">        } catch (IOException | InterruptedException e) {</span>
+            // TODO Auto-generated catch block
+            //System.err.println(&quot;Error while fetching data from API: &quot; + e.getMessage()); 
+<span class="nc" id="L96">            return this.getSinglePrice();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
