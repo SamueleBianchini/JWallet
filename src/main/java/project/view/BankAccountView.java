@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.FlowLayout;
 import java.awt.Component;
 import java.awt.CardLayout;
+import org.jfree.chart.ChartPanel;
 
 import java.util.List;
 import java.util.Optional;
