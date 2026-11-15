@@ -47,7 +47,7 @@ public final class ChartUtils {
      */
     public static JFreeChart createNetCashFlowChart(final List&lt;Transaction&gt; transactions) {
 
-<span class="nc bnc" id="L50" title="All 2 branches missed.">        InputValidator.checkArgument(transactions, p -&gt; !p.isEmpty(), &quot;List&quot;);</span>
+<span class="nc" id="L50">        InputValidator.checkArgument(transactions, p -&gt; true, &quot;List&quot;);</span>
 
         // Create the dataset
 <span class="nc" id="L53">        final XYSeries balanceSeries = createTransactionSeries(transactions);</span>
@@ -90,53 +90,49 @@ public final class ChartUtils {
 <span class="nc" id="L90">        renderer.setDefaultShapesVisible(true);</span>
 
 <span class="nc" id="L92">        return chart;</span>
-        // Add the chart to the panel
-        /*
-        final ChartPanel chartComponent = new ChartPanel(chart);
-
-        this.chartPanel.setLayout(new BorderLayout());
-        this.chartPanel.add(chartComponent, BorderLayout.CENTER);
-
-        this.chartPanel.revalidate();
-        this.chartPanel.repaint();*/
     }
 
     private static XYSeries createTransactionSeries(final List&lt;Transaction&gt; transactions) {
 
-<span class="nc" id="L106">        final List&lt;Transaction&gt; sortedTransactions = new ArrayList&lt;&gt;(transactions);</span>
+<span class="nc" id="L97">        final XYSeries series = new XYSeries(&quot;Net change&quot;);</span>
 
-<span class="nc" id="L108">        sortedTransactions.sort(Comparator.comparing((@NonNull Transaction transaction) -&gt; transaction.date()));</span>
+        /* If the list of transactions is null return the empty series */
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (transactions.isEmpty()) {</span>
+<span class="nc" id="L101">            return series;</span>
+        }
+        /* Otherwise create the series */
+<span class="nc" id="L104">        final List&lt;Transaction&gt; sortedTransactions = new ArrayList&lt;&gt;(transactions);</span>
 
-<span class="nc" id="L110">        final XYSeries series = new XYSeries(&quot;Net change&quot;);</span>
+<span class="nc" id="L106">        sortedTransactions.sort(Comparator.comparing((@NonNull Transaction transaction) -&gt; transaction.date()));</span>
 
-<span class="nc" id="L112">        BigDecimal currentValue = BigDecimal.ZERO;</span>
+<span class="nc" id="L108">        BigDecimal currentValue = BigDecimal.ZERO;</span>
 
         // Starting point
-<span class="nc" id="L115">        series.add(</span>
-<span class="nc" id="L116">            sortedTransactions.get(0).date()</span>
-<span class="nc" id="L117">                .atStartOfDay(ZoneId.systemDefault())</span>
-<span class="nc" id="L118">                .toInstant()</span>
-<span class="nc" id="L119">                .toEpochMilli(),</span>
+<span class="nc" id="L111">        series.add(</span>
+<span class="nc" id="L112">            sortedTransactions.get(0).date()</span>
+<span class="nc" id="L113">                .atStartOfDay(ZoneId.systemDefault())</span>
+<span class="nc" id="L114">                .toInstant()</span>
+<span class="nc" id="L115">                .toEpochMilli(),</span>
                 0.0
         );
 
-<span class="nc bnc" id="L123" title="All 2 branches missed.">    for (final Transaction transaction : sortedTransactions) {</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        for (final Transaction transaction : sortedTransactions) {</span>
 
-<span class="nc bnc" id="L125" title="All 2 branches missed.">        final BigDecimal variation = transaction.isPositive()</span>
-<span class="nc" id="L126">            ? transaction.amount()</span>
-<span class="nc" id="L127">            : transaction.amount().add(transaction.fee()).negate();</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">            final BigDecimal variation = transaction.isPositive()</span>
+<span class="nc" id="L122">                ? transaction.amount()</span>
+<span class="nc" id="L123">                : transaction.amount().add(transaction.fee()).negate();</span>
 
-<span class="nc" id="L129">        currentValue = currentValue.add(variation);</span>
+<span class="nc" id="L125">            currentValue = currentValue.add(variation);</span>
 
-<span class="nc" id="L131">        final long timestamp = transaction.date()</span>
-<span class="nc" id="L132">            .atStartOfDay(ZoneId.systemDefault())</span>
-<span class="nc" id="L133">            .toInstant()</span>
-<span class="nc" id="L134">            .toEpochMilli();</span>
+<span class="nc" id="L127">            final long timestamp = transaction.date()</span>
+<span class="nc" id="L128">                .atStartOfDay(ZoneId.systemDefault())</span>
+<span class="nc" id="L129">                .toInstant()</span>
+<span class="nc" id="L130">                .toEpochMilli();</span>
 
-<span class="nc" id="L136">        series.add(timestamp, currentValue.doubleValue());</span>
-<span class="nc" id="L137">    }</span>
+<span class="nc" id="L132">            series.add(timestamp, currentValue.doubleValue());</span>
+<span class="nc" id="L133">        }</span>
 
-<span class="nc" id="L139">    return series;</span>
-}
+<span class="nc" id="L135">        return series;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

@@ -34,6 +34,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 
 import org.jfree.chart.ChartPanel;
 
@@ -399,7 +400,7 @@ public final class BankAccountView extends JFrame {
 
         final String[] columns = {"Date", "Cause", "Other party", "Amount", "Fee", "Direction"};
 
-        final JTable transactionsTable = new JTable(transactions.size(), columns.length);
+        final JTable transactionsTable = new JTable(new DefaultTableModel(columns, transactions.size()));
 
         transactionsTable.setFont(new Font(FONT, Font.PLAIN, TRANSACTIONS_PANEL_TABLE_FONT_SIZE));
         transactionsTable.setRowHeight(TRANSACTIONS_PANEL_TABLE_ROW_HEIGHT);
