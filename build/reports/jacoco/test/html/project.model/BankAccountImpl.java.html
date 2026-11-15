@@ -137,24 +137,24 @@ public class BankAccountImpl implements BankAccountInterface {
             This part checks if the start if after the finish or if the min is higher than the max, in which
             case it throws an IllegalArgumentException which will need to be handled by the controller when it calls this method.
         */
-<span class="nc bnc" id="L140" title="All 6 branches missed.">        if (start.isPresent() &amp;&amp; finish.isPresent() &amp;&amp; start.get().isAfter(finish.get())) {</span>
-<span class="nc" id="L141">            throw new IllegalArgumentException(&quot;Starting date cannot be after finishing date&quot;);</span>
+<span class="pc bpc" id="L140" title="1 of 6 branches missed.">        if (start.isPresent() &amp;&amp; finish.isPresent() &amp;&amp; start.get().isAfter(finish.get())) {</span>
+<span class="fc" id="L141">            throw new IllegalArgumentException(&quot;Starting date cannot be after finishing date&quot;);</span>
         }
-<span class="nc bnc" id="L143" title="All 6 branches missed.">        if (min.isPresent() &amp;&amp; max.isPresent() &amp;&amp; min.get().compareTo(max.get()) &gt; 0) {</span>
-<span class="nc" id="L144">            throw new IllegalArgumentException(&quot;Minimum amount cannot be higher than the maximum amount&quot;);</span>
+<span class="pc bpc" id="L143" title="1 of 6 branches missed.">        if (min.isPresent() &amp;&amp; max.isPresent() &amp;&amp; min.get().compareTo(max.get()) &gt; 0) {</span>
+<span class="fc" id="L144">            throw new IllegalArgumentException(&quot;Minimum amount cannot be higher than the maximum amount&quot;);</span>
         }
         /*
             This part is the output of the method. It uses stream() to filter for every parameter necessary
             and then returns the stream as an unmodifiable list.
         */
-<span class="nc" id="L150">        return this.transactionsList.stream()</span>
-<span class="nc bnc" id="L151" title="All 4 branches missed.">            .filter(t -&gt; start.isEmpty() || !t.date().isBefore(start.get()))</span>
-<span class="nc bnc" id="L152" title="All 4 branches missed.">            .filter(t -&gt; finish.isEmpty() || !t.date().isAfter(finish.get()))</span>
-<span class="nc bnc" id="L153" title="All 4 branches missed.">            .filter(t -&gt; otherParty.isEmpty() || t.otherParty().equals(otherParty.get()))</span>
-<span class="nc bnc" id="L154" title="All 4 branches missed.">            .filter(t -&gt; isPositive.isEmpty() || t.isPositive() == isPositive.get())</span>
-<span class="nc bnc" id="L155" title="All 4 branches missed.">            .filter(t -&gt; min.isEmpty() || t.amount().compareTo(min.get()) &gt;= 0)</span>
-<span class="nc bnc" id="L156" title="All 4 branches missed.">            .filter(t -&gt; max.isEmpty() || t.amount().compareTo(max.get()) &lt;= 0)</span>
-<span class="nc" id="L157">            .toList();</span>
+<span class="fc" id="L150">        return this.transactionsList.stream()</span>
+<span class="fc bfc" id="L151" title="All 4 branches covered.">            .filter(t -&gt; start.isEmpty() || !t.date().isBefore(start.get()))</span>
+<span class="fc bfc" id="L152" title="All 4 branches covered.">            .filter(t -&gt; finish.isEmpty() || !t.date().isAfter(finish.get()))</span>
+<span class="fc bfc" id="L153" title="All 4 branches covered.">            .filter(t -&gt; otherParty.isEmpty() || t.otherParty().equals(otherParty.get()))</span>
+<span class="fc bfc" id="L154" title="All 4 branches covered.">            .filter(t -&gt; isPositive.isEmpty() || t.isPositive() == isPositive.get())</span>
+<span class="fc bfc" id="L155" title="All 4 branches covered.">            .filter(t -&gt; min.isEmpty() || t.amount().compareTo(min.get()) &gt;= 0)</span>
+<span class="fc bfc" id="L156" title="All 4 branches covered.">            .filter(t -&gt; max.isEmpty() || t.amount().compareTo(max.get()) &lt;= 0)</span>
+<span class="fc" id="L157">            .toList();</span>
     }
 
 }
