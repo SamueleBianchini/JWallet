@@ -15,9 +15,13 @@ public final class DataUtility {
     public static final String OTHER_IBAN = "IT00A0000000000000000000001";
     public static final String NAME = "Nathan Drake";
     public static final String CAUSE = "Cruise vacation";
+    public static final String CARD_NUMBER = "0000000000000000";
+    public static final String CVV = "000";
+    public static final String PIN = "00000";
     public static final BigDecimal AMOUNT = new BigDecimal("1000.00");
-    public static final LocalDate DATE = LocalDate.of(2026, 1, 1);
     public static final BigDecimal NEG_AMOUNT = new BigDecimal("-1000.00");
+    public static final LocalDate DATE = LocalDate.of(2026, 1, 1);
+    public static final LocalDate EXPIRY_DATE = LocalDate.of(2036, 1, 1);
 
     /**
      * This constructor is private because this is a utility class.

@@ -53,6 +53,9 @@ class TestBankAccountModel {
             DataUtility.AMOUNT, BigDecimal.ZERO, true, DataUtility.DATE, DataUtility.CAUSE, DataUtility.OTHER_IBAN
         );
         assertThrows(IllegalArgumentException.class, () -> bankAccount.executeTransaction(null));
+        assertThrows(IllegalArgumentException.class, () -> bankAccount.executeTransaction(
+            new Transaction(DataUtility.AMOUNT, BigDecimal.ZERO, true, DataUtility.DATE, DataUtility.CAUSE, DataUtility.IBAN)
+        ));
         bankAccount.executeTransaction(positiveTransaction);
         assertEquals(bankAccount.getBalance(), DataUtility.AMOUNT);
         /* Testing negative transaction */
@@ -80,40 +83,40 @@ class TestBankAccountModel {
         final LocalDate firstDate = LocalDate.of(2025, 11, 11);
         final LocalDate lastDate = LocalDate.of(2026, 3, 3);
         final Transaction middleDateTransaction = new Transaction(
-            DataUtility.AMOUNT, BigDecimal.ZERO, true, DataUtility.DATE, DataUtility.CAUSE, DataUtility.IBAN
+            DataUtility.AMOUNT, BigDecimal.ZERO, true, DataUtility.DATE, DataUtility.CAUSE, DataUtility.OTHER_IBAN
         );
         transactionsList.add(middleDateTransaction);
         final Transaction firstDateTransaction = new Transaction(
-            DataUtility.AMOUNT, BigDecimal.ZERO, true, firstDate, DataUtility.CAUSE, DataUtility.IBAN
+            DataUtility.AMOUNT, BigDecimal.ZERO, true, firstDate, DataUtility.CAUSE, DataUtility.OTHER_IBAN
         );
         transactionsList.add(firstDateTransaction);
         final Transaction lastDateTransaction = new Transaction(
-            DataUtility.AMOUNT, BigDecimal.ZERO, true, lastDate, DataUtility.CAUSE, DataUtility.IBAN
+            DataUtility.AMOUNT, BigDecimal.ZERO, true, lastDate, DataUtility.CAUSE, DataUtility.OTHER_IBAN
         );
         transactionsList.add(lastDateTransaction);
         /* Definition of the transaction needed to test negative case */
         final Transaction negativeTransaction = new Transaction(
-            DataUtility.AMOUNT, BigDecimal.ZERO, false, DataUtility.DATE, DataUtility.CAUSE, DataUtility.IBAN
+            DataUtility.AMOUNT, BigDecimal.ZERO, false, DataUtility.DATE, DataUtility.CAUSE, DataUtility.OTHER_IBAN
         );
         transactionsList.add(negativeTransaction);
         /* Definition of the transaction needed to test the otherParty */
         final Transaction otherPartyTransaction = new Transaction(
-            DataUtility.AMOUNT, BigDecimal.ZERO, true, DataUtility.DATE, DataUtility.CAUSE, DataUtility.OTHER_IBAN
+            DataUtility.AMOUNT, BigDecimal.ZERO, true, DataUtility.DATE, DataUtility.CAUSE, "IT00A0000000000000000000002"
         );
         transactionsList.add(otherPartyTransaction);
         /* Definition of the transactions needed to test all cases for the amount */
         final BigDecimal firstAmount = new BigDecimal("500.00");
         final BigDecimal lastAmount = new BigDecimal("1500.00");
         final Transaction middleAmountTransaction = new Transaction(
-            DataUtility.AMOUNT, BigDecimal.ZERO, true, DataUtility.DATE, DataUtility.CAUSE, DataUtility.IBAN
+            DataUtility.AMOUNT, BigDecimal.ZERO, true, DataUtility.DATE, DataUtility.CAUSE, DataUtility.OTHER_IBAN
         );
         transactionsList.add(middleAmountTransaction);
         final Transaction firstAmountTransaction = new Transaction(
-            firstAmount, BigDecimal.ZERO, true, DataUtility.DATE, DataUtility.CAUSE, DataUtility.IBAN
+            firstAmount, BigDecimal.ZERO, true, DataUtility.DATE, DataUtility.CAUSE, DataUtility.OTHER_IBAN
         );
         transactionsList.add(firstAmountTransaction);
         final Transaction lastAmountTransaction = new Transaction(
-            lastAmount, BigDecimal.ZERO, true, DataUtility.DATE, DataUtility.CAUSE, DataUtility.IBAN
+            lastAmount, BigDecimal.ZERO, true, DataUtility.DATE, DataUtility.CAUSE, DataUtility.OTHER_IBAN
         );
         transactionsList.add(lastAmountTransaction);
         /* Execution and recording of all transaction */
@@ -148,7 +151,7 @@ class TestBankAccountModel {
         /* Filters testing for otherParty*/
         assertEquals(DataUtility.removeElement(transactionsList, otherPartyTransaction), bankAccount.viewBankTransactions(
             Optional.empty(), Optional.empty(),
-            Optional.of(DataUtility.IBAN),
+            Optional.of(DataUtility.OTHER_IBAN),
             Optional.empty(), Optional.empty(), Optional.empty()
         ));
         /* Filters testing for amount*/

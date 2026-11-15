@@ -35,6 +35,9 @@ class TestTransaction {
                 DataUtility.NEG_AMOUNT, BigDecimal.ZERO, true, DataUtility.DATE, DataUtility.CAUSE, DataUtility.IBAN));
         assertThrows(IllegalArgumentException.class,
             () -> new Transaction(
+                BigDecimal.ZERO, BigDecimal.ZERO, true, DataUtility.DATE, DataUtility.CAUSE, DataUtility.IBAN));
+        assertThrows(IllegalArgumentException.class,
+            () -> new Transaction(
                 DataUtility.AMOUNT, DataUtility.NEG_AMOUNT, true, DataUtility.DATE, DataUtility.CAUSE, DataUtility.IBAN));
         assertThrows(IllegalArgumentException.class,
             () -> new Transaction(

@@ -11,6 +11,7 @@ import java.awt.FlowLayout;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -28,7 +29,8 @@ import javax.swing.JComponent;
  */
 public final class DialogUtils {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/uuuu")
+        .withResolverStyle(ResolverStyle.STRICT);
 
     private static final String FIELD = "Field";
 

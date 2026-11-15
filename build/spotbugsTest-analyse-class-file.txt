@@ -1,3 +1,5 @@
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\test\project\controller\TestBankAccountController.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\test\project\model\TestBankAccountModel.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\test\project\model\TestTransaction.class
 C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\test\project\utility\DataUtility.class
+C:\Users\samue\Desktop\Progetto OOP\JWallet\build\classes\java\test\project\utility\TestParsingUtility.class

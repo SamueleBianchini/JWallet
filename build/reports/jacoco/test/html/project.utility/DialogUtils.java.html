@@ -11,6 +11,7 @@ import java.awt.FlowLayout;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -28,7 +29,8 @@ import javax.swing.JComponent;
  */
 public final class DialogUtils {
 
-<span class="nc" id="L31">    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(&quot;dd/MM/yyyy&quot;);</span>
+<span class="fc" id="L32">    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(&quot;dd/MM/uuuu&quot;)</span>
+<span class="fc" id="L33">        .withResolverStyle(ResolverStyle.STRICT);</span>
 
     private static final String FIELD = &quot;Field&quot;;
 
@@ -56,18 +58,18 @@ public final class DialogUtils {
      */
     public static JDialog createDialog(final Component parent, final String title) {
 
-<span class="nc" id="L59">        InputValidator.checkArgument(parent, p -&gt; true, &quot;Parent&quot;);</span>
-<span class="nc bnc" id="L60" title="All 2 branches missed.">        InputValidator.checkArgument(title, p -&gt; !p.isBlank(), &quot;Title&quot;);</span>
+<span class="nc" id="L61">        InputValidator.checkArgument(parent, p -&gt; true, &quot;Parent&quot;);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        InputValidator.checkArgument(title, p -&gt; !p.isBlank(), &quot;Title&quot;);</span>
 
-<span class="nc" id="L62">        final JDialog dialog = new JDialog(</span>
-<span class="nc" id="L63">            SwingUtilities.getWindowAncestor(parent),</span>
+<span class="nc" id="L64">        final JDialog dialog = new JDialog(</span>
+<span class="nc" id="L65">            SwingUtilities.getWindowAncestor(parent),</span>
             title,
             Dialog.ModalityType.APPLICATION_MODAL
         );
 
-<span class="nc" id="L68">        dialog.setLayout(new BorderLayout(DIALOG_PADDING, DIALOG_PADDING));</span>
+<span class="nc" id="L70">        dialog.setLayout(new BorderLayout(DIALOG_PADDING, DIALOG_PADDING));</span>
 
-<span class="nc" id="L70">        return dialog;</span>
+<span class="nc" id="L72">        return dialog;</span>
     }
 
     /**
@@ -76,14 +78,14 @@ public final class DialogUtils {
      * @return the new panel
      */
     public static JPanel createFormPanel() {
-<span class="nc" id="L79">        final JPanel panel = new JPanel(new GridBagLayout());</span>
-<span class="nc" id="L80">        panel.setBorder(BorderFactory.createEmptyBorder(</span>
+<span class="nc" id="L81">        final JPanel panel = new JPanel(new GridBagLayout());</span>
+<span class="nc" id="L82">        panel.setBorder(BorderFactory.createEmptyBorder(</span>
             PANEL_PADDING,
             PANEL_PADDING,
             PANEL_PADDING,
             PANEL_PADDING
         ));
-<span class="nc" id="L86">        return panel;</span>
+<span class="nc" id="L88">        return panel;</span>
     }
 
     /**
@@ -101,25 +103,25 @@ public final class DialogUtils {
         final int row
     ) {
 
-<span class="nc" id="L104">        InputValidator.checkArgument(panel, p -&gt; true, &quot;Panel&quot;);</span>
-<span class="nc bnc" id="L105" title="All 2 branches missed.">        InputValidator.checkArgument(label, p -&gt; !p.isBlank(), &quot;Label&quot;);</span>
-<span class="nc" id="L106">        InputValidator.checkArgument(field, p -&gt; true, FIELD);</span>
-<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (row &lt; 0) {</span>
-<span class="nc" id="L108">            throw new IllegalArgumentException(&quot;Row cannot be lower than 0&quot;);</span>
+<span class="nc" id="L106">        InputValidator.checkArgument(panel, p -&gt; true, &quot;Panel&quot;);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        InputValidator.checkArgument(label, p -&gt; !p.isBlank(), &quot;Label&quot;);</span>
+<span class="nc" id="L108">        InputValidator.checkArgument(field, p -&gt; true, FIELD);</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (row &lt; 0) {</span>
+<span class="nc" id="L110">            throw new IllegalArgumentException(&quot;Row cannot be lower than 0&quot;);</span>
         }
 
-<span class="nc" id="L111">        final GridBagConstraints gbc = new GridBagConstraints();</span>
-<span class="nc" id="L112">        gbc.insets = new Insets(FIELD_INSET, FIELD_INSET, FIELD_INSET, FIELD_INSET);</span>
-<span class="nc" id="L113">        gbc.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L113">        final GridBagConstraints gbc = new GridBagConstraints();</span>
+<span class="nc" id="L114">        gbc.insets = new Insets(FIELD_INSET, FIELD_INSET, FIELD_INSET, FIELD_INSET);</span>
+<span class="nc" id="L115">        gbc.fill = GridBagConstraints.HORIZONTAL;</span>
 
-<span class="nc" id="L115">        gbc.gridx = 0;</span>
-<span class="nc" id="L116">        gbc.gridy = row;</span>
-<span class="nc" id="L117">        panel.add(new JLabel(label), gbc);</span>
+<span class="nc" id="L117">        gbc.gridx = 0;</span>
+<span class="nc" id="L118">        gbc.gridy = row;</span>
+<span class="nc" id="L119">        panel.add(new JLabel(label), gbc);</span>
 
-<span class="nc" id="L119">        gbc.gridx = 1;</span>
-<span class="nc" id="L120">        gbc.weightx = 1.0;</span>
-<span class="nc" id="L121">        panel.add(field, gbc);</span>
-<span class="nc" id="L122">    }</span>
+<span class="nc" id="L121">        gbc.gridx = 1;</span>
+<span class="nc" id="L122">        gbc.weightx = 1.0;</span>
+<span class="nc" id="L123">        panel.add(field, gbc);</span>
+<span class="nc" id="L124">    }</span>
 
     /**
      * This method is used to construct a specific textField for Strings and numbers.
@@ -127,7 +129,7 @@ public final class DialogUtils {
      * @return the new textField
      */
     public static JTextField createTextField() {
-<span class="nc" id="L130">        return new JTextField(TEXT_FIELD_SIZE);</span>
+<span class="fc" id="L132">        return new JTextField(TEXT_FIELD_SIZE);</span>
     }
 
     /**
@@ -136,7 +138,7 @@ public final class DialogUtils {
      * @return the new textField
      */
     public static JTextField createDateField() {
-<span class="nc" id="L139">        return new JTextField(LocalDate.now().format(DATE_FORMATTER), DATE_FIELD_SIZE);</span>
+<span class="nc" id="L141">        return new JTextField(LocalDate.now().format(DATE_FORMATTER), DATE_FIELD_SIZE);</span>
     }
 
     /**
@@ -148,10 +150,10 @@ public final class DialogUtils {
      */
     public static BigDecimal getBigDecimalValue(final JTextField field) {
 
-<span class="nc" id="L151">        InputValidator.checkArgument(field, p -&gt; true, FIELD);</span>
+<span class="fc" id="L153">        InputValidator.checkArgument(field, p -&gt; true, FIELD);</span>
 
-<span class="nc" id="L153">        return new BigDecimal(</span>
-<span class="nc" id="L154">            field.getText().trim().replace(',', '.')</span>
+<span class="fc" id="L155">        return new BigDecimal(</span>
+<span class="fc" id="L156">            field.getText().trim().replace(',', '.')</span>
         );
     }
 
@@ -164,10 +166,10 @@ public final class DialogUtils {
      */
     public static LocalDate getLocalDateValue(final JTextField field) {
 
-<span class="nc" id="L167">        InputValidator.checkArgument(field, p -&gt; true, FIELD);</span>
+<span class="fc" id="L169">        InputValidator.checkArgument(field, p -&gt; true, FIELD);</span>
 
-<span class="nc" id="L169">        return LocalDate.parse(</span>
-<span class="nc" id="L170">            field.getText().trim(),</span>
+<span class="fc" id="L171">        return LocalDate.parse(</span>
+<span class="fc" id="L172">            field.getText().trim(),</span>
             DATE_FORMATTER
         );
     }
@@ -184,14 +186,14 @@ public final class DialogUtils {
         final JButton confirmButton,
         final JButton cancelButton) {
 
-<span class="nc" id="L187">        final JPanel buttonsPanel = new JPanel(</span>
+<span class="nc" id="L189">        final JPanel buttonsPanel = new JPanel(</span>
             new FlowLayout(FlowLayout.RIGHT)
         );
 
-<span class="nc" id="L191">        buttonsPanel.add(cancelButton);</span>
-<span class="nc" id="L192">        buttonsPanel.add(confirmButton);</span>
+<span class="nc" id="L193">        buttonsPanel.add(cancelButton);</span>
+<span class="nc" id="L194">        buttonsPanel.add(confirmButton);</span>
 
-<span class="nc" id="L194">        return buttonsPanel;</span>
+<span class="nc" id="L196">        return buttonsPanel;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

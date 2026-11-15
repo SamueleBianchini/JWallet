@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="project.model.TestBankAccountModel" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-15T12:18:33.557Z" hostname="BIANCOZZ" time="0.302">
+<testsuite name="project.model.TestBankAccountModel" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-15T17:25:43.872Z" hostname="BIANCOZZ" time="0.046">
   <properties/>
-  <testcase name="testTransactionHistory()" classname="project.model.TestBankAccountModel" time="0.194"/>
+  <testcase name="testTransactionHistory()" classname="project.model.TestBankAccountModel" time="0.03"/>
   <testcase name="testExecuteTransaction()" classname="project.model.TestBankAccountModel" time="0.005"/>
-  <testcase name="testConstructor()" classname="project.model.TestBankAccountModel" time="0.009"/>
+  <testcase name="testConstructor()" classname="project.model.TestBankAccountModel" time="0.004"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

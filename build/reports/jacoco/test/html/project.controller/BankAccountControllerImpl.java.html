@@ -33,12 +33,12 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
      *      will be in charge of creating the bankAccount or if this class will be.
      * 
      */
-<span class="nc" id="L36">    public BankAccountControllerImpl(final BankAccountInterface bankAccount) {</span>
+<span class="fc" id="L36">    public BankAccountControllerImpl(final BankAccountInterface bankAccount) {</span>
         /* Input validation */
-<span class="nc" id="L38">        InputValidator.checkArgument(bankAccount, p -&gt; true, &quot;Bank account&quot;);</span>
+<span class="fc" id="L38">        InputValidator.checkArgument(bankAccount, p -&gt; true, &quot;Bank account&quot;);</span>
         /* Actual constructor */
-<span class="nc" id="L40">        this.bankAccount = bankAccount;</span>
-<span class="nc" id="L41">    }</span>
+<span class="fc" id="L40">        this.bankAccount = bankAccount;</span>
+<span class="fc" id="L41">    }</span>
 
     /**
      * This is the getter for the field iban of the BankAccount.
@@ -59,7 +59,7 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
      */
     @Override
     public String getCardHolder() {
-<span class="nc" id="L62">        return this.bankAccount.getCardHolder();</span>
+<span class="fc" id="L62">        return this.bankAccount.getCardHolder();</span>
     }
 
     /**
@@ -70,7 +70,7 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
      */
     @Override
     public BigDecimal getBalance() {
-<span class="nc" id="L73">        return this.bankAccount.getBalance();</span>
+<span class="fc" id="L73">        return this.bankAccount.getBalance();</span>
     }
 
     /**
@@ -117,18 +117,18 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
     @Override
     public void deposit(final BigDecimal amount, final LocalDate date) {
         /* Input validation */
-<span class="nc" id="L120">        InputValidator.checkArgument(date, p -&gt; true, DATE_ERROR_MESSAGE);</span>
-<span class="nc bnc" id="L121" title="All 2 branches missed.">        InputValidator.checkArgument(amount, p -&gt; p.compareTo(BigDecimal.ZERO) &gt; 0, AMOUNT_ERROR_MESSAGE);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        InputValidator.checkArgument(amount, p -&gt; p.compareTo(BigDecimal.ZERO) &gt; 0, AMOUNT_ERROR_MESSAGE);</span>
+<span class="fc" id="L121">        InputValidator.checkArgument(date, p -&gt; true, DATE_ERROR_MESSAGE);</span>
         /* Method execution */
-<span class="nc" id="L123">        this.bankAccount.executeTransaction(new Transaction(</span>
+<span class="fc" id="L123">        this.bankAccount.executeTransaction(new Transaction(</span>
             amount,
             BigDecimal.ZERO,
             true,
             date,
             &quot;cash deposit&quot;,
-<span class="nc" id="L129">            this.bankAccount.getCardHolder()</span>
+<span class="fc" id="L129">            this.bankAccount.getCardHolder()</span>
         ));
-<span class="nc" id="L131">    }</span>
+<span class="fc" id="L131">    }</span>
 
     /**
      * This method is used to transfer the money via wireTransfer.
@@ -142,13 +142,13 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
     @Override
     public void wireTransfer(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
         /* Input validation */
-<span class="nc bnc" id="L145" title="All 2 branches missed.">        InputValidator.checkArgument(amount, p -&gt; p.compareTo(BigDecimal.ZERO) &gt; 0, AMOUNT_ERROR_MESSAGE);</span>
-<span class="nc" id="L146">        InputValidator.checkArgument(date, p -&gt; true, DATE_ERROR_MESSAGE);</span>
-<span class="nc bnc" id="L147" title="All 2 branches missed.">        InputValidator.checkArgument(cause, p -&gt; !p.isBlank(), &quot;Cause&quot;);</span>
-<span class="nc bnc" id="L148" title="All 2 branches missed.">        InputValidator.checkArgument(destination, p -&gt; !p.isBlank(), &quot;Destination&quot;);</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        InputValidator.checkArgument(amount, p -&gt; p.compareTo(BigDecimal.ZERO) &gt; 0, AMOUNT_ERROR_MESSAGE);</span>
+<span class="fc" id="L146">        InputValidator.checkArgument(date, p -&gt; true, DATE_ERROR_MESSAGE);</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        InputValidator.checkArgument(cause, p -&gt; !p.isBlank(), &quot;Cause&quot;);</span>
+<span class="pc bpc" id="L148" title="1 of 4 branches missed.">        InputValidator.checkArgument(destination, p -&gt; !p.isBlank() &amp;&amp; !p.equals(this.getCardHolder()), &quot;Destination&quot;);</span>
         /* Method execution */
-<span class="nc bnc" id="L150" title="All 2 branches missed.">        if (this.bankAccount.preAuthorize(amount.add(BigDecimal.ONE))) {</span>
-<span class="nc" id="L151">            this.bankAccount.executeTransaction(new Transaction(</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">        if (this.bankAccount.preAuthorize(amount.add(BigDecimal.ONE))) {</span>
+<span class="fc" id="L151">            this.bankAccount.executeTransaction(new Transaction(</span>
                 amount,
                 BigDecimal.ONE,
                 false,
@@ -159,7 +159,7 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
         } else {
 <span class="nc" id="L160">            throw new IllegalArgumentException(&quot;Not enough balance&quot;);</span>
         }
-<span class="nc" id="L162">    }</span>
+<span class="fc" id="L162">    }</span>
 
     /**
      * This method is used to charge a PrepaidCard by adding to its balance money directly taken
@@ -173,20 +173,20 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
     @Override
     public void prepaidCharge(final BigDecimal amount, final LocalDate date, final PrepaidCard card) {
         /* Input validation */
-<span class="nc bnc" id="L176" title="All 2 branches missed.">        InputValidator.checkArgument(amount, p -&gt; p.compareTo(BigDecimal.ZERO) &gt; 0, AMOUNT_ERROR_MESSAGE);</span>
-<span class="nc" id="L177">        InputValidator.checkArgument(date, p -&gt; true, DATE_ERROR_MESSAGE);</span>
-<span class="nc" id="L178">        InputValidator.checkArgument(card, p -&gt; true, &quot;Prepaid card&quot;);</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        InputValidator.checkArgument(amount, p -&gt; p.compareTo(BigDecimal.ZERO) &gt; 0, AMOUNT_ERROR_MESSAGE);</span>
+<span class="fc" id="L177">        InputValidator.checkArgument(date, p -&gt; true, DATE_ERROR_MESSAGE);</span>
+<span class="fc" id="L178">        InputValidator.checkArgument(card, p -&gt; true, &quot;Prepaid card&quot;);</span>
         /* Method execution */
-<span class="nc bnc" id="L180" title="All 2 branches missed.">        if (this.bankAccount.preAuthorize(amount.add(BigDecimal.ONE))) {</span>
-<span class="nc" id="L181">            this.bankAccount.executeTransaction(new Transaction(</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">        if (this.bankAccount.preAuthorize(amount.add(BigDecimal.ONE))) {</span>
+<span class="fc" id="L181">            this.bankAccount.executeTransaction(new Transaction(</span>
                 amount,
                 BigDecimal.ONE,
                 false,
                 date,
                 &quot;Recharging the prepaid card&quot;,
-<span class="nc" id="L187">                card.getCardNumber()</span>
+<span class="fc" id="L187">                card.getCardNumber()</span>
             ));
         }
-<span class="nc" id="L190">    }</span>
+<span class="fc" id="L190">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

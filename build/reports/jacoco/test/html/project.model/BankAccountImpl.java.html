@@ -92,7 +92,7 @@ public class BankAccountImpl implements BankAccountInterface {
      */
     @Override
     public void executeTransaction(final Transaction transaction) {
-<span class="fc" id="L95">        InputValidator.checkArgument(transaction, p -&gt; true, &quot;Transaction&quot;);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        InputValidator.checkArgument(transaction, p -&gt; !p.otherParty().equals(this.iban), &quot;Transaction&quot;);</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">        if (transaction.isPositive()) {</span>
 <span class="fc" id="L97">            this.balance = this.balance.add(transaction.amount());</span>
         } else {
