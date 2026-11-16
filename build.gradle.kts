@@ -26,13 +26,9 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-/*
 application {
-    this will be useful once we know what the main class is. 
-    We will need to put here 
-    mainClass.set("name of the main file")
-    to make it so gradle knows what is the main
-}*/
+    mainClass.set("project.Main")
+}
 
 tasks.test {
     useJUnitPlatform()
