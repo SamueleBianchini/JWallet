@@ -31,7 +31,7 @@ public interface CardInterface {
      * 
      * @return the expiry date as a LocalDate.
      */
-    LocalDate getExpiryDate();
+    String getExpiryDate();
 
     /**
      * This method is the getter for the field cardHolder. It should not be modified by the extensions of this abstract class.

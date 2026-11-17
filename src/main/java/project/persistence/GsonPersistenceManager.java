@@ -9,13 +9,12 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Optional;
-import project.model.BankAccountImpl;
+import project.model.AppState;
 
 /**
  * Basic JSON implementation of {@link PersistenceManager} using Google Gson.
- * Specifies UTF-8 character encoding and handles directory creation to comply with QA standards.
  */
-public final class GsonPersistenceManager implements PersistenceManager<BankAccountImpl> {
+public final class GsonPersistenceManager implements PersistenceManager<AppState> {
 
     private final File file;
     private final Gson gson;
@@ -33,7 +32,7 @@ public final class GsonPersistenceManager implements PersistenceManager<BankAcco
     }
 
     @Override
-    public void save(final BankAccountImpl account) throws IOException {
+    public void save(final AppState account) throws IOException {
         if (account == null) {
             throw new IllegalArgumentException("BankAccount cannot be null");
         }
@@ -47,12 +46,12 @@ public final class GsonPersistenceManager implements PersistenceManager<BankAcco
     }
 
     @Override
-    public Optional<BankAccountImpl> load() throws IOException {
+    public Optional<AppState> load() throws IOException {
         if (!file.exists() || file.length() == 0) {
             return Optional.empty();
         }
         try (Reader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {
-            final BankAccountImpl account = gson.fromJson(reader, BankAccountImpl.class);
+            final AppState account = gson.fromJson(reader, AppState.class);
             return Optional.ofNullable(account);
         }
     }

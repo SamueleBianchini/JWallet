@@ -29,7 +29,7 @@ public final class CreditCard extends AbstractCard {
     public CreditCard(
         final String cardNumber,
         final String cardHolder,
-        final LocalDate expiryDate,
+        final String expiryDate,
         final String cvv,
         final String pin,
         final BigDecimal creditLimit,

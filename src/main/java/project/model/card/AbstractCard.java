@@ -18,7 +18,7 @@ public abstract class AbstractCard implements CardInterface {
     private final List<Transaction> cardTransactions;
     private final String cardNumber;
     private final String cardHolder;
-    private final LocalDate expiryDate;
+    private final String expiryDate;
     /**
      * The cvv will not have a getter method because it is considered a sensitive information and therefore
      * cannot be exposed for safety reasons.
@@ -45,7 +45,7 @@ public abstract class AbstractCard implements CardInterface {
     public AbstractCard(
         final String cardNumber,
         final String cardHolder,
-        final LocalDate expiryDate,
+        final String expiryDate,
         final String cvv,
         final String pin
     ) {
@@ -98,7 +98,7 @@ public abstract class AbstractCard implements CardInterface {
      * @return the expiry date as a LocalDate.
      */
     @Override
-    public final LocalDate getExpiryDate() {
+    public final String getExpiryDate() {
         return this.expiryDate;
     }
 

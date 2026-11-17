@@ -29,7 +29,7 @@ public final class PrepaidCard extends AbstractCard {
     public PrepaidCard(
         final String cardNumber,
         final String cardHolder,
-        final LocalDate expiryDate,
+        final String expiryDate,
         final String cvv,
         final String pin
         ) {
@@ -64,7 +64,7 @@ public final class PrepaidCard extends AbstractCard {
         InputValidator.checkArgument(date, p -> true, "Date");
         InputValidator.checkArgument(iban, p -> !p.isBlank() && !p.isEmpty(), "Iban");
         /* Method execution */
-        if (super.isFrozen() || super.getExpiryDate().isBefore(LocalDate.now())) {
+        if (super.isFrozen() || InputValidator.isBefore(super.getExpiryDate(), LocalDate.now().toString())) {
             return false;
         }
         this.balance = this.balance.add(amount);
@@ -97,7 +97,7 @@ public final class PrepaidCard extends AbstractCard {
         InputValidator.checkArgument(cause, p -> !p.isBlank() && !p.isEmpty(), "Cause");
         InputValidator.checkArgument(destination, p -> !p.isBlank() && !p.isEmpty(), "Destination");
         /* Method execution */
-        if (super.isFrozen() || amount.compareTo(this.balance) > 0 || super.getExpiryDate().isBefore(LocalDate.now())) {
+        if (super.isFrozen() || amount.compareTo(this.balance) > 0 || InputValidator.isBefore(super.getExpiryDate(), LocalDate.now().toString())) {
             return false;
         } else {
             this.balance = this.balance.subtract(amount);

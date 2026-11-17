@@ -18,6 +18,12 @@ public final class InputValidator {
 
     }
 
+    public static boolean isBefore(final String date1, final String date2) {
+        if (date1 == null || date2 == null || date1.isBlank() || date2.isBlank()) {
+            return false;
+        }
+        return date1.compareTo(date2) < 0;
+    }
     /**
      * This is the utility method used to validate any input by checking if it is null and also
      * the predicate input as a parameter.

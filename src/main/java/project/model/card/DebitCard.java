@@ -27,7 +27,7 @@ public final class DebitCard extends AbstractCard {
     public DebitCard(
         final String cardNumber,
         final String cardHolder,
-        final LocalDate expiryDate,
+        final String expiryDate,
         final String cvv,
         final String pin
     ) {
@@ -54,7 +54,7 @@ public final class DebitCard extends AbstractCard {
         InputValidator.checkArgument(cause, p -> !p.isBlank() && !p.isEmpty(), "Cause");
         InputValidator.checkArgument(destination, p -> !p.isBlank() && !p.isEmpty(), "Destination");
         /* Method execution */
-        if (super.isFrozen() || super.getExpiryDate().isBefore(LocalDate.now())) {
+        if (super.isFrozen() || InputValidator.isBefore(super.getExpiryDate(), LocalDate.now().toString())) {
             return false;
         }
         super.registerTransaction(new Transaction(
