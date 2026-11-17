@@ -47,7 +47,7 @@ public final class ChartUtils {
      */
     public static JFreeChart createNetCashFlowChart(final List<Transaction> transactions) {
 
-        InputValidator.checkArgument(transactions, p -> !p.isEmpty(), "List");
+        InputValidator.checkArgument(transactions, p -> true, "List");
 
         // Create the dataset
         final XYSeries balanceSeries = createTransactionSeries(transactions);
@@ -90,24 +90,20 @@ public final class ChartUtils {
         renderer.setDefaultShapesVisible(true);
 
         return chart;
-        // Add the chart to the panel
-        /*
-        final ChartPanel chartComponent = new ChartPanel(chart);
-
-        this.chartPanel.setLayout(new BorderLayout());
-        this.chartPanel.add(chartComponent, BorderLayout.CENTER);
-
-        this.chartPanel.revalidate();
-        this.chartPanel.repaint();*/
     }
 
     private static XYSeries createTransactionSeries(final List<Transaction> transactions) {
 
+        final XYSeries series = new XYSeries("Net change");
+
+        /* If the list of transactions is null return the empty series */
+        if (transactions.isEmpty()) {
+            return series;
+        }
+        /* Otherwise create the series */
         final List<Transaction> sortedTransactions = new ArrayList<>(transactions);
 
         sortedTransactions.sort(Comparator.comparing((@NonNull Transaction transaction) -> transaction.date()));
-
-        final XYSeries series = new XYSeries("Net change");
 
         BigDecimal currentValue = BigDecimal.ZERO;
 
@@ -120,22 +116,22 @@ public final class ChartUtils {
                 0.0
         );
 
-    for (final Transaction transaction : sortedTransactions) {
+        for (final Transaction transaction : sortedTransactions) {
 
-        final BigDecimal variation = transaction.isPositive()
-            ? transaction.amount()
-            : transaction.amount().add(transaction.fee()).negate();
+            final BigDecimal variation = transaction.isPositive()
+                ? transaction.amount()
+                : transaction.amount().add(transaction.fee()).negate();
 
-        currentValue = currentValue.add(variation);
+            currentValue = currentValue.add(variation);
 
-        final long timestamp = transaction.date()
-            .atStartOfDay(ZoneId.systemDefault())
-            .toInstant()
-            .toEpochMilli();
+            final long timestamp = transaction.date()
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
 
-        series.add(timestamp, currentValue.doubleValue());
+            series.add(timestamp, currentValue.doubleValue());
+        }
+
+        return series;
     }
-
-    return series;
-}
 }

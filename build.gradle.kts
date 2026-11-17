@@ -20,15 +20,25 @@ dependencies {
     compileOnly("com.github.spotbugs:spotbugs-annotations:4.9.8")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.jfree:jfreechart:1.5.6")
+
+    testImplementation(platform("org.junit:junit-bom:6.0.1"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-/*
 application {
-    this will be useful once we know what the main class is. 
-    We will need to put here 
-    mainClass.set("name of the main file")
-    to make it so gradle knows what is the main
-}*/
+    mainClass.set("project.Main")
+}
+
+tasks.test {
+    useJUnitPlatform()
+
+    testLogging {
+        events(*org.gradle.api.tasks.testing.logging.TestLogEvent.values())
+    }
+
+    testLogging.showStandardStreams = true
+}
 
 tasks.javadoc {
     isFailOnError = false

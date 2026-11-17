@@ -117,8 +117,8 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
     @Override
     public void deposit(final BigDecimal amount, final LocalDate date) {
         /* Input validation */
-        InputValidator.checkArgument(date, p -> true, DATE_ERROR_MESSAGE);
         InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, AMOUNT_ERROR_MESSAGE);
+        InputValidator.checkArgument(date, p -> true, DATE_ERROR_MESSAGE);
         /* Method execution */
         this.bankAccount.executeTransaction(new Transaction(
             amount,
@@ -145,7 +145,7 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
         InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, AMOUNT_ERROR_MESSAGE);
         InputValidator.checkArgument(date, p -> true, DATE_ERROR_MESSAGE);
         InputValidator.checkArgument(cause, p -> !p.isBlank(), "Cause");
-        InputValidator.checkArgument(destination, p -> !p.isBlank(), "Destination");
+        InputValidator.checkArgument(destination, p -> !p.isBlank() && !p.equals(this.getCardHolder()), "Destination");
         /* Method execution */
         if (this.bankAccount.preAuthorize(amount.add(BigDecimal.ONE))) {
             this.bankAccount.executeTransaction(new Transaction(
