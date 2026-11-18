@@ -2,12 +2,16 @@ package project.persistence;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.LocalDate;
 import java.util.Optional;
 import project.model.AppState;
 
@@ -26,7 +30,12 @@ public final class GsonPersistenceManager implements PersistenceManager<AppState
      */
     public GsonPersistenceManager(final String filePath) {
         this.file = new File(filePath);
+        /* Gson cannot handle LocalDate alone: we save it as text (2026-11-18) and read it back as a date. */
         this.gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class,
+                    (JsonSerializer<LocalDate>) (date, type, context) -> new JsonPrimitive(date.toString()))
+                .registerTypeAdapter(LocalDate.class,
+                    (JsonDeserializer<LocalDate>) (json, type, context) -> LocalDate.parse(json.getAsString()))
                 .setPrettyPrinting()
                 .create();
     }

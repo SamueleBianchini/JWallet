@@ -2,20 +2,23 @@
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.LocalDate;
 import java.util.Optional;
-import project.model.BankAccountImpl;
+import project.model.AppState;
 
 /**
  * Basic JSON implementation of {@link PersistenceManager} using Google Gson.
- * Specifies UTF-8 character encoding and handles directory creation to comply with QA standards.
  */
-public final class GsonPersistenceManager implements PersistenceManager&lt;BankAccountImpl&gt; {
+public final class GsonPersistenceManager implements PersistenceManager&lt;AppState&gt; {
 
     private final File file;
     private final Gson gson;
@@ -25,35 +28,40 @@ public final class GsonPersistenceManager implements PersistenceManager&lt;BankA
      *
      * @param filePath the path to the JSON save file
      */
-<span class="nc" id="L28">    public GsonPersistenceManager(final String filePath) {</span>
-<span class="nc" id="L29">        this.file = new File(filePath);</span>
-<span class="nc" id="L30">        this.gson = new GsonBuilder()</span>
-<span class="nc" id="L31">                .setPrettyPrinting()</span>
-<span class="nc" id="L32">                .create();</span>
-<span class="nc" id="L33">    }</span>
+<span class="nc" id="L31">    public GsonPersistenceManager(final String filePath) {</span>
+<span class="nc" id="L32">        this.file = new File(filePath);</span>
+        /* Gson cannot handle LocalDate alone: we save it as text (2026-11-18) and read it back as a date. */
+<span class="nc" id="L34">        this.gson = new GsonBuilder()</span>
+<span class="nc" id="L35">                .registerTypeAdapter(LocalDate.class,</span>
+<span class="nc" id="L36">                    (JsonSerializer&lt;LocalDate&gt;) (date, type, context) -&gt; new JsonPrimitive(date.toString()))</span>
+<span class="nc" id="L37">                .registerTypeAdapter(LocalDate.class,</span>
+<span class="nc" id="L38">                    (JsonDeserializer&lt;LocalDate&gt;) (json, type, context) -&gt; LocalDate.parse(json.getAsString()))</span>
+<span class="nc" id="L39">                .setPrettyPrinting()</span>
+<span class="nc" id="L40">                .create();</span>
+<span class="nc" id="L41">    }</span>
 
     @Override
-    public void save(final BankAccountImpl account) throws IOException {
-<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (account == null) {</span>
-<span class="nc" id="L38">            throw new IllegalArgumentException(&quot;BankAccount cannot be null&quot;);</span>
+    public void save(final AppState account) throws IOException {
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (account == null) {</span>
+<span class="nc" id="L46">            throw new IllegalArgumentException(&quot;BankAccount cannot be null&quot;);</span>
         }
-<span class="nc" id="L40">        final File parent = file.getParentFile();</span>
-<span class="nc bnc" id="L41" title="All 2 branches missed.">        if (parent != null) {</span>
-<span class="nc" id="L42">            Files.createDirectories(parent.toPath());</span>
+<span class="nc" id="L48">        final File parent = file.getParentFile();</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (parent != null) {</span>
+<span class="nc" id="L50">            Files.createDirectories(parent.toPath());</span>
         }
-<span class="nc" id="L44">        try (Writer writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {</span>
-<span class="nc" id="L45">            gson.toJson(account, writer);</span>
+<span class="nc" id="L52">        try (Writer writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {</span>
+<span class="nc" id="L53">            gson.toJson(account, writer);</span>
         }
-<span class="nc" id="L47">    }</span>
+<span class="nc" id="L55">    }</span>
 
     @Override
-    public Optional&lt;BankAccountImpl&gt; load() throws IOException {
-<span class="nc bnc" id="L51" title="All 4 branches missed.">        if (!file.exists() || file.length() == 0) {</span>
-<span class="nc" id="L52">            return Optional.empty();</span>
+    public Optional&lt;AppState&gt; load() throws IOException {
+<span class="nc bnc" id="L59" title="All 4 branches missed.">        if (!file.exists() || file.length() == 0) {</span>
+<span class="nc" id="L60">            return Optional.empty();</span>
         }
-<span class="nc" id="L54">        try (Reader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {</span>
-<span class="nc" id="L55">            final BankAccountImpl account = gson.fromJson(reader, BankAccountImpl.class);</span>
-<span class="nc" id="L56">            return Optional.ofNullable(account);</span>
+<span class="nc" id="L62">        try (Reader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {</span>
+<span class="nc" id="L63">            final AppState account = gson.fromJson(reader, AppState.class);</span>
+<span class="nc" id="L64">            return Optional.ofNullable(account);</span>
         }
     }
 }

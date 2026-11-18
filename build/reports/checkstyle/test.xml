@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <checkstyle version="12.2.0">
-<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\test\java\project\controller\TestBankAccountController.java">
+<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\test\java\project\controller\TestBankAccountController.java">
 </file>
-<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\test\java\project\model\TestBankAccountModel.java">
+<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\test\java\project\model\TestBankAccountModel.java">
 </file>
-<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\test\java\project\model\TestTransaction.java">
+<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\test\java\project\model\TestTransaction.java">
 </file>
-<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\test\java\project\utility\DataUtility.java">
+<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\test\java\project\utility\DataUtility.java">
 </file>
-<file name="C:\Users\samue\Desktop\Progetto OOP\JWallet\src\test\java\project\utility\TestParsingUtility.java">
+<file name="C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\src\test\java\project\utility\TestParsingUtility.java">
 </file>
 </checkstyle>

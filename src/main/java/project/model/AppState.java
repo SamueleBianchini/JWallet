@@ -17,14 +17,14 @@ public final class AppState {
     private List<PrepaidCard> prepaidCards;
 
     /**
-     * Default constructor
+     * Default constructor.
      */
     public AppState() {
         this.prepaidCards = new ArrayList<>();
     }
 
     /**
-     * Constructs a new AppState
+     * Constructs a new AppState.
      *
      * @param bankAccount  the user's bank account
      * @param debitCard    the user's main debit card
