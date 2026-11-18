@@ -15,7 +15,12 @@ import java.time.format.ResolverStyle;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.SwingUtilities;
+import javax.swing.DefaultListCellRenderer;
+
+import project.model.card.PrepaidCard;
+
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.BorderFactory;
@@ -29,8 +34,8 @@ import javax.swing.JComponent;
  */
 public final class DialogUtils {
 
-<span class="fc" id="L32">    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(&quot;dd/MM/uuuu&quot;)</span>
-<span class="fc" id="L33">        .withResolverStyle(ResolverStyle.STRICT);</span>
+<span class="fc" id="L37">    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(&quot;dd/MM/uuuu&quot;)</span>
+<span class="fc" id="L38">        .withResolverStyle(ResolverStyle.STRICT);</span>
 
     private static final String FIELD = &quot;Field&quot;;
 
@@ -58,18 +63,18 @@ public final class DialogUtils {
      */
     public static JDialog createDialog(final Component parent, final String title) {
 
-<span class="nc" id="L61">        InputValidator.checkArgument(parent, p -&gt; true, &quot;Parent&quot;);</span>
-<span class="nc bnc" id="L62" title="All 2 branches missed.">        InputValidator.checkArgument(title, p -&gt; !p.isBlank(), &quot;Title&quot;);</span>
+<span class="nc" id="L66">        InputValidator.checkArgument(parent, p -&gt; true, &quot;Parent&quot;);</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        InputValidator.checkArgument(title, p -&gt; !p.isBlank(), &quot;Title&quot;);</span>
 
-<span class="nc" id="L64">        final JDialog dialog = new JDialog(</span>
-<span class="nc" id="L65">            SwingUtilities.getWindowAncestor(parent),</span>
+<span class="nc" id="L69">        final JDialog dialog = new JDialog(</span>
+<span class="nc" id="L70">            SwingUtilities.getWindowAncestor(parent),</span>
             title,
             Dialog.ModalityType.APPLICATION_MODAL
         );
 
-<span class="nc" id="L70">        dialog.setLayout(new BorderLayout(DIALOG_PADDING, DIALOG_PADDING));</span>
+<span class="nc" id="L75">        dialog.setLayout(new BorderLayout(DIALOG_PADDING, DIALOG_PADDING));</span>
 
-<span class="nc" id="L72">        return dialog;</span>
+<span class="nc" id="L77">        return dialog;</span>
     }
 
     /**
@@ -78,14 +83,14 @@ public final class DialogUtils {
      * @return the new panel
      */
     public static JPanel createFormPanel() {
-<span class="nc" id="L81">        final JPanel panel = new JPanel(new GridBagLayout());</span>
-<span class="nc" id="L82">        panel.setBorder(BorderFactory.createEmptyBorder(</span>
+<span class="nc" id="L86">        final JPanel panel = new JPanel(new GridBagLayout());</span>
+<span class="nc" id="L87">        panel.setBorder(BorderFactory.createEmptyBorder(</span>
             PANEL_PADDING,
             PANEL_PADDING,
             PANEL_PADDING,
             PANEL_PADDING
         ));
-<span class="nc" id="L88">        return panel;</span>
+<span class="nc" id="L93">        return panel;</span>
     }
 
     /**
@@ -103,25 +108,25 @@ public final class DialogUtils {
         final int row
     ) {
 
-<span class="nc" id="L106">        InputValidator.checkArgument(panel, p -&gt; true, &quot;Panel&quot;);</span>
-<span class="nc bnc" id="L107" title="All 2 branches missed.">        InputValidator.checkArgument(label, p -&gt; !p.isBlank(), &quot;Label&quot;);</span>
-<span class="nc" id="L108">        InputValidator.checkArgument(field, p -&gt; true, FIELD);</span>
-<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (row &lt; 0) {</span>
-<span class="nc" id="L110">            throw new IllegalArgumentException(&quot;Row cannot be lower than 0&quot;);</span>
+<span class="nc" id="L111">        InputValidator.checkArgument(panel, p -&gt; true, &quot;Panel&quot;);</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        InputValidator.checkArgument(label, p -&gt; !p.isBlank(), &quot;Label&quot;);</span>
+<span class="nc" id="L113">        InputValidator.checkArgument(field, p -&gt; true, FIELD);</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        if (row &lt; 0) {</span>
+<span class="nc" id="L115">            throw new IllegalArgumentException(&quot;Row cannot be lower than 0&quot;);</span>
         }
 
-<span class="nc" id="L113">        final GridBagConstraints gbc = new GridBagConstraints();</span>
-<span class="nc" id="L114">        gbc.insets = new Insets(FIELD_INSET, FIELD_INSET, FIELD_INSET, FIELD_INSET);</span>
-<span class="nc" id="L115">        gbc.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L118">        final GridBagConstraints gbc = new GridBagConstraints();</span>
+<span class="nc" id="L119">        gbc.insets = new Insets(FIELD_INSET, FIELD_INSET, FIELD_INSET, FIELD_INSET);</span>
+<span class="nc" id="L120">        gbc.fill = GridBagConstraints.HORIZONTAL;</span>
 
-<span class="nc" id="L117">        gbc.gridx = 0;</span>
-<span class="nc" id="L118">        gbc.gridy = row;</span>
-<span class="nc" id="L119">        panel.add(new JLabel(label), gbc);</span>
+<span class="nc" id="L122">        gbc.gridx = 0;</span>
+<span class="nc" id="L123">        gbc.gridy = row;</span>
+<span class="nc" id="L124">        panel.add(new JLabel(label), gbc);</span>
 
-<span class="nc" id="L121">        gbc.gridx = 1;</span>
-<span class="nc" id="L122">        gbc.weightx = 1.0;</span>
-<span class="nc" id="L123">        panel.add(field, gbc);</span>
-<span class="nc" id="L124">    }</span>
+<span class="nc" id="L126">        gbc.gridx = 1;</span>
+<span class="nc" id="L127">        gbc.weightx = 1.0;</span>
+<span class="nc" id="L128">        panel.add(field, gbc);</span>
+<span class="nc" id="L129">    }</span>
 
     /**
      * This method is used to construct a specific textField for Strings and numbers.
@@ -129,7 +134,7 @@ public final class DialogUtils {
      * @return the new textField
      */
     public static JTextField createTextField() {
-<span class="fc" id="L132">        return new JTextField(TEXT_FIELD_SIZE);</span>
+<span class="nc" id="L137">        return new JTextField(TEXT_FIELD_SIZE);</span>
     }
 
     /**
@@ -138,40 +143,70 @@ public final class DialogUtils {
      * @return the new textField
      */
     public static JTextField createDateField() {
-<span class="nc" id="L141">        return new JTextField(LocalDate.now().format(DATE_FORMATTER), DATE_FIELD_SIZE);</span>
+<span class="nc" id="L146">        return new JTextField(LocalDate.now().format(DATE_FORMATTER), DATE_FIELD_SIZE);</span>
     }
 
     /**
      * This method is used to extract the BigDecimal from the input String.
      * 
-     * @param field the field in which there is the input
+     * @param field the string to parse.
      * 
-     * @return the BigDecimal inserted as input
+     * @return the BigDecimal inserted as input.
      */
-    public static BigDecimal getBigDecimalValue(final JTextField field) {
+    public static BigDecimal getBigDecimalValue(final String field) {
 
-<span class="fc" id="L153">        InputValidator.checkArgument(field, p -&gt; true, FIELD);</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        InputValidator.checkArgument(field, p -&gt; !p.isBlank(), FIELD);</span>
 
-<span class="fc" id="L155">        return new BigDecimal(</span>
-<span class="fc" id="L156">            field.getText().trim().replace(',', '.')</span>
+<span class="fc" id="L160">        return new BigDecimal(</span>
+<span class="fc" id="L161">            field.trim().replace(',', '.')</span>
         );
     }
 
     /**
      * This method is used to extract the LocalDate from the input String.
      * 
-     * @param field the field in which there is the input
+     * @param field the string to parse.
      * 
-     * @return the LocalDate inserted as input
+     * @return the LocalDate inserted as input.
      */
-    public static LocalDate getLocalDateValue(final JTextField field) {
+    public static LocalDate getLocalDateValue(final String field) {
 
-<span class="fc" id="L169">        InputValidator.checkArgument(field, p -&gt; true, FIELD);</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">        InputValidator.checkArgument(field, p -&gt; !p.isBlank(), FIELD);</span>
 
-<span class="fc" id="L171">        return LocalDate.parse(</span>
-<span class="fc" id="L172">            field.getText().trim(),</span>
+<span class="fc" id="L176">        return LocalDate.parse(</span>
+<span class="fc" id="L177">            field.trim(),</span>
             DATE_FORMATTER
         );
+    }
+
+    /**
+     * This method is used to get a DefaultListCell renderer, which is the renderer necessary to show
+     * the Prepaidcards inside the JComboBox.
+     * 
+     * @return the newly created renderer for the PrepaidCards.
+     */
+    public static DefaultListCellRenderer getCardsListRenderer() {
+<span class="nc" id="L189">        return new DefaultListCellRenderer() {</span>
+            @Override
+            public Component getListCellRendererComponent(
+                final JList&lt;?&gt; list,
+                final Object value,
+                final int index,
+                final boolean isSelected,
+                final boolean cellHasFocus
+            ) {
+
+<span class="nc" id="L199">                super.getListCellRendererComponent(</span>
+                    list, value, index, isSelected, cellHasFocus
+                );
+
+<span class="nc bnc" id="L203" title="All 2 branches missed.">                if (value instanceof PrepaidCard card) {</span>
+<span class="nc" id="L204">                    setText(card.getCardNumber());</span>
+                }
+
+<span class="nc" id="L207">                return this;</span>
+            }
+        };
     }
 
     /**
@@ -186,14 +221,14 @@ public final class DialogUtils {
         final JButton confirmButton,
         final JButton cancelButton) {
 
-<span class="nc" id="L189">        final JPanel buttonsPanel = new JPanel(</span>
+<span class="nc" id="L224">        final JPanel buttonsPanel = new JPanel(</span>
             new FlowLayout(FlowLayout.RIGHT)
         );
 
-<span class="nc" id="L193">        buttonsPanel.add(cancelButton);</span>
-<span class="nc" id="L194">        buttonsPanel.add(confirmButton);</span>
+<span class="nc" id="L228">        buttonsPanel.add(cancelButton);</span>
+<span class="nc" id="L229">        buttonsPanel.add(confirmButton);</span>
 
-<span class="nc" id="L196">        return buttonsPanel;</span>
+<span class="nc" id="L231">        return buttonsPanel;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
