@@ -6,24 +6,17 @@ import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FlowLayout;
-import java.awt.Component;
 import java.awt.CardLayout;
 
 import java.util.List;
-import java.util.Optional;
-import java.math.BigDecimal;
-import java.time.format.DateTimeParseException;
-import java.time.LocalDate;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -55,17 +48,14 @@ public final class BankAccountView extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private static final String FONT = "Arial";
-    private static final String INVALID_INPUT = "Invalid input";
-    private static final String INVALID_DATE = "Enter a valid date (dd/MM/yyyy).";
-    private static final String INVALID_AMOUNT = "Enter a valid amount.";
+    private static final String INVALID_INPUT = "Invalid input.";
     private static final String AMOUNT = "Amount (€) :";
     private static final String CONFIRM = "Confirm";
     private static final String DATE = "Date :";
-    private static final String AMOUNT_POSITIVE = "Amount must be positive.";
     private static final String CANCEL = "Cancel";
     private static final String TABLE = "TABLE";
     private static final String CHART = "CHART";
-    private static final String INTERNAL_ERROR = "Internal error";
+    private static final int TRANSACTION_DIALOG_LAST_ROW = 5;
 
     private static final int SIDE_MENU_BUTTONS_WIDTH = 180;
     private static final int SIDE_MENU_BUTTONS_HEIGHT = 50;
@@ -128,14 +118,6 @@ public final class BankAccountView extends JFrame {
     private final JPanel chartPanel;
 
     private boolean showingTable;
-    /* Here is the declaration of the Optional for the current filters for the transactions visualization.
-        We need to record them here because every method which does a new transaction needs to update the  */
-    private transient Optional<LocalDate> start;
-    private transient Optional<LocalDate> finish;
-    private transient Optional<Boolean> positiveFilter;
-    private transient Optional<String> otherParty;
-    private transient Optional<BigDecimal> min;
-    private transient Optional<BigDecimal> max;
 
     /**
      * This method is the constructor for the BankAccountView.
@@ -190,13 +172,6 @@ public final class BankAccountView extends JFrame {
         this.chartPanel = new JPanel(new BorderLayout());
 
         this.showingTable = true;
-
-        this.start = Optional.empty();
-        this.finish = Optional.empty();
-        this.positiveFilter = Optional.empty();
-        this.otherParty = Optional.empty();
-        this.min = Optional.empty();
-        this.max = Optional.empty();
 
         /* Actual constructor (view definition section) */
 
@@ -391,22 +366,16 @@ public final class BankAccountView extends JFrame {
      * with the currently recorded filters.
      */
     private void updateTransactionsTable() {
-        final String[] columns = {"Amount", "Fee", "Date", "Cause", "Source", "Destination"};
+        final String[] columns = {"+/-", "Amount", "Fee", "Date", "Cause", "Source", "Destination"};
 
-        final List<Transaction> transactions = this.bankAccountController.viewBankTransactions(
-                this.start,
-                this.finish,
-                this.otherParty,
-                this.positiveFilter,
-                this.min,
-                this.max
-            );
+        final List<Transaction> transactions = this.bankAccountController.viewBankTransactions();
 
         final DefaultTableModel tableContent = new DefaultTableModel(columns, 0);
 
         for (final Transaction transaction : transactions) {
             if (transaction.isPositive()) {
                 tableContent.addRow(new Object[] {
+                    "+",
                     transaction.amount(),
                     transaction.fee(),
                     transaction.date(),
@@ -416,6 +385,7 @@ public final class BankAccountView extends JFrame {
                 });
             } else {
                 tableContent.addRow(new Object[] {
+                    "-",
                     transaction.amount(),
                     transaction.fee(),
                     transaction.date(),
@@ -450,15 +420,9 @@ public final class BankAccountView extends JFrame {
     private void updateTransactionsChart() {
         this.chartPanel.removeAll();
         this.chartPanel.add(new ChartPanel(
-            ChartUtils.createNetCashFlowChart(this.bankAccountController.viewBankTransactions(
-                this.start,
-                this.finish,
-                this.otherParty,
-                this.positiveFilter,
-                this.min,
-                this.max
-            ))), BorderLayout.CENTER);
-
+            ChartUtils.createNetCashFlowChart(this.bankAccountController.viewBankTransactions())),
+            BorderLayout.CENTER
+        );
         this.chartPanel.revalidate();
         this.chartPanel.repaint();
     }
@@ -495,55 +459,20 @@ public final class BankAccountView extends JFrame {
         final JButton confirmButton = new JButton(CONFIRM);
 
         confirmButton.addActionListener(p -> {
-            final BigDecimal amount;
             try {
-                amount = DialogUtils.getBigDecimalValue(amountField);
+                this.bankAccountController.deposit(
+                    amountField.getText(),
+                    dateField.getText()
+                );
             } catch (final IllegalArgumentException e) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    INVALID_AMOUNT,
+                    e.getMessage(),
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
                 return;
             }
-
-            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    AMOUNT_POSITIVE,
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
-
-            final LocalDate date;
-
-            try {
-                date = DialogUtils.getLocalDateValue(dateField);
-            } catch (final DateTimeParseException e) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    INVALID_DATE,
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
-
-            try {
-                this.bankAccountController.deposit(amount, date);
-            } catch (final IllegalArgumentException e) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    INTERNAL_ERROR,
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
-
             this.updateBalance();
             this.updateTransactionsTable();
             this.updateTransactionsChart();
@@ -586,73 +515,18 @@ public final class BankAccountView extends JFrame {
         final JButton confirmButton = new JButton(CONFIRM);
 
         confirmButton.addActionListener(p -> {
-            final BigDecimal amount;
+
             try {
-                amount = DialogUtils.getBigDecimalValue(amountField);
+                this.bankAccountController.wireTransfer(
+                    amountField.getText(),
+                    dateField.getText(),
+                    causeField.getText(),
+                    destinationField.getText()
+                );
             } catch (final IllegalArgumentException e) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    INVALID_AMOUNT,
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
-
-            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    AMOUNT_POSITIVE,
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
-
-            final LocalDate date;
-
-            try {
-                date = DialogUtils.getLocalDateValue(dateField);
-            } catch (final DateTimeParseException e) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    INVALID_DATE,
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
-
-            final String cause;
-            final String destination;
-
-            if (causeField.getText().isBlank()) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    "Insert a cause",
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            } else if (destinationField.getText().isBlank()) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    "Insert a destination",
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            } else {
-                cause = causeField.getText();
-                destination = destinationField.getText();
-            }
-
-            try {
-                this.bankAccountController.wireTransfer(amount, date, cause, destination);
-            } catch (final IllegalArgumentException e) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    "Not enough balance or internal error",
+                    e.getMessage(),
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
@@ -696,28 +570,7 @@ public final class BankAccountView extends JFrame {
             cardField.addItem(card);
         }
 
-        /* This part of the code rewrites the renderer of the JComboBox for the cards
-            so that the ComboBox shows the cardNumber instead of the string version of the whole class */
-        cardField.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(
-                final JList<?> list,
-                final Object value,
-                final int index,
-                final boolean isSelected,
-                final boolean cellHasFocus) {
-
-            super.getListCellRendererComponent(
-                list, value, index, isSelected, cellHasFocus
-            );
-
-            if (value instanceof PrepaidCard card) {
-                setText(card.getCardNumber());
-            }
-
-            return this;
-        }
-        });
+        cardField.setRenderer(DialogUtils.getCardsListRenderer());
 
         DialogUtils.addField(formPanel, AMOUNT, amountField, 0);
         DialogUtils.addField(formPanel, DATE, dateField, 1);
@@ -726,44 +579,10 @@ public final class BankAccountView extends JFrame {
         final JButton confirmButton = new JButton(CONFIRM);
 
         confirmButton.addActionListener(p -> {
-            final BigDecimal amount;
-            try {
-                amount = DialogUtils.getBigDecimalValue(amountField);
-            } catch (final IllegalArgumentException e) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    INVALID_AMOUNT,
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
 
-            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    AMOUNT_POSITIVE,
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
+            /*
 
-            final LocalDate date;
-
-            try {
-                date = DialogUtils.getLocalDateValue(dateField);
-            } catch (final DateTimeParseException e) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    INVALID_DATE,
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
-
-            final PrepaidCard chosenCard;
+            This part of the method will need to be moved inside the method of the controllerMaster
 
             try {
                 chosenCard = (PrepaidCard) cardField.getSelectedItem();
@@ -786,15 +605,14 @@ public final class BankAccountView extends JFrame {
                 return;
             }
 
-            /* This if is just temporary to avoid getting a warning for not using the field date.
-                once the next method is ready and uncommented this if should be eliminated */
-            if (date == null) {
-                throw new IllegalArgumentException("Temporary");
-            }
-            /*
-                This part needs the implementation from the masterController.
+            This part needs the implementation from the masterController.
+
             try {
-                this.masterController.prepaidCharge(amount, date, chosenCard);
+                this.masterController.prepaidCharge(
+                    amountField.getText(),
+                    dateField.getText(),
+                    chosenCard
+                );
             } catch (final IllegalArgumentException e) {
                 JOptionPane.showMessageDialog(
                     dialog,
@@ -803,7 +621,9 @@ public final class BankAccountView extends JFrame {
                     JOptionPane.ERROR_MESSAGE
                 );
                 return;
-            }*/
+            }
+
+            */
 
             this.updateBalance();
             this.updateTransactionsTable();
@@ -841,12 +661,6 @@ public final class BankAccountView extends JFrame {
         final JTextField minField = DialogUtils.createTextField();
         final JTextField maxField = DialogUtils.createTextField();
 
-        DialogUtils.addField(formPanel, "Starting date :", startField, 0);
-        DialogUtils.addField(formPanel, "Finishing date :", finishField, 1);
-        DialogUtils.addField(formPanel, "OtherParty :", otherPartyField, 2);
-        DialogUtils.addField(formPanel, "Minimum amount :", minField, 3);
-        DialogUtils.addField(formPanel, "Maximum amount :", maxField, 4);
-
         final JPanel positiveFilterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         final JRadioButton positiveButton = new JRadioButton("Positive");
@@ -860,169 +674,36 @@ public final class BankAccountView extends JFrame {
         positiveFilterPanel.add(positiveButton);
         positiveFilterPanel.add(negativeButton);
 
+        DialogUtils.addField(formPanel, "Starting date :", startField, 0);
+        DialogUtils.addField(formPanel, "Finishing date :", finishField, 1);
+        DialogUtils.addField(formPanel, "OtherParty :", otherPartyField, 2);
+        DialogUtils.addField(formPanel, "Minimum amount :", minField, 3);
+        DialogUtils.addField(formPanel, "Maximum amount :", maxField, 4);
+        DialogUtils.addField(formPanel, "Direction", positiveFilterPanel, TRANSACTION_DIALOG_LAST_ROW);
+
         final JButton confirmButton = new JButton(CONFIRM);
 
         confirmButton.addActionListener(p -> {
-            final Optional<BigDecimal> newMin;
-            if (minField.getText().isBlank()) {
-                newMin = Optional.empty();
-            } else {
-                try {
-                    newMin = Optional.of(DialogUtils.getBigDecimalValue(minField));
-                } catch (final IllegalArgumentException e) {
-                    JOptionPane.showMessageDialog(
-                        dialog,
-                        INVALID_AMOUNT,
-                        INVALID_INPUT,
-                        JOptionPane.ERROR_MESSAGE
-                    );
-                    return;
-                }
-            }
-
-            if (newMin.isPresent() && newMin.get().compareTo(BigDecimal.ZERO) <= 0) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    AMOUNT_POSITIVE,
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
-
-            final Optional<BigDecimal> newMax;
-            if (maxField.getText().isBlank()) {
-                newMax = Optional.empty();
-            } else {
-                try {
-                    newMax = Optional.of(DialogUtils.getBigDecimalValue(maxField));
-                } catch (final IllegalArgumentException e) {
-                    JOptionPane.showMessageDialog(
-                        dialog,
-                        INVALID_AMOUNT,
-                        INVALID_INPUT,
-                        JOptionPane.ERROR_MESSAGE
-                    );
-                    return;
-                }
-            }
-
-            if (newMax.isPresent() && newMax.get().compareTo(BigDecimal.ZERO) <= 0) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    AMOUNT_POSITIVE,
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
-
-            if (newMin.isPresent() && newMax.isPresent() && newMax.get().compareTo(newMin.get()) < 0) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    "Maximum amount cannot be lower than minimum amount",
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
-
-            final Optional<LocalDate> newStart;
-            if (startField.getText().isBlank()) {
-                newStart = Optional.empty();
-            } else {
-                try {
-                    newStart = Optional.of(DialogUtils.getLocalDateValue(startField));
-                } catch (final DateTimeParseException e) {
-                    JOptionPane.showMessageDialog(
-                        dialog,
-                        INVALID_DATE,
-                        INVALID_INPUT,
-                        JOptionPane.ERROR_MESSAGE
-                    );
-                    return;
-                }
-            }
-
-            final Optional<LocalDate> newFinish;
-            if (finishField.getText().isBlank()) {
-                newFinish = Optional.empty();
-            } else {
-                try {
-                    newFinish = Optional.of(DialogUtils.getLocalDateValue(finishField));
-                } catch (final DateTimeParseException e) {
-                    JOptionPane.showMessageDialog(
-                        dialog,
-                        INVALID_DATE,
-                        INVALID_INPUT,
-                        JOptionPane.ERROR_MESSAGE
-                    );
-                    return;
-                }
-            }
-
-            if (newStart.isPresent() && newFinish.isPresent() && newFinish.get().compareTo(newStart.get()) < 0) {
-                JOptionPane.showMessageDialog(
-                    dialog,
-                    "Finishing date cannot be earlier than starting date",
-                    INVALID_INPUT,
-                    JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
-
-            final Optional<String> newOtherParty;
-
-            if (otherPartyField.getText().isBlank()) {
-                newOtherParty = Optional.empty();
-            } else {
-                newOtherParty = Optional.of(otherPartyField.getText());
-            }
-
-            final Optional<Boolean> newPositiveFilter;
-
-            if (positiveButton.isSelected()) {
-                newPositiveFilter = Optional.of(true);
-            } else if (negativeButton.isSelected()) {
-                newPositiveFilter = Optional.of(false);
-            } else {
-                newPositiveFilter = Optional.empty();
-            }
 
             try {
-                if (this.bankAccountController.viewBankTransactions(
-                        start,
-                        finish,
-                        otherParty,
-                        positiveFilter,
-                        min,
-                        max
-                    ) == null
-                ) {
-                    JOptionPane.showMessageDialog(
-                        dialog,
-                        INTERNAL_ERROR,
-                        INVALID_INPUT,
-                        JOptionPane.ERROR_MESSAGE
-                    );
-                    return;
-                }
+                this.bankAccountController.updateTransactionsFilter(
+                    startField.getText(),
+                    finishField.getText(),
+                    otherPartyField.getText(),
+                    positiveButton.isSelected(),
+                    negativeButton.isSelected(),
+                    minField.getText(),
+                    maxField.getText()
+                );
             } catch (final IllegalArgumentException e) {
                 JOptionPane.showMessageDialog(
                     dialog,
-                    INTERNAL_ERROR,
+                    e.getMessage(),
                     INVALID_INPUT,
                     JOptionPane.ERROR_MESSAGE
                 );
                 return;
             }
-
-            this.start = newStart;
-            this.finish = newFinish;
-            this.positiveFilter = newPositiveFilter;
-            this.otherParty = newOtherParty;
-            this.min = newMin;
-            this.max = newMax;
 
             this.updateTransactionsTable();
             this.updateTransactionsChart();

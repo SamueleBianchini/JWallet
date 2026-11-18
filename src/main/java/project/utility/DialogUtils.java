@@ -15,7 +15,12 @@ import java.time.format.ResolverStyle;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.SwingUtilities;
+import javax.swing.DefaultListCellRenderer;
+
+import project.model.card.PrepaidCard;
+
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.BorderFactory;
@@ -144,34 +149,64 @@ public final class DialogUtils {
     /**
      * This method is used to extract the BigDecimal from the input String.
      * 
-     * @param field the field in which there is the input
+     * @param field the string to parse.
      * 
-     * @return the BigDecimal inserted as input
+     * @return the BigDecimal inserted as input.
      */
-    public static BigDecimal getBigDecimalValue(final JTextField field) {
+    public static BigDecimal getBigDecimalValue(final String field) {
 
-        InputValidator.checkArgument(field, p -> true, FIELD);
+        InputValidator.checkArgument(field, p -> !p.isBlank(), FIELD);
 
         return new BigDecimal(
-            field.getText().trim().replace(',', '.')
+            field.trim().replace(',', '.')
         );
     }
 
     /**
      * This method is used to extract the LocalDate from the input String.
      * 
-     * @param field the field in which there is the input
+     * @param field the string to parse.
      * 
-     * @return the LocalDate inserted as input
+     * @return the LocalDate inserted as input.
      */
-    public static LocalDate getLocalDateValue(final JTextField field) {
+    public static LocalDate getLocalDateValue(final String field) {
 
-        InputValidator.checkArgument(field, p -> true, FIELD);
+        InputValidator.checkArgument(field, p -> !p.isBlank(), FIELD);
 
         return LocalDate.parse(
-            field.getText().trim(),
+            field.trim(),
             DATE_FORMATTER
         );
+    }
+
+    /**
+     * This method is used to get a DefaultListCell renderer, which is the renderer necessary to show
+     * the Prepaidcards inside the JComboBox.
+     * 
+     * @return the newly created renderer for the PrepaidCards.
+     */
+    public static DefaultListCellRenderer getCardsListRenderer() {
+        return new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(
+                final JList<?> list,
+                final Object value,
+                final int index,
+                final boolean isSelected,
+                final boolean cellHasFocus
+            ) {
+
+                super.getListCellRendererComponent(
+                    list, value, index, isSelected, cellHasFocus
+                );
+
+                if (value instanceof PrepaidCard card) {
+                    setText(card.getCardNumber());
+                }
+
+                return this;
+            }
+        };
     }
 
     /**

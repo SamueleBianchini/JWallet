@@ -7,8 +7,8 @@ import java.util.Optional;
 
 import project.model.BankAccountInterface;
 import project.model.Transaction;
+import project.utility.DialogUtils;
 import project.utility.InputValidator;
-import project.model.card.PrepaidCard;
 
 /**
  * This class is the implementation of the BankAccountControllerInterface.
@@ -20,6 +20,13 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
 
     private static final String AMOUNT_ERROR_MESSAGE = "Amount";
     private static final String DATE_ERROR_MESSAGE = "Date";
+
+    private Optional<LocalDate> start;
+    private Optional<LocalDate> finish;
+    private Optional<Boolean> positiveFilter;
+    private Optional<String> otherParty;
+    private Optional<BigDecimal> min;
+    private Optional<BigDecimal> max;
 
     private final BankAccountInterface bankAccount;
     /*I need to create the controllerMaster to know what and how to import it
@@ -38,6 +45,12 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
         InputValidator.checkArgument(bankAccount, p -> true, "Bank account");
         /* Actual constructor */
         this.bankAccount = bankAccount;
+        this.start = Optional.empty();
+        this.finish = Optional.empty();
+        this.positiveFilter = Optional.empty();
+        this.otherParty = Optional.empty();
+        this.min = Optional.empty();
+        this.max = Optional.empty();
     }
 
     /**
@@ -78,31 +91,97 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
      * while also selecting them based on specific instructions that can be put as parameters
      * to specify the period, the cause, positive or negative, or the amount of the selected operations.
      * 
-     * @param start an optional that may contain a date from where to start the selection.
-     *      If not present, there will not be a minimum date to consider.
-     * @param finish an optional that may contain a date after which the operation is not selected
-     *      anymore. If not present, there will not be a maximum date do consider.
-     * @param otherParty an optional that may contain the specific other party for the operations we want
-     *      to select. If not present, all possible other parties will be considered.
-     * @param isPositive an optional that may contain a boolean which, if positive, means
-     *      that the operations we need to select are only positive, if false only negative ones,
-     *      if not present means both.
-     * @param min an optional containing a minimum amount for the operation to be selected.
-     *      If not present, no minimum will be considered.
-     * @param max an optional containing a maximum amount for the operation to be selected.
-     *      If not present, no maximum will be considered.
      * @return a list of the transactions relative to this bank account.
      */
     @Override
-    public List<Transaction> viewBankTransactions(
-        final Optional<LocalDate> start,
-        final Optional<LocalDate> finish,
-        final Optional<String> otherParty,
-        final Optional<Boolean> isPositive,
-        final Optional<BigDecimal> min,
-        final Optional<BigDecimal> max
+    public List<Transaction> viewBankTransactions() {
+        return this.bankAccount.viewBankTransactions(this.start,
+            this.finish,
+            this.otherParty,
+            this.positiveFilter,
+            this.min,
+            this.max
+        );
+    }
+
+    /**
+     * This method is used to save new filters for the extraction of the list of the transactions
+     * made with the bankAccount.
+     * 
+     * @param newStart a String that contains the input value for the filter for the minimum date of the selection.
+     *      If not present, there will not be a minimum date to consider.
+     * @param newFinish a String that contains the input value for the filter for the maximum date of the selection.
+     *      If not present, there will not be a maximum date do consider.
+     * @param newOtherParty a String that contains the input value for the filter for the selected otherParty.
+     *      If not present, all possible other parties will be considered.
+     * @param positivePressed a boolean which is true if we are selecting only positive transactions.
+     * @param negativePressed a boolean which is true if we are selecting only negative transactions.
+     * @param newMin a String that contains the input value for the filter for the minimum amount of the selection.
+     *      If not present, no minimum will be considered.
+     * @param newMax a String that contains the input value for the filter for the maximum amount of the selection.
+     *      If not present, no maximum will be considered.
+     */
+    @Override
+    public void updateTransactionsFilter(
+        final String newStart,
+        final String newFinish,
+        final String newOtherParty,
+        final boolean positivePressed,
+        final boolean negativePressed,
+        final String newMin,
+        final String newMax
     ) {
-        return this.bankAccount.viewBankTransactions(start, finish, otherParty, isPositive, min, max);
+        InputValidator.checkArgument(newStart, p -> true, "Starting date");
+        InputValidator.checkArgument(newFinish, p -> true, "Finishing date");
+        InputValidator.checkArgument(newOtherParty, p -> true, "Other party");
+        InputValidator.checkArgument(newMin, p -> true, "Minimum amount");
+        InputValidator.checkArgument(newMax, p -> true, "Maximum amount");
+
+        if (newMin.isBlank()) {
+            this.min = Optional.empty();
+        } else {
+            this.min = Optional.of(this.amountParser(newMin));
+        }
+
+        if (newMax.isBlank()) {
+            this.max = Optional.empty();
+        } else {
+            this.max = Optional.of(this.amountParser(newMax));
+        }
+
+        if (this.min.isPresent() && this.max.isPresent() && this.max.get().compareTo(this.min.get()) < 0) {
+            throw new IllegalArgumentException("Minimum amount cannot be higher than maximum amount");
+        }
+
+        if (newStart.isBlank()) {
+            this.start = Optional.empty();
+        } else {
+            this.start = Optional.of(this.dateParser(newStart));
+        }
+
+        if (newFinish.isBlank()) {
+            this.finish = Optional.empty();
+        } else {
+            this.finish = Optional.of(this.dateParser(newFinish));
+        }
+
+        if (this.start.isPresent() && this.finish.isPresent() && this.finish.get().isBefore(this.start.get())) {
+            throw new IllegalArgumentException("Starting date cannot be after finishing date");
+        }
+
+        if (positivePressed) {
+            this.positiveFilter = Optional.of(true);
+        } else if (negativePressed) {
+            this.positiveFilter = Optional.of(false);
+        } else {
+            this.positiveFilter = Optional.empty();
+        }
+
+        if (newOtherParty.isBlank()) {
+            this.otherParty = Optional.empty();
+        } else {
+            this.otherParty = Optional.of(newOtherParty);
+        }
     }
 
     /**
@@ -111,20 +190,22 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
      * a standard "cash deposit" and the otherParty will just be the cardHolder's name.
      * Furthermore, there is no fee on cash deposits.
      * 
-     * @param amount the amount we want to deposit.
-     * @param date the date on which the deposit has occurred.
+     * @param amount the amount we want to deposit, not parsed yet.
+     * @param date the date on which the deposit has occurred, not parsed yet.
      */
     @Override
-    public void deposit(final BigDecimal amount, final LocalDate date) {
+    public void deposit(final String amount, final String date) {
         /* Input validation */
-        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, AMOUNT_ERROR_MESSAGE);
-        InputValidator.checkArgument(date, p -> true, DATE_ERROR_MESSAGE);
+        InputValidator.checkArgument(amount, p -> !p.isBlank(), AMOUNT_ERROR_MESSAGE);
+        InputValidator.checkArgument(date, p -> !p.isBlank(), DATE_ERROR_MESSAGE);
+        final BigDecimal parsedAmount = this.amountParser(amount);
+        final LocalDate parsedDate = this.dateParser(date);
         /* Method execution */
         this.bankAccount.executeTransaction(new Transaction(
-            amount,
+            parsedAmount,
             BigDecimal.ZERO,
             true,
-            date,
+            parsedDate,
             "cash deposit",
             this.bankAccount.getCardHolder()
         ));
@@ -134,25 +215,27 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
      * This method is used to transfer the money via wireTransfer.
      * This type of operations will have a fee attached, equal to one euro.
      * 
-     * @param amount the amount we want to transfer.
-     * @param date the date on which the transfer occurs.
+     * @param amount the amount we want to transfer, not parsed yet.
+     * @param date the date on which the transfer occurs, not parsed yet.
      * @param cause the cause of the operation.
      * @param destination the destination of the wireTransfer.
      */
     @Override
-    public void wireTransfer(final BigDecimal amount, final LocalDate date, final String cause, final String destination) {
+    public void wireTransfer(final String amount, final String date, final String cause, final String destination) {
         /* Input validation */
-        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, AMOUNT_ERROR_MESSAGE);
-        InputValidator.checkArgument(date, p -> true, DATE_ERROR_MESSAGE);
+        InputValidator.checkArgument(amount, p -> !p.isBlank(), AMOUNT_ERROR_MESSAGE);
+        InputValidator.checkArgument(date, p -> !p.isBlank(), DATE_ERROR_MESSAGE);
         InputValidator.checkArgument(cause, p -> !p.isBlank(), "Cause");
         InputValidator.checkArgument(destination, p -> !p.isBlank() && !p.equals(this.getCardHolder()), "Destination");
+        final BigDecimal parsedAmount = this.amountParser(amount);
+        final LocalDate parsedDate = this.dateParser(date);
         /* Method execution */
-        if (this.bankAccount.preAuthorize(amount.add(BigDecimal.ONE))) {
+        if (this.bankAccount.preAuthorize(parsedAmount.add(BigDecimal.ONE))) {
             this.bankAccount.executeTransaction(new Transaction(
-                amount,
+                parsedAmount,
                 BigDecimal.ONE,
                 false,
-                date,
+                parsedDate,
                 cause,
                 destination
             ));
@@ -166,26 +249,58 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
      * from the BankAccount. This type of operation will have a fee of one euro, and the
      * standard cause "Recharging the Prepaidcard balance".
      * 
-     * @param amount the amount we want to recharge
-     * @param date the date on which we will recharge.
-     * @param card the card we want to recharge.
+     * @param amount the amount we want to recharge, not parsed yet.
+     * @param date the date on which we will recharge, not parsed yet.
+     * @param cardNumber the number of the card we want to recharge.
      */
     @Override
-    public void prepaidCharge(final BigDecimal amount, final LocalDate date, final PrepaidCard card) {
+    public void prepaidCharge(final String amount, final String date, final String cardNumber) {
         /* Input validation */
-        InputValidator.checkArgument(amount, p -> p.compareTo(BigDecimal.ZERO) > 0, AMOUNT_ERROR_MESSAGE);
-        InputValidator.checkArgument(date, p -> true, DATE_ERROR_MESSAGE);
-        InputValidator.checkArgument(card, p -> true, "Prepaid card");
+        InputValidator.checkArgument(amount, p -> !p.isBlank(), AMOUNT_ERROR_MESSAGE);
+        InputValidator.checkArgument(date, p -> !p.isBlank(), DATE_ERROR_MESSAGE);
+        InputValidator.checkArgument(cardNumber, p -> !p.isBlank(), "Prepaid card");
+        final BigDecimal parsedAmount = this.amountParser(amount);
+        final LocalDate parsedDate = this.dateParser(date);
         /* Method execution */
-        if (this.bankAccount.preAuthorize(amount.add(BigDecimal.ONE))) {
+        if (this.bankAccount.preAuthorize(parsedAmount.add(BigDecimal.ONE))) {
             this.bankAccount.executeTransaction(new Transaction(
-                amount,
+                parsedAmount,
                 BigDecimal.ONE,
                 false,
-                date,
+                parsedDate,
                 "Recharging the prepaid card",
-                card.getCardNumber()
+                cardNumber
             ));
         }
+    }
+
+    /**
+     * This method is used to parse the string in a field to get its represented BigDecimal.
+     * 
+     * @param amount the string to parse.
+     * @return the parsed BigDecimal
+     */
+    @Override
+    public BigDecimal amountParser(final String amount) {
+        InputValidator.checkArgument(amount, p -> !p.isBlank(), AMOUNT_ERROR_MESSAGE);
+        final BigDecimal parsedAmount;
+        parsedAmount = DialogUtils.getBigDecimalValue(amount);
+        if (parsedAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Amount cannot be zero or lower");
+        }
+        return parsedAmount;
+    }
+
+    /**
+     * This method is used to parse the string in a field to get its represented LocalDate.
+     * 
+     * @param date the string to parse.
+     * @return the parsed LocalDate.
+     */
+    @Override
+    public LocalDate dateParser(final String date) {
+        final LocalDate parsedDate;
+        parsedDate = DialogUtils.getLocalDateValue(date);
+        return parsedDate;
     }
 }

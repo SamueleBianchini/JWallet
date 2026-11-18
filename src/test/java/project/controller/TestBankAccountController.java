@@ -15,8 +15,6 @@ import project.model.BankAccountImpl;
 import project.model.BankAccountInterface;
 import project.utility.DataUtility;
 import project.model.Transaction;
-//import project.model.card.PrepaidCard;
-import project.model.card.PrepaidCard;
 
 /**
  * This class is the test class for the bankAccountController.
@@ -45,18 +43,26 @@ class TestBankAccountController {
         final BankAccountInterface bankAccount = new BankAccountImpl(DataUtility.IBAN, DataUtility.NAME);
         final BankAccountControllerInterface controller = new BankAccountControllerImpl(bankAccount);
         /* Input validation testing */
-        assertThrows(IllegalArgumentException.class, () -> controller.deposit(null, DataUtility.DATE));
-        assertThrows(IllegalArgumentException.class, () -> controller.deposit(DataUtility.NEG_AMOUNT, DataUtility.DATE));
-        assertThrows(IllegalArgumentException.class, () -> controller.deposit(BigDecimal.ZERO, DataUtility.DATE));
-        assertThrows(IllegalArgumentException.class, () -> controller.deposit(DataUtility.AMOUNT, null));
+        assertThrows(IllegalArgumentException.class, () -> controller.deposit(null, DataUtility.DATE_TEXT));
+        assertThrows(IllegalArgumentException.class, () -> controller.deposit(
+            DataUtility.NEG_AMOUNT.toString(),
+            DataUtility.DATE_TEXT));
+        assertThrows(IllegalArgumentException.class, () -> controller.deposit(
+            BigDecimal.ZERO.toString(),
+            DataUtility.DATE_TEXT));
+        assertThrows(IllegalArgumentException.class, () -> controller.deposit(
+            DataUtility.AMOUNT.toString(), null));
         /* Correct recording and execution testing */
-        controller.deposit(DataUtility.AMOUNT, DataUtility.DATE);
+        controller.deposit(
+            DataUtility.AMOUNT.toString(),
+            DataUtility.DATE_TEXT);
         assertEquals(controller.getBalance(), DataUtility.AMOUNT);
         final Transaction transaction = bankAccount.viewBankTransactions(
             Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()
         ).getFirst();
         assertEquals(transaction.amount(), DataUtility.AMOUNT);
         assertEquals(transaction.fee(), BigDecimal.ZERO);
+        assertEquals(transaction.date(), DataUtility.DATE);
         assertTrue(transaction.isPositive());
         assertEquals(transaction.cause(), "cash deposit");
         assertEquals(transaction.otherParty(), DataUtility.NAME);
@@ -69,43 +75,48 @@ class TestBankAccountController {
     void testWireTranser() {
         final BankAccountInterface bankAccount = new BankAccountImpl(DataUtility.IBAN, DataUtility.NAME);
         final BankAccountControllerInterface controller = new BankAccountControllerImpl(bankAccount);
-        controller.deposit(DataUtility.AMOUNT.add(BigDecimal.ONE), DataUtility.DATE);
+        controller.deposit(
+            DataUtility.AMOUNT.add(BigDecimal.ONE).toString(),
+            DataUtility.DATE_TEXT);
         /* Input validation testing */
         assertThrows(IllegalArgumentException.class, () -> controller.wireTransfer(
-            null, DataUtility.DATE, DataUtility.CAUSE, DataUtility.OTHER_IBAN
+            null, DataUtility.DATE_TEXT, DataUtility.CAUSE, DataUtility.OTHER_IBAN
         ));
         assertThrows(IllegalArgumentException.class, () -> controller.wireTransfer(
-            DataUtility.NEG_AMOUNT, DataUtility.DATE, DataUtility.CAUSE, DataUtility.OTHER_IBAN
+            DataUtility.NEG_AMOUNT.toString(), DataUtility.DATE_TEXT, DataUtility.CAUSE, DataUtility.OTHER_IBAN
         ));
         assertThrows(IllegalArgumentException.class, () -> controller.wireTransfer(
-            BigDecimal.ZERO, DataUtility.DATE, DataUtility.CAUSE, DataUtility.OTHER_IBAN
+            BigDecimal.ZERO.toString(), DataUtility.DATE_TEXT, DataUtility.CAUSE, DataUtility.OTHER_IBAN
         ));
         assertThrows(IllegalArgumentException.class, () -> controller.wireTransfer(
-            DataUtility.AMOUNT, null, DataUtility.CAUSE, DataUtility.OTHER_IBAN
+            DataUtility.AMOUNT.toString(), null, DataUtility.CAUSE, DataUtility.OTHER_IBAN
         ));
         assertThrows(IllegalArgumentException.class, () -> controller.wireTransfer(
-            DataUtility.AMOUNT, DataUtility.DATE, null, DataUtility.OTHER_IBAN
+            DataUtility.AMOUNT.toString(), DataUtility.DATE_TEXT, null, DataUtility.OTHER_IBAN
         ));
         assertThrows(IllegalArgumentException.class, () -> controller.wireTransfer(
-            DataUtility.AMOUNT, DataUtility.DATE, DataUtility.BLANK, DataUtility.OTHER_IBAN
+            DataUtility.AMOUNT.toString(), DataUtility.DATE_TEXT, DataUtility.BLANK, DataUtility.OTHER_IBAN
         ));
         assertThrows(IllegalArgumentException.class, () -> controller.wireTransfer(
-            DataUtility.AMOUNT, DataUtility.DATE, DataUtility.CAUSE, null
+            DataUtility.AMOUNT.toString(), DataUtility.DATE_TEXT, DataUtility.CAUSE, null
         ));
         assertThrows(IllegalArgumentException.class, () -> controller.wireTransfer(
-            DataUtility.AMOUNT, DataUtility.DATE, DataUtility.CAUSE, DataUtility.BLANK
+            DataUtility.AMOUNT.toString(), DataUtility.DATE_TEXT, DataUtility.CAUSE, DataUtility.BLANK
         ));
         assertThrows(IllegalArgumentException.class, () -> controller.wireTransfer(
-            DataUtility.AMOUNT, DataUtility.DATE, DataUtility.CAUSE, DataUtility.IBAN
+            DataUtility.AMOUNT.toString(), DataUtility.DATE_TEXT, DataUtility.CAUSE, DataUtility.IBAN
         ));
         /* Correct recording and execution testing */
-        controller.wireTransfer(DataUtility.AMOUNT, DataUtility.DATE, DataUtility.CAUSE, DataUtility.OTHER_IBAN);
+        controller.wireTransfer(
+            DataUtility.AMOUNT.toString(), DataUtility.DATE_TEXT, DataUtility.CAUSE, DataUtility.OTHER_IBAN
+        );
         assertEquals(controller.getBalance().stripTrailingZeros(), BigDecimal.ZERO);
         final Transaction transaction = bankAccount.viewBankTransactions(
             Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()
         ).get(1);
         assertEquals(transaction.amount(), DataUtility.AMOUNT);
         assertEquals(transaction.fee(), BigDecimal.ONE);
+        assertEquals(transaction.date(), DataUtility.DATE);
         assertFalse(transaction.isPositive());
         assertEquals(transaction.cause(), DataUtility.CAUSE);
         assertEquals(transaction.otherParty(), DataUtility.OTHER_IBAN);
@@ -118,36 +129,34 @@ class TestBankAccountController {
     void testPrepaidCharge() {
         final BankAccountInterface bankAccount = new BankAccountImpl(DataUtility.IBAN, DataUtility.NAME);
         final BankAccountControllerInterface controller = new BankAccountControllerImpl(bankAccount);
-        controller.deposit(DataUtility.AMOUNT.add(BigDecimal.ONE), DataUtility.DATE);
-        final PrepaidCard card = new PrepaidCard(
-            DataUtility.CARD_NUMBER, DataUtility.NAME, DataUtility.EXPIRY_DATE, DataUtility.CVV, DataUtility.PIN
-        );
+        controller.deposit(DataUtility.AMOUNT.add(BigDecimal.ONE).toString(), DataUtility.DATE_TEXT);
         /* Input validation testing */
         assertThrows(IllegalArgumentException.class, () -> controller.prepaidCharge(
-            null, DataUtility.DATE, card
+            null, DataUtility.DATE_TEXT, DataUtility.CARD_NUMBER
         ));
         assertThrows(IllegalArgumentException.class, () -> controller.prepaidCharge(
-            DataUtility.NEG_AMOUNT, DataUtility.DATE, card
+            DataUtility.NEG_AMOUNT.toString(), DataUtility.DATE_TEXT, DataUtility.CARD_NUMBER
         ));
         assertThrows(IllegalArgumentException.class, () -> controller.prepaidCharge(
-            BigDecimal.ZERO, DataUtility.DATE, card
+            BigDecimal.ZERO.toString(), DataUtility.DATE_TEXT, DataUtility.CARD_NUMBER
         ));
         assertThrows(IllegalArgumentException.class, () -> controller.prepaidCharge(
-            DataUtility.AMOUNT, null, card
+            DataUtility.AMOUNT.toString(), null, DataUtility.CARD_NUMBER
         ));
         assertThrows(IllegalArgumentException.class, () -> controller.prepaidCharge(
-            DataUtility.AMOUNT, DataUtility.DATE, null
+            DataUtility.AMOUNT.toString(), DataUtility.DATE_TEXT, null
         ));
         /* Correct recording and execution testing */
-        controller.prepaidCharge(DataUtility.AMOUNT, DataUtility.DATE, card);
+        controller.prepaidCharge(DataUtility.AMOUNT.toString(), DataUtility.DATE_TEXT, DataUtility.CARD_NUMBER);
         assertEquals(controller.getBalance().stripTrailingZeros(), BigDecimal.ZERO);
         final Transaction transaction = bankAccount.viewBankTransactions(
             Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()
         ).get(1);
         assertEquals(transaction.amount(), DataUtility.AMOUNT);
         assertEquals(transaction.fee(), BigDecimal.ONE);
+        assertEquals(transaction.date(), DataUtility.DATE);
         assertFalse(transaction.isPositive());
         assertEquals(transaction.cause(), "Recharging the prepaid card");
-        assertEquals(transaction.otherParty(), card.getCardNumber());
+        assertEquals(transaction.otherParty(), DataUtility.CARD_NUMBER);
     }
 }
