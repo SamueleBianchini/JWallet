@@ -22,7 +22,7 @@ public final class IncomeInvestment extends SpeculativeInvestment implements Inc
      * @param asset the asset to which this investment refers.
      * @param originalSingleValue the original value for a single instance of the asset.
      * @param nBought the number of instances of the asset that this investment refers to.
-     * @param purchaseDate the dato on which this investment was purchased.
+     * @param purchaseDate the date on which this investment was purchased.
      */
     public IncomeInvestment(
         final AssetInterface asset,
