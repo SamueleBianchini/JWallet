@@ -3,8 +3,11 @@ package project.model.investmentplatform.investiments;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.SequencedMap;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import project.model.investmentplatform.assets.AssetInterface;
 import project.utility.InputValidator;
@@ -18,7 +21,7 @@ import project.utility.InputValidator;
  */
 public class SpeculativeInvestment implements InvestmentInterface {
 
-    private final List<BigDecimal> priceVariationList;
+    private final Map<LocalDate, BigDecimal> priceVariationList;
     private final AssetInterface asset;
     private final LocalDate purchaseDate;
     private final BigDecimal originalAssetValue;
@@ -46,12 +49,13 @@ public class SpeculativeInvestment implements InvestmentInterface {
         InputValidator.checkArgument(nBought, p -> p > 0, "Number bought");
         InputValidator.checkArgument(purchaseDate, p -> true, "Purchase date");
         /* Actual constructor */
-        this.priceVariationList = new ArrayList<>();
+        this.priceVariationList = new LinkedHashMap<>();
+        this.priceVariationList.put(purchaseDate, BigDecimal.ZERO);
         this.asset = asset;
         this.originalAssetValue = originalAssetValue;
+        this.currentAssetValue = originalAssetValue;
         this.nBought = nBought;
         this.closingDate = Optional.empty();
-        this.currentAssetValue = originalAssetValue;
         this.purchaseDate = purchaseDate;
     }
 
@@ -77,6 +81,10 @@ public class SpeculativeInvestment implements InvestmentInterface {
         return this.closingDate;
     }
 
+    private SequencedMap<LocalDate, BigDecimal> pvLinkedToSequence() {
+        return (java.util.SequencedMap<LocalDate, BigDecimal>) getPriceVariationList();
+    }
+
     /**
      * This method is a getter for the original value of a single instance of the asset.
      * 
@@ -84,7 +92,7 @@ public class SpeculativeInvestment implements InvestmentInterface {
      */
     @Override
     public final BigDecimal getOriginalAssetValue() {
-        return this.originalAssetValue;
+        return originalAssetValue;
     }
 
     /**
@@ -104,8 +112,19 @@ public class SpeculativeInvestment implements InvestmentInterface {
      */
     @Override
     public final LocalDate getpurchasedDate() {
-        return this.purchaseDate;
+        return pvLinkedToSequence().firstEntry().getKey();
     }
+
+    /**
+     * This method is a getter for the last time that was updated
+     * the price variation list and so also the current value.
+     * 
+     * @return the date of the last update
+     */
+    @Override
+    public final LocalDate getLastUpdateDate() {
+        return pvLinkedToSequence().lastEntry().getKey();
+    } 
 
     /**
      * This method is a getter for the original total value of the investment.
@@ -114,7 +133,7 @@ public class SpeculativeInvestment implements InvestmentInterface {
      */
     @Override
     public final BigDecimal totalOriginalValue() {
-        return this.originalAssetValue.multiply(BigDecimal.valueOf(this.nBought));
+        return getOriginalAssetValue().multiply(BigDecimal.valueOf(this.nBought));
     }
 
     /**
@@ -135,32 +154,32 @@ public class SpeculativeInvestment implements InvestmentInterface {
      */
     @Override
     public final BigDecimal totalCurrentValue() {
-        return this.currentAssetValue.multiply(BigDecimal.valueOf(this.nBought));
+        return asset.getSinglePrice().multiply(BigDecimal.valueOf(this.nBought));
     }
 
     /**
      * This method is used to update the current value of the asset and add
-     * the new value of gain/loss money.
+     * the new value of gain/loss money paired with today date.
      * 
      */
     @Override
     public final void updateCurrentValue() {
         if (getClosingDate().isEmpty()) {
-            this.priceVariationList.add(totalVariationValue());
-            this.currentAssetValue = asset.getSinglePrice();
+            this.priceVariationList.put(LocalDate.now(), totalVariationValue());
+            //setCurrentValue(asset.getSinglePrice());
         }
     }
 
-    /**
-     * This method will be used to set the current value, and will be called by the updateCurrentValue
-     * or by the asset when it updates, because it should always reflect the last update made.
-     * 
-     * @param newValue the new value.
-     */
-    @Override
-    public final void setCurrentValue(final BigDecimal newValue) {
-        this.currentAssetValue = newValue;
-    }
+    // /**
+    //  * This method will be used to set the current value, and will be called by the updateCurrentValue
+    //  * or by the asset when it updates, because it should always reflect the last update made.
+    //  * 
+    //  * @param newValue the new value.
+    //  */
+    // @Override
+    // public final void setCurrentValue(final BigDecimal newValue) {
+    //     this.currentAssetValue = newValue;
+    // }
 
     /**
      * This method is the getter for the price variation list, which we will use to make graphs.
@@ -168,8 +187,8 @@ public class SpeculativeInvestment implements InvestmentInterface {
      * @return the price variation list.
      */
     @Override
-    public final List<BigDecimal> getPriceVariationList() {
-        return List.copyOf(this.priceVariationList);
+    public final Map<LocalDate, BigDecimal> getPriceVariationList() {
+        return Map.copyOf(this.priceVariationList);
     }
 
     /**
@@ -180,6 +199,7 @@ public class SpeculativeInvestment implements InvestmentInterface {
      * @param date the date to close the investment. 
      */
     public final void close(final LocalDate date) {
+       updateCurrentValue();
        this.closingDate =  Optional.of(date);
     }
 
@@ -191,4 +211,6 @@ public class SpeculativeInvestment implements InvestmentInterface {
     public final void close() {
         close(LocalDate.now());
     }
+
+
 }

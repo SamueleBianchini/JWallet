@@ -36,31 +36,38 @@ public interface InvestimentPlatformInterface {
      * This method is used to open a new investment.
      * 
      * @param asset the asset to which this investment refers.
-     * @param originalSingleValue the original value for a single instance of the asset.
+     * @param originalAssetValue the original value for a single instance of the asset.
      * @param nBought the number of instances of the asset that this investment refers to.
      * @param purchaseDate the date on which this investment was purchased.
-     * @return true if all the operations went well, false otherwise.
      */
-    boolean openNewInvestment(
-        final AssetInterface asset,
-        final BigDecimal originalSingleValue,
-        final int nBought,
-        final LocalDate purchaseDate
+    void  openNewInvestment(
+         AssetInterface asset,
+         BigDecimal originalAssetValue,
+         int nBought,
+         LocalDate purchaseDate
     );
 
     /**
      * This method is used to close a particular investment.
      * 
      * @param investment the investment to close
-     * @return true if all the operations went well, false otherwise.
      */
-    boolean closeInvetment(final InvestmentInterface investment);
+    void closeInvestment(InvestmentInterface investment);
 
     /**
-     * This method is used to save all the investment
-     * on the json file. 
+     * This method is used to close a particular investment.
      * 
-     * @return true if all the operations went well, false otherwise.
+     * @param investment the investment to close
+     * @param date the date on wich close the investments
      */
-    boolean saveInvestmentJSON();
+    void closeInvestment(InvestmentInterface investment,
+                         LocalDate date);
+    
+    /**
+     * This method is used to close an investment on a 
+     * particular index of the investment list.
+     * 
+     * @param index
+     */
+    void closeInvestment(Integer index);
 }

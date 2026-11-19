@@ -2,7 +2,7 @@ package project.model.investmentplatform.investiments;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import project.model.investmentplatform.assets.AssetInterface;
@@ -65,10 +65,11 @@ public interface InvestmentInterface {
 
     /**
      * This method is the getter for the price variation list, which we will use to make graphs.
-     * 
+     * each price is paired with the corresponding draw date.
+     *  
      * @return the price variation list.
      */
-    List<BigDecimal> getPriceVariationList();
+    Map<LocalDate, BigDecimal> getPriceVariationList();
 
     /**
      * Method to get the value in gain or loss of the value of the investment,
@@ -85,13 +86,13 @@ public interface InvestmentInterface {
      */
     int nBought();
 
-    /**
-     * This method will be used to set the current value, and will be called by the updateCurrentValue
-     * or by the asset when it updates, because it should always reflect the last update made.
-     * 
-     * @param newValue the new value.
-     */
-    void setCurrentValue(BigDecimal newValue);
+    // /**
+    //  * This method will be used to set the current value, and will be called by the updateCurrentValue
+    //  * or by the asset when it updates, because it should always reflect the last update made.
+    //  * 
+    //  * @param newValue the new value.
+    //  */
+    // void setCurrentValue(BigDecimal newValue);
 
     /**
      * This method is a getter for the original total value of the investment.
@@ -113,5 +114,13 @@ public interface InvestmentInterface {
      * 
      */
     void updateCurrentValue();
+
+    /**
+     * This method is a getter for the last time that was updated
+     * the price variation list and so also the current value.
+     * 
+     * @return the date of the last update
+     */
+    LocalDate getLastUpdateDate();
 
 }
