@@ -3,6 +3,7 @@ package project.model.investmentplatform.investiments;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import project.model.investmentplatform.assets.AssetInterface;
 
@@ -29,7 +30,7 @@ public interface InvestmentInterface {
      * 
      * @return the original value for a single instance of the asset, as it was when the investment started.
      */
-    BigDecimal getOriginalSingleValue();
+    BigDecimal getOriginalAssetValue();
 
     /**
      * This method is a getter for the date of the purchase of the investment.
@@ -37,6 +38,30 @@ public interface InvestmentInterface {
      * @return the date of the purchase of the investment.
      */
     LocalDate getpurchasedDate();
+
+    /**
+     * This method is a getter for the closing date of the investment.
+     * If the investment is still open, the Optional will be empty.
+     * 
+     * @return the optional of the closing date.
+     */
+    Optional<LocalDate> getClosingDate();
+
+    /**
+     * This method is used to set the closing date
+     * to a specific date. It must be greater or equals
+     * to the last date entered on the price variation. 
+     * 
+     * @param date the date to close the investment. 
+     */
+    void close(final LocalDate date);
+
+    /**
+     * This method is used to set the closing date
+     * to today.
+     * 
+     */
+    void close();
 
     /**
      * This method is the getter for the price variation list, which we will use to make graphs.
@@ -83,7 +108,9 @@ public interface InvestmentInterface {
     BigDecimal totalCurrentValue();
 
     /**
-     * This method is used to update the current value of the asset and assign the necessary modifications.
+     * This method is used to update the current value of the asset and add
+     * the new value of gain/loss money.
+     * 
      */
     void updateCurrentValue();
 

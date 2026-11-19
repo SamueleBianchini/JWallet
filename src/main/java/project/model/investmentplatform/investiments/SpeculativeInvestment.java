@@ -3,6 +3,7 @@ package project.model.investmentplatform.investiments;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.ArrayList;
 
 import project.model.investmentplatform.assets.AssetInterface;
@@ -20,35 +21,37 @@ public class SpeculativeInvestment implements InvestmentInterface {
     private final List<BigDecimal> priceVariationList;
     private final AssetInterface asset;
     private final LocalDate purchaseDate;
-    private final BigDecimal originalSingleValue;
+    private final BigDecimal originalAssetValue;
     private final int nBought;
-    private BigDecimal currentSingleValue;
+    private Optional<LocalDate> closingDate;
+    private BigDecimal currentAssetValue;
 
     /**
      * This method is the constructor for the speculative investments.
      * 
      * @param asset the asset to which this investment refers to.
-     * @param originalSingleValue the original value for a single instance.
+     * @param originalAssetValue the original value for a single instance.
      * @param nBought the number of instances of the asset bought.
      * @param purchaseDate the date on which we purchased the investment.
      */
     public SpeculativeInvestment(
         final AssetInterface asset,
-        final BigDecimal originalSingleValue,
+        final BigDecimal originalAssetValue,
         final int nBought,
         final LocalDate purchaseDate
     ) {
         /* Input validation */
         InputValidator.checkArgument(asset, p -> true, "Asset");
-        InputValidator.checkArgument(originalSingleValue, p -> p.compareTo(BigDecimal.ZERO) > 0, "Original single value");
+        InputValidator.checkArgument(originalAssetValue, p -> p.compareTo(BigDecimal.ZERO) > 0, "Original single value");
         InputValidator.checkArgument(nBought, p -> p > 0, "Number bought");
         InputValidator.checkArgument(purchaseDate, p -> true, "Purchase date");
         /* Actual constructor */
         this.priceVariationList = new ArrayList<>();
         this.asset = asset;
-        this.originalSingleValue = originalSingleValue;
+        this.originalAssetValue = originalAssetValue;
         this.nBought = nBought;
-        this.currentSingleValue = originalSingleValue;
+        this.closingDate = Optional.empty();
+        this.currentAssetValue = originalAssetValue;
         this.purchaseDate = purchaseDate;
     }
 
@@ -65,13 +68,23 @@ public class SpeculativeInvestment implements InvestmentInterface {
     }
 
     /**
+     * This method is a getter for the closing date of the investment.
+     * If the investment is still open, the Optional will be empty.
+     * 
+     * @return the optional of the closing date.
+     */
+    public Optional<LocalDate> getClosingDate() {
+        return this.closingDate;
+    }
+
+    /**
      * This method is a getter for the original value of a single instance of the asset.
      * 
      * @return the original value for a single instance of the asset, as it was when the investment started.
      */
     @Override
-    public final BigDecimal getOriginalSingleValue() {
-        return this.originalSingleValue;
+    public final BigDecimal getOriginalAssetValue() {
+        return this.originalAssetValue;
     }
 
     /**
@@ -101,7 +114,7 @@ public class SpeculativeInvestment implements InvestmentInterface {
      */
     @Override
     public final BigDecimal totalOriginalValue() {
-        return this.originalSingleValue.multiply(BigDecimal.valueOf(this.nBought));
+        return this.originalAssetValue.multiply(BigDecimal.valueOf(this.nBought));
     }
 
     /**
@@ -122,15 +135,20 @@ public class SpeculativeInvestment implements InvestmentInterface {
      */
     @Override
     public final BigDecimal totalCurrentValue() {
-        return this.currentSingleValue.multiply(BigDecimal.valueOf(this.nBought));
+        return this.currentAssetValue.multiply(BigDecimal.valueOf(this.nBought));
     }
 
     /**
-     * This method is used to update the current value of the asset and assign the necessary modifications.
+     * This method is used to update the current value of the asset and add
+     * the new value of gain/loss money.
+     * 
      */
     @Override
     public final void updateCurrentValue() {
-        this.asset.priceVariation();
+        if (getClosingDate().isEmpty()) {
+            this.priceVariationList.add(totalVariationValue());
+            this.currentAssetValue = asset.getSinglePrice();
+        }
     }
 
     /**
@@ -141,7 +159,7 @@ public class SpeculativeInvestment implements InvestmentInterface {
      */
     @Override
     public final void setCurrentValue(final BigDecimal newValue) {
-        this.currentSingleValue = newValue;
+        this.currentAssetValue = newValue;
     }
 
     /**
@@ -152,5 +170,25 @@ public class SpeculativeInvestment implements InvestmentInterface {
     @Override
     public final List<BigDecimal> getPriceVariationList() {
         return List.copyOf(this.priceVariationList);
+    }
+
+    /**
+     * This method is used to set the closing date
+     * to a specific date. It must be greater or equals
+     * to the last date entered on the price variation. 
+     * 
+     * @param date the date to close the investment. 
+     */
+    public final void close(final LocalDate date) {
+       this.closingDate =  Optional.of(date);
+    }
+
+    /**
+     * This method is used to set the closing date
+     * to today.
+     * 
+     */
+    public final void close() {
+        close(LocalDate.now());
     }
 }

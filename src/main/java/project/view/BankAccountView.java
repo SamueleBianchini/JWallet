@@ -10,14 +10,6 @@ import java.awt.CardLayout;
 import org.jfree.chart.ChartPanel;
 
 import java.util.List;
-<<<<<<< HEAD
-import java.util.Optional;
-import java.math.BigDecimal;
-import java.time.format.DateTimeParseException;
-import java.time.LocalDate;
-=======
-
->>>>>>> b79334c14d1f2c4c878caa13bf581363182dcd46
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
