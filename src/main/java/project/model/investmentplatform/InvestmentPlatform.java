@@ -7,12 +7,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import project.model.investmentplatform.assets.AssetInterface;
 import project.model.investmentplatform.assets.AssetType;
 import project.model.investmentplatform.investiments.IncomeInvestment;
 import project.model.investmentplatform.investiments.InvestmentInterface;
 import project.model.investmentplatform.investiments.SpeculativeInvestment;
-import project.persistence.GsonPersistenceManager;
 import project.utility.InputValidator;
 
 /**
@@ -31,12 +32,14 @@ public class InvestmentPlatform implements InvestimentPlatformInterface{
      */
     public InvestmentPlatform(final List<InvestmentInterface> inv) {
         InputValidator.checkArgument(inv, i -> i.stream().allMatch(Objects::nonNull), "Investments");
-        this.investments = inv;
+        this.investments = new ArrayList<>(inv);
         sortInvList();
     }
 
     private void sortInvList() {
-        investments.sort(Comparator.comparing(InvestmentInterface::getpurchasedDate));
+        investments.sort(Comparator.comparing(
+            (@NonNull InvestmentInterface investment) -> investment.getpurchasedDate()
+        ));
     }
     /**
      * This is the costructor of the InvestingPlatform.
@@ -100,7 +103,8 @@ public class InvestmentPlatform implements InvestimentPlatformInterface{
                 originalAssetValue, 
                 nBought, 
                 purchaseDate));
-        }    
+        }
+        sortInvList();  
     }
 
     /**
