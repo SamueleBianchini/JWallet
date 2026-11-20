@@ -2,11 +2,9 @@ package project.model.investmentplatform.investiments;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.SequencedMap;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import project.model.investmentplatform.assets.AssetInterface;
@@ -23,11 +21,11 @@ public class SpeculativeInvestment implements InvestmentInterface {
 
     private final Map<LocalDate, BigDecimal> priceVariationList;
     private final AssetInterface asset;
-    private final LocalDate purchaseDate;
+    //private final LocalDate purchaseDate;
     private final BigDecimal originalAssetValue;
     private final int nBought;
     private Optional<LocalDate> closingDate;
-    private BigDecimal currentAssetValue;
+    //private BigDecimal currentAssetValue;
 
     /**
      * This method is the constructor for the speculative investments.
@@ -53,10 +51,10 @@ public class SpeculativeInvestment implements InvestmentInterface {
         this.priceVariationList.put(purchaseDate, BigDecimal.ZERO);
         this.asset = asset;
         this.originalAssetValue = originalAssetValue;
-        this.currentAssetValue = originalAssetValue;
+        //this.currentAssetValue = originalAssetValue;
         this.nBought = nBought;
         this.closingDate = Optional.empty();
-        this.purchaseDate = purchaseDate;
+        //this.purchaseDate = purchaseDate;
     }
 
     /**
@@ -77,12 +75,19 @@ public class SpeculativeInvestment implements InvestmentInterface {
      * 
      * @return the optional of the closing date.
      */
+    @Override
     public Optional<LocalDate> getClosingDate() {
         return this.closingDate;
     }
 
+    /**
+     * Private method to convert the price variation list to a SequencedMap.
+     * Usefull for its methods firstEntry() and lastEntry().
+     * 
+     * @return the converted map
+     */
     private SequencedMap<LocalDate, BigDecimal> pvLinkedToSequence() {
-        return (java.util.SequencedMap<LocalDate, BigDecimal>) getPriceVariationList();
+        return (SequencedMap<LocalDate, BigDecimal>) getPriceVariationMap();
     }
 
     /**
@@ -187,7 +192,7 @@ public class SpeculativeInvestment implements InvestmentInterface {
      * @return the price variation list.
      */
     @Override
-    public final Map<LocalDate, BigDecimal> getPriceVariationList() {
+    public final Map<LocalDate, BigDecimal> getPriceVariationMap() {
         return Map.copyOf(this.priceVariationList);
     }
 
@@ -198,9 +203,10 @@ public class SpeculativeInvestment implements InvestmentInterface {
      * 
      * @param date the date to close the investment. 
      */
+    @Override
     public final void close(final LocalDate date) {
        updateCurrentValue();
-       this.closingDate =  Optional.of(date);
+       this.closingDate = Optional.of(date);
     }
 
     /**
@@ -208,9 +214,9 @@ public class SpeculativeInvestment implements InvestmentInterface {
      * to today.
      * 
      */
+    @Override
     public final void close() {
         close(LocalDate.now());
     }
-
 
 }

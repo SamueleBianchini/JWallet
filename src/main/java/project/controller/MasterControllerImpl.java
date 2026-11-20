@@ -95,7 +95,7 @@ public class MasterControllerImpl implements MasterControllerInterface {
         if (!TEST_USERNAME.equals(username) || !TEST_PASSWORD.equals(password)) {
             return false;
         }
-        
+
         final BankAccountInterface bankAccount = new BankAccountImpl("IT60X0542811101000000123456", "user");
         this.debitCard = new DebitCard(
             "4000123412341234",

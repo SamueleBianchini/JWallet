@@ -17,13 +17,12 @@ import project.model.investmentplatform.investiments.SpeculativeInvestment;
 import project.utility.InputValidator;
 
 /**
- * 
  * InvestimentPlatformInt is a platform used to open,
  * manage and close investments. 
  * 
  */
-public class InvestmentPlatform implements InvestimentPlatformInterface{
-    private List<InvestmentInterface> investments;
+public class InvestmentPlatform implements InvestimentPlatformInterface {
+    private final List<InvestmentInterface> investments;
 
     /**
      * This is the costructor of the InvestingPlatform.
@@ -36,18 +35,24 @@ public class InvestmentPlatform implements InvestimentPlatformInterface{
         sortInvList();
     }
 
-    private void sortInvList() {
-        investments.sort(Comparator.comparing(
-            (@NonNull InvestmentInterface investment) -> investment.getpurchasedDate()
-        ));
-    }
     /**
      * This is the costructor of the InvestingPlatform.
      * It sets the investments list as an empty list.
      * 
      */
     public InvestmentPlatform() {
-        this(new ArrayList<InvestmentInterface>());
+        this(new ArrayList<>());
+    }
+
+    /**
+     * Simple private method to sort the investment list by
+     * the open date.
+     * 
+     */
+    private void sortInvList() {
+        investments.sort(Comparator.comparing(
+            (@NonNull InvestmentInterface investment) -> investment.getpurchasedDate()
+        ));
     }
 
     /**
@@ -57,6 +62,7 @@ public class InvestmentPlatform implements InvestimentPlatformInterface{
      * 
      * @return the list of investments
      */
+    @Override
     public List<InvestmentInterface> getInvestmentsList() {
         return List.copyOf(investments);
     }
@@ -67,6 +73,7 @@ public class InvestmentPlatform implements InvestimentPlatformInterface{
      * 
      * @return the list of open investment
      */
+    @Override
     public List<InvestmentInterface> getOpenIvestmentList() {
         return investments.stream()
                           .filter(i -> i.getClosingDate().isEmpty())
@@ -81,6 +88,7 @@ public class InvestmentPlatform implements InvestimentPlatformInterface{
      * @param nBought the number of instances of the asset that this investment refers to.
      * @param purchaseDate the date on which this investment was purchased.
      */
+    @Override
     public void openNewInvestment(
         final AssetInterface asset,
         final BigDecimal originalAssetValue,
@@ -91,11 +99,11 @@ public class InvestmentPlatform implements InvestimentPlatformInterface{
         InputValidator.checkArgument(originalAssetValue, p -> p.compareTo(BigDecimal.ZERO) > 0, "Original single value");
         InputValidator.checkArgument(nBought, p -> p > 0, "Number bought");
         InputValidator.checkArgument(purchaseDate, p -> true, "Purchase date");
-        if (asset.getAssetType().equals(AssetType.BOUND)) {
+        if (asset.getAssetType() == AssetType.BOUND) {
             investments.add(new SpeculativeInvestment(
-                asset, 
-                originalAssetValue, 
-                nBought, 
+                asset,
+                originalAssetValue,
+                nBought,
                 purchaseDate));
         } else {
             investments.add(new IncomeInvestment(
@@ -104,7 +112,7 @@ public class InvestmentPlatform implements InvestimentPlatformInterface{
                 nBought, 
                 purchaseDate));
         }
-        sortInvList();  
+        sortInvList();
     }
 
     /**
@@ -113,10 +121,12 @@ public class InvestmentPlatform implements InvestimentPlatformInterface{
      * @param investment the investment to close
      * @param date the date on wich close the investments
      */
-    public void closeInvestment(InvestmentInterface investment,
-                         LocalDate date) {
+    @Override
+    public void closeInvestment(final InvestmentInterface investment,
+                                final LocalDate date) {
         InputValidator.checkArgument(investment, i -> i.getClosingDate().isEmpty(), "Investment");
-        InputValidator.checkArgument(date, d -> investment.getLastUpdateDate().isBefore(date) || investment.getLastUpdateDate().equals(date), null);
+        InputValidator.checkArgument(date, d -> investment.getLastUpdateDate().isBefore(date)
+                                || investment.getLastUpdateDate().equals(date), null);
         investment.close(date);
     }
 
@@ -125,18 +135,20 @@ public class InvestmentPlatform implements InvestimentPlatformInterface{
      * 
      * @param investment the investment to close
      */
+    @Override
     public void closeInvestment(final InvestmentInterface investment) {
         closeInvestment(investment, LocalDate.now());
     }
 
-    
     /**
      * This method is used to close an investment on a 
      * particular index of the investment list.
      * 
-     * @param index
+     * @param index the index of the investment to close
+     *              of the investment list.
      */
-    public void closeInvestment(Integer index) {
+    @Override
+    public void closeInvestment(final Integer index) {
         InputValidator.checkArgument(index, i -> Objects.nonNull(investments.get(i)), "Index");
         closeInvestment(investments.get(index));
     }

@@ -54,7 +54,7 @@ public interface InvestmentInterface {
      * 
      * @param date the date to close the investment. 
      */
-    void close(final LocalDate date);
+    void close(LocalDate date);
 
     /**
      * This method is used to set the closing date
@@ -66,10 +66,10 @@ public interface InvestmentInterface {
     /**
      * This method is the getter for the price variation list, which we will use to make graphs.
      * each price is paired with the corresponding draw date.
-     *  
+     * 
      * @return the price variation list.
      */
-    Map<LocalDate, BigDecimal> getPriceVariationList();
+    Map<LocalDate, BigDecimal> getPriceVariationMap();
 
     /**
      * Method to get the value in gain or loss of the value of the investment,
