@@ -7,9 +7,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FlowLayout;
 import java.awt.CardLayout;
+import org.jfree.chart.ChartPanel;
 
 import java.util.List;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -27,8 +27,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
-
-import org.jfree.chart.ChartPanel;
 
 import project.controller.BankAccountControllerInterface;
 import project.model.BankAccountInterface;

@@ -1,5 +1,0 @@
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\test\project\controller\TestBankAccountController.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\test\project\model\TestBankAccountModel.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\test\project\model\TestTransaction.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\test\project\utility\DataUtility.class
-C:\Users\jacop\OneDrive\Desktop\JWallet\JWallet\build\classes\java\test\project\utility\TestParsingUtility.class
