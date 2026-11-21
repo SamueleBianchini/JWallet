@@ -2,6 +2,7 @@ package project.controller;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -299,8 +300,13 @@ public class BankAccountControllerImpl implements BankAccountControllerInterface
      */
     @Override
     public LocalDate dateParser(final String date) {
+        InputValidator.checkArgument(date, p -> !p.isBlank(), DATE_ERROR_MESSAGE);
         final LocalDate parsedDate;
-        parsedDate = DialogUtils.getLocalDateValue(date);
+        try {
+            parsedDate = DialogUtils.getLocalDateValue(date);
+        } catch (final DateTimeParseException e) {
+            throw new IllegalArgumentException(e);
+        }
         return parsedDate;
     }
 }
